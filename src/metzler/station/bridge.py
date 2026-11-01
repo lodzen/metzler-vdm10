@@ -53,24 +53,35 @@ class ProviderBridgeMixin:
             return
         self._attach_bridge_media(call, remote_sdp, door_a, door_v)
         log.info("call classified: %s", "door (video to provider)" if call.door else "intercom (audio only)")
+        call.trunk = self.provider              # prov_* describes the provider leg until the fritz leg wins
         self.provider.invite(call)
+        if self.fritz and self.o.fritz_target:
+            self.fritz.invite(call)             # --fritz: the fritzfon races every bridged call
 
     def _provider_loop_guard(self, pkt, addr):
         """True if this INVITE must not be bridged to the provider (handled here)"""
-        if not self.provider:
+        if not (self.provider or self.fritz):
             return False
         # our own provider call forked back at us (the proxy rings every contact
         # on the account, including ours). Silently ignore it: a non-responding
         # branch keeps the call in "trying" state, giving pushed mobile devices
         # time to wake and register (a 486 would end the call as busy instantly)
-        if self.provider.owns(pkt.get("Call-ID")):
+        if self.provider and self.provider.owns(pkt.get("Call-ID")):
             log.debug("ignoring our own provider fork (Call-ID %s)", pkt.get("Call-ID"))
             return True
-        # an inbound call from the SIP side (someone dialing the account) is
-        # either bridged to --inbound-target or declined (486 inside)
-        if self.provider.is_provider_addr(addr):
-            self.inbound_provider_call(pkt, addr)
+        # same for a racing leg to the fritzfon: we registered as its SIP
+        # account, so the box forks our own INVITE right back at us
+        if self.fritz and self.fritz.owns(pkt.get("Call-ID")):
+            log.debug("ignoring our own fritz fork (Call-ID %s)", pkt.get("Call-ID"))
             return True
+        # an inbound call from either SIP side (someone dialing the provider
+        # account, or a fritz phone calling our extension) is bridged to
+        # --inbound-target or declined (486 inside) - the trunk object is
+        # remembered on the call so its SDP answers use that leg's identity
+        for trunk in (self.provider, self.fritz):
+            if trunk and trunk.is_provider_addr(addr):
+                self.inbound_provider_call(pkt, addr, trunk)
+                return True
         return False
 
     def _retransmitted_invite(self, pkt, addr):
@@ -141,7 +152,7 @@ class ProviderBridgeMixin:
                                      extra_to_tag=call.to_tag)
         ok.body = self._indoor_answer(call, resp_sdp, prov_a)
         self.reply(call, ok)
-        self.provider.ack(call, resp)
+        (call.trunk or self.provider).ack(call, resp)   # the winning leg's trunk
         call.state = "established"
         if not call.provider_media:
             self._bind_srtp(call, resp_sdp)

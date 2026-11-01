@@ -34,8 +34,11 @@ def main(argv=None):
 def build_parser(env):
     """CLI options; every default comes from the INDOOR_* keys of `env`"""
     d = lambda k, default=None, cast=None: env_default(env, k, default, cast)
-    fd = lambda k, default=None, cast=None: (lambda v: cast(v) if cast and v is not None else v)(
-        env.get("INDOOR_FRITZ_" + k.upper()) or env.get("FRITZ_BOX_" + k.upper()) or default)
+
+    def fd(key, default=None, cast=None):
+        """fritz option default: INDOOR_FRITZ_* first, then the FRITZ_BOX_* naming"""
+        v = env.get("INDOOR_FRITZ_" + key.upper()) or env.get("FRITZ_BOX_" + key.upper()) or default
+        return cast(v) if cast and v is not None else v
     ap = argparse.ArgumentParser(description="Simulated Hikvision/Metzler indoor station -> SIP bridge. "
                                  "All options can also be set via .env (INDOOR_* keys).")
     ap.add_argument("--server", default=d("server"), help="registrar IP (door station / primary indoor)")
@@ -97,6 +100,13 @@ def build_parser(env):
                     help="fritz IP-phone username (env FRITZ_BOX_USER)")
     ap.add_argument("--fritz-pass", default=fd("password") or fd("pass", ""),
                     help="fritz IP-phone password (env FRITZ_BOX_PASSWORD)")
+    ap.add_argument("--fritz-call-button", dest="fritz_target",
+                    default=fd("call_button") or fd("target", ""),
+                    help="number the fritz leg dials on every bridged call, in parallel "
+                         "with the provider app (env FRITZ_BOX_CALL_BUTTON). For a "
+                         "Tuersprechanlage account this is the box-configured 'Rufnummer "
+                         "der Klingeltaste' (e.g. 1 -> sip:1@fritz.box) - the box treats "
+                         "it as a doorbell press and rings its phones")
     # --- local-audio mode: no provider, talk through local headset ---
     ap.add_argument("--local-audio", action="store_true", default=env_bool(env, "local_audio"),
                     help="door audio -> local speaker (aplay)")
@@ -144,6 +154,8 @@ def finalize_options(o, ap):
     if not o.sip_target and o.sip_user and o.sip_domain:
         o.sip_target = f"sip:{o.sip_user}@{o.sip_domain}"
     o.sip_target = sip_uri(o.sip_target, o.sip_domain)
+    if o.fritz_target:
+        o.fritz_target = sip_uri(o.fritz_target, o.fritz_domain)
     for f in ("server", "username", "local_ip") + (() if local_mode else ("sip_host", "sip_target")):
         if getattr(o, f) in (None, ""):
             ap.error(f"--{f.replace('_','-')} required (or set INDOOR_{f.upper()} in .env)")

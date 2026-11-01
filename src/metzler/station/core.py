@@ -2,7 +2,7 @@
 receive loop and request routing, run/shutdown."""
 
 import logging
-import queue
+import re
 import shutil
 import signal
 import socket
@@ -12,7 +12,7 @@ from typing import ClassVar
 
 from metzler.media.rtsp_server import RtspServer
 from metzler.provider import FritzTrunk, SipProvider
-from metzler.sip.message import UA, Packet, branch, call_id, tag
+from metzler.sip.message import UA, Packet, branch, tag, uri_of
 
 log = logging.getLogger("indoor")
 
@@ -27,15 +27,11 @@ class StationCore:
         self.sip = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sip.bind(("0.0.0.0", o.listen_port))
         self.bind_port = self.sip.getsockname()[1]
-        self.reg = None                 # register packet (rebuilt each try)
-        self.reg_call_id = call_id()
-        self.reg_cseq = 1
         self.expires = o.expires
-        self.registered = threading.Event()
+        self.init_registrations()       # self.regs + self.registered (primary ext)
         self.calls = {}                 # intercom/door-side Call-ID -> Call
         self.ended_invites = {}         # ended Call-ID -> (final resp, ts); retransmit answers
         self.out_calls = {}             # our outbound Call-ID -> dict
-        self.reg_queue = queue.Queue()  # responses matching reg_call_id
         self.running = True
         self.local_tag = tag()
         self.local_mode = bool(o.local_audio or o.local_mic or o.local_tone or o.video_player)
@@ -138,12 +134,8 @@ class StationCore:
             return log.debug("unparseable from %s: %s", addr, e)
         log.debug("<< %s:%d\n%s", addr[0], addr[1], text)
         sl = pkt.status_line
-        if sl.startswith("SIP/2.0") and pkt.get("Call-ID") == self.reg_call_id:
-            return self.reg_queue.put(pkt)
-        if sl.startswith("SIP/2.0") and self.provider and self.provider.is_reg_response(pkt):
-            return self.provider.reg_queue.put(pkt)
-        if sl.startswith("SIP/2.0") and self.fritz and self.fritz.is_reg_response(pkt):
-            return self.fritz.reg_queue.put(pkt)
+        if sl.startswith("SIP/2.0") and self._dispatch_reg_response(pkt):
+            return
         name = "on_response" if sl.startswith("SIP/2.0") else self.REQUEST_HANDLERS.get(sl.split(" ", 1)[0])
         if not name: return
         try:
@@ -163,6 +155,17 @@ class StationCore:
         log.info("INFO body: %s", pkt.body[:200])
         self.send(self.in_dialog_response(pkt, "200 OK"), addr)
 
+    def _dispatch_reg_response(self, pkt):
+        """a REGISTER reply: hand it to whichever registration loop is
+        waiting (intercom ext(s), provider, fritz) - matched by Call-ID"""
+        for r in self.regs:
+            if r.is_reg_response(pkt):
+                r.reg_queue.put(pkt); return True
+        for trunk in (self.provider, self.fritz):
+            if trunk and trunk.is_reg_response(pkt):
+                trunk.reg_queue.put(pkt); return True
+        return False
+
     def _out_invite_response(self, out, pkt, addr):
         """response on an outbound intercom leg; a bridged app call gets the
         intercom's ringing and its final result forwarded"""
@@ -177,6 +180,7 @@ class StationCore:
             self.out_answered(out, pkt, addr)
         elif code >= 300:
             log.warning("outbound call to %s failed: %s", out["num"], pkt.status_line)
+            self._ack_dead_final(pkt, addr)         # else the registrar retransmits ~30s
             self.out_calls.pop(cid, None)
             if call:                                # callee busy/gone -> tell the app
                 self.reply(call, self.in_dialog_response(
@@ -191,21 +195,115 @@ class StationCore:
         if out and "INVITE" in cseq:
             return self._out_invite_response(out, pkt, addr)
         call = self.provider.calls.get(cid) if self.provider else None
-        if call and "INVITE" in cseq:                   # provider-leg INVITE reply
-            result = self.provider.handle_response(call, pkt)
-            if result == "answered":
-                self.provider_answered(call, pkt)
-            elif result == "early":
-                self.early_media(call, pkt)
-            elif result == "fail":
-                self.reply(call, self.in_dialog_response(call.invite, "486 Busy Here",
-                                                         extra_to_tag=call.to_tag))
-                self._close_call(call, call.id)
-                self.provider.calls.pop(cid, None)
+        if call and "INVITE" in cseq:
+            return self._provider_invite_response(call, pkt)
+        if self.fritz and "INVITE" in cseq and cid in self.fritz.calls:
+            return self._fritz_invite_response(self.fritz.calls[cid], pkt)
+        if "INVITE" in cseq and int(pkt.status_line.split()[1]) >= 300:
+            self._ack_dead_final(pkt, addr)         # leg already torn down - still ACK
+
+    # explicit user rejections (decline on a ringing device) - unlike timeouts
+    # or transport failures these kill the whole race, not just that leg
+    DECLINE_CODES: ClassVar[frozenset] = frozenset((486, 603))
+
+    def _ack_dead_final(self, pkt, addr):
+        """a final response on an INVITE transaction we already dropped (a
+        racing leg CANCELLed or declined earlier): it still needs the
+        transaction ACK - our Via sits at the bottom of the response's list,
+        so its branch is the last branch= - or the peer retransmits ~30s"""
+        cseq, to = pkt.get("CSeq") or "", pkt.get("To")
+        branches = re.findall(r"branch=([^;\s,]+)", pkt.get("Via") or "")
+        if not to or not branches or "INVITE" not in cseq:
+            return
+        p = Packet()
+        p.status_line = f"ACK {uri_of(to)} SIP/2.0"
+        p.set("Via", f"SIP/2.0/UDP {self.o.local_ip}:{self.bind_port};rport;branch={branches[-1]}")
+        p.set("Max-Forwards", "70")
+        p.set("To", to)
+        p.set("From", pkt.get("From"))
+        p.set("Call-ID", pkt.get("Call-ID"))
+        p.set("CSeq", cseq.replace("INVITE", "ACK"))
+        p.set("User-Agent", UA)
+        try: self.send(p, addr)
+        except OSError: pass
+
+    def _decline_call(self, call, pkt):
+        """no leg left ringing, or a leg got explicitly declined: CANCEL any
+        still-racing leg and give the indoor caller the final outcome. A
+        401/407 challenge is never propagated - the indoor gets a plain 486."""
+        if call.fritz_leg:
+            self.fritz.cancel_leg(call)
+            call.fritz_leg = None
+        if self.provider and call.prov_call_id in self.provider.calls:
+            self.provider.cancel(call)
+            self.provider.calls.pop(call.prov_call_id, None)
+        code = int(pkt.status_line.split()[1]) if pkt else 0
+        # the registrar clears its global busy flag only on 408/486/603;
+        # every other outcome (auth challenges, 488, 5xx) becomes a 486
+        status = pkt.status_line[8:] if code in (408, 486, 603) else "486 Busy Here"
+        self.reply(call, self.in_dialog_response(call.invite, status,
+                                                 extra_to_tag=call.to_tag))
+        self._close_call(call, call.id)
+
+    def _provider_invite_response(self, call, pkt):
+        """response on the provider leg of a bridged call; on door calls a
+        fritz leg may be racing it - the winner keeps the call, the loser is
+        CANCELLed"""
+        cid = pkt.get("Call-ID")
+        result = self.provider.handle_response(call, pkt)
+        if result == "answered":
+            if call.fritz_leg:                          # the app won the race
+                self.fritz.cancel_leg(call)
+                call.fritz_leg = None
+            self.provider_answered(call, pkt)
+        elif result == "early":
+            self.early_media(call, pkt)
+        elif result == "fail":
+            self.provider.calls.pop(cid, None)
+            if call.fritz_leg and int(pkt.status_line.split()[1]) not in self.DECLINE_CODES:
+                return                                  # fritz still rings - keep waiting
+            self._decline_call(call, pkt)
+
+    def _fritz_invite_response(self, call, pkt):
+        """response on the racing fritzfon leg of a door call"""
+        cid = pkt.get("Call-ID")
+        result = self.fritz.handle_response(call, pkt)
+        if result == "answered":
+            return self._fritz_won(call, pkt)
+        if result == "fail":
+            self.fritz.calls.pop(cid, None)
+            call.fritz_leg = None
+            prov_alive = self.provider and call.prov_call_id in self.provider.calls
+            if not prov_alive or int(pkt.status_line.split()[1]) in self.DECLINE_CODES:
+                self._decline_call(call, pkt)
+
+    def _fritz_won(self, call, resp):
+        """the fritzfon answered a door call first: CANCEL the still-racing
+        provider leg, promote the fritz leg into the call's SIP-leg fields
+        (ACK/teardown then work via call.trunk) and take the answered path.
+        Idempotent - a retransmitted 200 gets re-ACKed only."""
+        leg = call.fritz_leg
+        if not leg:
+            return self.fritz.ack(call, resp)
+        if call.prov_call_id in self.provider.calls:
+            self.provider.cancel(call)                  # prov_* still = the provider leg
+            self.provider.calls.pop(call.prov_call_id, None)
+        (call.prov_call_id, call.prov_branch, call.prov_cseq,
+         call.prov_from) = (leg["cid"], leg["branch"], leg["cseq"], leg["from"])
+        call.prov_to = call.prov_uri = None             # filled by ack() from the 200
+        for m in ([call.media, getattr(call.media, "video", None)]
+                  if call.kind == "intercom" else [call.audio, call.video]):
+            if m: m.srtp = None                         # fritz leg is plain RTP
+        call.prov_plain = True
+        call.provider_media = False                     # rebind media to the fritz peer
+        call.trunk = self.fritz
+        call.fritz_leg = None
+        self.provider_answered(call, resp)
 
     def run(self):
         threading.Thread(target=self.listener, daemon=True).start()
-        threading.Thread(target=self.registration_loop, daemon=True).start()
+        for r in self.regs:
+            threading.Thread(target=r.register_loop, daemon=True).start()
         threading.Thread(target=self.heartbeat_loop, daemon=True).start()
         if self.o.call:
             threading.Thread(target=self.call_out, args=(self.o.call,), daemon=True).start()
@@ -221,16 +319,9 @@ class StationCore:
                      bool(self.o.local_audio), bool(self.o.local_mic), self.o.local_tone,
                      bool(self.o.video_player), self.o.alsa_device)
         else:
-            if self.provider.needs_register():
-                threading.Thread(target=self.provider.register_loop, daemon=True).start()
-            else:
-                log.info("no --sip-user/--sip-pass: trunk mode, provider REGISTER skipped")
-            if self.fritz and self.fritz.needs_register():
-                threading.Thread(target=self.fritz.register_loop, daemon=True).start()
-            log.info("indoor station sim on %s:%d -> registrar %s:%d, bridge via %s:%d to %s",
-                     self.o.local_ip, self.bind_port, self.server[0], self.server[1],
-                     self.provider.proxy[0], self.provider.proxy[1], self.o.sip_target)
+            self._start_trunks()
         def terminate(signum, frame): raise KeyboardInterrupt
+
         signal.signal(signal.SIGTERM, terminate)   # plain `kill` must unregister too
         try:
             while True: time.sleep(1)
@@ -238,6 +329,18 @@ class StationCore:
             pass
         finally:
             self.shutdown()
+
+    def _start_trunks(self):
+        """provider (+ optional fritz) REGISTER loops and the startup log"""
+        if self.provider.needs_register():
+            threading.Thread(target=self.provider.register_loop, daemon=True).start()
+        else:
+            log.info("no --sip-user/--sip-pass: trunk mode, provider REGISTER skipped")
+        if self.fritz and self.fritz.needs_register():
+            threading.Thread(target=self.fritz.register_loop, daemon=True).start()
+        log.info("indoor station sim on %s:%d -> registrar %s:%d, bridge via %s:%d to %s",
+                 self.o.local_ip, self.bind_port, self.server[0], self.server[1],
+                 self.provider.proxy[0], self.provider.proxy[1], self.o.sip_target)
 
     def shutdown(self):
         """clean exit: end every call (BYE/CANCEL so the registrar's busy
@@ -251,7 +354,8 @@ class StationCore:
             self._end_call_on_shutdown(call)
         self.calls.clear()
         try:
-            self.send(self.build_register(expires=0), self.server)
+            for r in self.regs:
+                r.unregister()
             if self.provider and self.provider.needs_register(): self.provider.unregister()
             if self.fritz and self.fritz.needs_register(): self.fritz.unregister()
             time.sleep(0.3)

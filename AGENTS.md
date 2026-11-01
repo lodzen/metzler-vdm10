@@ -4,9 +4,11 @@
   `sip/`, `media/`, `station/`); flat re-exports live in `__init__.py`, `__main__.py` is the
   `python -m metzler` + standalone-file entry. See `docs/architecture.md` for the module map and
   `docs/protocol.md` for the Hikvision SIP dialect.
-- Run (provider/Linphone mode): `INDOOR_ENV=.env.linphone uv run indoor-station`
-  (equivalent: `uv run python -m metzler`, or standalone `python3 src/metzler/__main__.py`).
-  - `.env` = local headset mode, `.env.linphone` = SIP-provider bridge (secrets live only in these files).
+- Run (provider/Linphone mode): `uv run indoor-station` (loads `.env` by default;
+  `INDOOR_ENV=<file>` selects another profile; equivalent: `uv run python -m metzler`,
+  or standalone `python3 src/metzler/__main__.py`).
+  - `.env` = the single profile (secrets live only there): SIP-provider bridge + optional
+    Fritz trunk; local headset mode = uncomment `INDOOR_LOCAL_AUDIO`/`INDOOR_LOCAL_MIC`.
   - UDP 5060 must be free: WSL uses mirrored networking, so a Windows SIP app (e.g. Linphone desktop) blocks it.
 - Must keep working standalone (stdlib only at module level; `cryptography` is optional and only enables
   SRTP) and with a PBX trunk such as Asterisk (`--sip-host <pbx> --sip-target 6000`, no credentials = no

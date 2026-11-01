@@ -90,10 +90,15 @@ class OutboundCallMixin:
             p = Packet()
             uri = out["invite"].status_line.split()[1]
             p.status_line = f"CANCEL {uri} SIP/2.0"
-            p.set("Via", f"SIP/2.0/UDP {self.o.local_ip}:{self.bind_port};rport;branch={branch()}")
+            # RFC 3261 9.1: the CANCEL only matches the INVITE transaction
+            # with the same Via branch and CSeq number (else a 481 and the
+            # callee keeps ringing)
+            p.set("Via", out["invite"].get("Via"))
             p.set("Max-Forwards", "70")
             p.set("To", out["invite"].get("To")); p.set("From", out["invite"].get("From"))
-            p.set("Call-ID", cid); p.set("CSeq", "1 CANCEL"); p.set("User-Agent", UA)
+            p.set("Call-ID", cid)
+            p.set("CSeq", out["invite"].get("CSeq").replace("INVITE", "CANCEL"))
+            p.set("User-Agent", UA)
             try: self.send(p, out["peer"])
             except OSError: pass
             return

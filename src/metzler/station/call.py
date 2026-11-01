@@ -18,7 +18,8 @@ class Call:
         self.kind = None                # "door" | "intercom"
         self.door = False               # caller is an outdoor station (doorbell)
         self.inbound = False            # SIP app -> intercom call (reversed bridge)
-        self.trunk = None               # inbound leg's trunk (provider or fritz)
+        self.trunk = None               # SIP leg this call uses/won (provider or fritz)
+        self.fritz_leg = None           # racing door-call fritz leg dict (until it wins)
         self.out_cid = None             # Call-ID of our outbound intercom leg (inbound)
         self.provider_media = False     # provider peers latched + media streaming
         self.prov_call_id = call_id()

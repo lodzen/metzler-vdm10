@@ -14,10 +14,14 @@ class TeardownMixin:
         """one side went away -> drop the other leg too"""
         if call.inbound:                        # app leg ended -> end our intercom call
             return self.bye_outbound(call.out_cid)
-        if self.provider:
-            if call.state == "established": self.provider.bye(call)
-            else: self.provider.cancel(call)
-            self.provider.calls.pop(call.prov_call_id, None)
+        if call.fritz_leg:                      # door-call race still open? CANCEL it
+            self.fritz.cancel_leg(call)
+            call.fritz_leg = None
+        trunk = call.trunk or self.provider     # the live/winning SIP leg
+        if trunk and call.prov_call_id in trunk.calls:
+            if call.state == "established": trunk.bye(call)
+            else: trunk.cancel(call)
+            trunk.calls.pop(call.prov_call_id, None)
 
     def on_cancel(self, pkt, addr):
         self.send(self.in_dialog_response(pkt, "200 OK"), addr)
@@ -37,12 +41,16 @@ class TeardownMixin:
             self._end_provider_leg(call)
             self._close_call(call, cid)
             return
-        if self.provider and cid in self.provider.calls:   # SIP peer hung up
-            call = self.provider.calls.pop(cid)
-            self.bye_intercom(call)                 # end the intercom leg too
-            self._close_call(call, call.id)
-            return
-        elif cid in self.out_calls:
+        for trunk in (self.provider, self.fritz):
+            if trunk and cid in trunk.calls:        # a SIP leg's peer hung up
+                call = trunk.calls.pop(cid)
+                if call.fritz_leg:                  # don't leave the fritzfon ringing
+                    self.fritz.cancel_leg(call)
+                    call.fritz_leg = None
+                self.bye_intercom(call)             # end the intercom leg too
+                self._close_call(call, call.id)
+                return
+        if cid in self.out_calls:
             out = self.out_calls.pop(cid)
             if out.get("local"): out["local"].stop()
             if out.get("bridged"):              # intercom hung up -> BYE the app

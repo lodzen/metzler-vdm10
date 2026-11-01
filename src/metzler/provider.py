@@ -340,7 +340,16 @@ class SipProvider:
         return p
 
     def cancel(self, call):
-        try: self.st.send(self._leg_pkt(call, "CANCEL", "1 CANCEL"), self.proxy)
+        """CANCEL only matches the INVITE transaction when it echoes the live
+        INVITE's Via branch and CSeq number (RFC 3261 9.1); a fresh branch is
+        a new transaction the proxy doesn't know - 481, app keeps ringing"""
+        try:
+            uri = self.o.sip_target                       # must equal the INVITE's RURI
+            p = self._base("CANCEL", uri, call.prov_from, call.prov_branch)
+            p.set("To", f"<{uri}>")
+            p.set("Call-ID", call.prov_call_id)
+            p.set("CSeq", f"{call.prov_cseq} CANCEL")
+            self.st.send(p, self.proxy)
         except OSError: pass
 
     def bye(self, call):
@@ -349,11 +358,14 @@ class SipProvider:
 
 
 class FritzTrunk(SipProvider):
-    """A second, inbound-only SIP account on the same socket: --fritz makes the
-    station REGISTER as an IP phone at a Fritz!Box. INVITEs arriving from the
-    box get bridged to --inbound-target exactly like provider app calls;
-    intercom/door calls still go to the main provider trunk (no fritz outbound
-    legs), so Fritz needs no target/from/SRTP settings."""
+    """A second SIP account on the same socket: --fritz makes the station
+    REGISTER as an IP phone at a Fritz!Box. Inbound fritz calls bridge to
+    --inbound-target like provider app calls. Every bridged call ALSO rings
+    --fritz-call-button in parallel with the provider app (first answer wins).
+
+    The racing leg keeps its own state in call.fritz_leg - the call's
+    prov_* fields belong to the provider leg while both race; the winner
+    gets promoted into them."""
     def __init__(self, st, o):
         fo = SimpleNamespace(**vars(o))
         fo.sip_host, fo.sip_port = o.fritz_host, o.fritz_port
@@ -363,3 +375,88 @@ class FritzTrunk(SipProvider):
         fo.sip_srtp = False            # Fritz!Box IP phones talk plain RTP
         super().__init__(st, fo)
         self.label = "fritz"
+
+    # -- racing fritzfon leg (state: call.fritz_leg dict) --------------------
+
+    def invite(self, call):
+        """ring --fritz-call-button in parallel with the provider leg; the box
+        forks this back at our registered contact, so the Call-ID goes into
+        own_ids like a provider leg's"""
+        call.fritz_leg = {"cid": call_id(), "cseq": 0, "branch": None,
+                          "from": None, "uri": self.o.fritz_target, "auths": 0}
+        leg = call.fritz_leg
+        self.calls[leg["cid"]] = call
+        self.own_ids[leg["cid"]] = time.time()
+        self.st.send(self._invite_pkt(call, leg), self.proxy)
+
+    def _invite_pkt(self, call, leg, auth=None, auth_name="Authorization"):
+        """audio-only RTP/AVP offer for the fritzfon (no video, no SRTP);
+        From user stays the account, display name + Subject carry the
+        calling station like on the provider leg"""
+        leg["cseq"] += 1
+        leg["branch"] = branch()
+        num = userpart(call.invite.get("From") or "")
+        name = self.names.get(num, num) or self.o.name
+        p = self._base("INVITE", leg["uri"],
+                       f'"{name}" <sip:{self.o.sip_user}@{self.o.sip_domain}>;tag={tag()}',
+                       leg["branch"])
+        p.set("Contact", f"<sip:{self.o.sip_user}@{self.sdp_ip()}:{self.sdp_port()}>")
+        p.set("To", f"<{leg['uri']}>")
+        p.set("Call-ID", leg["cid"])
+        p.set("CSeq", f"{leg['cseq']} INVITE")
+        p.set("Subject", name)
+        p.set("Content-Type", "application/sdp")
+        if auth: p.set(auth_name, auth)
+        media = call.media if call.kind == "intercom" else call.audio
+        ip = self.sdp_ip()
+        p.body = (f"v=0\r\no=- 0 0 IN IP4 {ip}\r\ns=Talk session\r\n"
+                  f"c=IN IP4 {ip}\r\nt=0 0\r\n"
+                  f"m=audio {media.rtp_port} RTP/AVP 0 101\r\n"
+                  "a=rtpmap:0 PCMU/8000\r\na=rtpmap:101 telephone-event/8000\r\n"
+                  "a=fmtp:101 0-16\r\na=sendrecv\r\n")
+        leg["from"] = p.get("From")
+        return p
+
+    def _ack_leg_failure(self, leg, resp):
+        """non-2xx final responses need an ACK on the same branch"""
+        p = self._base("ACK", leg["uri"], resp.get("From"), leg["branch"])
+        p.set("To", resp.get("To"))
+        p.set("Call-ID", leg["cid"])
+        p.set("CSeq", f"{leg['cseq']} ACK")
+        self.st.send(p, self.proxy)
+
+    def handle_response(self, call, resp):
+        """dispatch one response on the racing fritz leg (early media is
+        ignored - a fritzfon rings, it does not stream to the door early)"""
+        code = int(resp.status_line.split()[1])
+        leg = call.fritz_leg
+        if code in (401, 407):
+            self._ack_leg_failure(leg, resp)
+            leg["auths"] += 1
+            if leg["auths"] > 2:
+                log.warning("fritz INVITE auth failed")
+                return "fail"
+            hdr = resp.get("Proxy-Authenticate" if code == 407 else "WWW-Authenticate")
+            auth = digest_response(hdr, "INVITE", leg["uri"],
+                                   self.o.sip_user, self.o.sip_pass)
+            name = "Proxy-Authorization" if code == 407 else "Authorization"
+            self.st.send(self._invite_pkt(call, leg, auth, name), self.proxy)
+            return "auth"
+        if code < 200: return "ringing"
+        if 200 <= code < 300: return "answered"
+        self._ack_leg_failure(leg, resp)
+        return "fail"
+
+    def cancel_leg(self, call):
+        """CANCEL the still-racing fritz leg (echoes its branch/CSeq like the
+        provider CANCEL) and drop it from the routing dict"""
+        leg = call.fritz_leg
+        if not leg: return
+        try:
+            p = self._base("CANCEL", leg["uri"], leg["from"], leg["branch"])
+            p.set("To", f"<{leg['uri']}>")
+            p.set("Call-ID", leg["cid"])
+            p.set("CSeq", f"{leg['cseq']} CANCEL")
+            self.st.send(p, self.proxy)
+        except OSError: pass
+        self.calls.pop(leg["cid"], None)

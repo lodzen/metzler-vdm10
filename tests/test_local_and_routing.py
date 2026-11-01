@@ -73,9 +73,9 @@ def test_extension_policy_answers_extension_calls_not_doorbell_legs(station_fact
 def test_datagram_routing(station_factory):
     st = station_factory()
     st.handle_datagram(b"\x00garbage", CALLER)             # unparseable: ignored
-    st.handle_datagram(f"SIP/2.0 200 OK\r\nCall-ID: {st.reg_call_id}\r\nCSeq: 1 REGISTER\r\n\r\n".encode(),
+    st.handle_datagram(f"SIP/2.0 200 OK\r\nCall-ID: {st.regs[0].reg_call_id}\r\nCSeq: 1 REGISTER\r\n\r\n".encode(),
                        ("127.0.0.1", 5098))
-    assert st.reg_queue.get_nowait().status_line == "SIP/2.0 200 OK"
+    assert st.regs[0].reg_queue.get_nowait().status_line == "SIP/2.0 200 OK"
     st.handle_datagram(b"OPTIONS sip:x SIP/2.0\r\nVia: SIP/2.0/UDP 1.2.3.4;branch=o\r\n"
                        b"From: <sip:a@b>;tag=1\r\nTo: <sip:x@y>\r\nCall-ID: o1\r\nCSeq: 1 OPTIONS\r\n\r\n", CALLER)
     assert st.sent[-1][0].status_line == "SIP/2.0 200 OK"

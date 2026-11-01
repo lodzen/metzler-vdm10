@@ -96,6 +96,20 @@ def test_call_out_via_registrar(station_factory):
     assert st.sent[-1][1] == ("127.0.0.1", 5098)
 
 
+def test_outbound_cancel_echoes_the_invites_branch_and_cseq(station_factory):
+    """same RFC 3261 9.1 rule as the provider CANCEL: a fresh Via branch
+    gets a 481 from the registrar and the intercom keeps ringing"""
+    st = station_factory()
+    st.registered.set()
+    st.call_out("10000000001")
+    inv = st.sent[-1][0]
+    st.bye_outbound(inv.get("Call-ID"))
+    can = st.sent[-1][0]
+    assert can.status_line.startswith("CANCEL")
+    assert can.get("Via") == inv.get("Via")
+    assert can.get("CSeq") == "1 CANCEL"
+
+
 # ---------------------------------------------------------------- incoming -> provider
 
 def test_intercom_call_is_bridged_to_the_provider(linphone_station):
@@ -162,6 +176,22 @@ def test_407_is_acked_and_retried_with_proxy_authorization(linphone_station):
     assert inv2.get("Proxy-Authorization").startswith('Digest username="alice"')
     assert "algorithm=SHA-256" in inv2.get("Proxy-Authorization")
     assert inv2.get("Authorization") is None
+
+
+def test_cancel_echoes_the_live_invites_branch_and_cseq(linphone_station):
+    """a CANCEL only matches the INVITE transaction with the same Via branch
+    and CSeq number (RFC 3261 9.1) - a fresh branch/CSeq makes the proxy
+    answer 481 and the callee keeps ringing"""
+    st = linphone_station
+    st.on_invite(intercom_invite(), CALLER)
+    st.on_response(response(provider_invites(st)[0], "407 Proxy Authentication Required",
+                            f"Proxy-Authenticate: {LINPHONE_CHALLENGE}"), PROXY)
+    inv = provider_invites(st)[-1]                      # the live (authed) INVITE
+    st.provider.cancel(st.calls["extcall1"])
+    can = st.sent.first("CANCEL")
+    assert can.get("Via") == inv.get("Via")
+    assert can.get("CSeq") == inv.get("CSeq").replace("INVITE", "CANCEL")
+    assert can.status_line.split()[1] == inv.status_line.split()[1]   # same RURI
 
 
 def test_401_uses_authorization_header(linphone_station):
@@ -441,3 +471,287 @@ def test_busy_intercom_486es_the_app(station_factory):
                             "486 Busy Here"), ("127.0.0.1", 5098))
     assert [p.status_line for p, a in st.sent if a == PROXY][-1] == "SIP/2.0 486 Busy Here"
     assert "appcall1" not in st.calls
+
+
+# ---------------------------------------------------------------- fritz trunk
+
+FRITZ = ("127.0.0.1", 5077)
+
+
+def fritz_station(station_factory):
+    """provider mode + a Fritz!Box as second (inbound-only) trunk"""
+    return station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                           "--sip-domain", "sip.linphone.org",
+                           "--sip-user", "alice", "--sip-pass", "secret",
+                           "--inbound-target", "10000000001",
+                           "--fritz", "--fritz-host", "127.0.0.1",
+                           "--fritz-port", "5077",
+                           "--fritz-user", "620", "--fritz-pass", "pw")
+
+
+def test_fritz_registers_as_its_own_account(station_factory):
+    st = fritz_station(station_factory)
+    p = st.fritz._register_pkt()
+    assert p.status_line == "REGISTER sip:fritz.box SIP/2.0"
+    assert p.get("From").startswith("<sip:620@fritz.box>")
+    assert p.get("Contact").startswith("<sip:620@127.0.0.1:")
+    assert st.fritz.label == "fritz" and st.provider.label == "provider"
+
+
+def test_fritz_reg_response_routes_to_its_own_queue(station_factory):
+    """two REGISTER loops share the socket; replies go to their own Call-ID"""
+    st = fritz_station(station_factory)
+    st.handle_datagram(f"SIP/2.0 200 OK\nCall-ID: {st.fritz.reg_call_id}\n\n".encode(), FRITZ)
+    assert st.fritz.reg_queue.get_nowait().status_line.startswith("SIP/2.0 200")
+    assert st.provider.reg_queue.empty()
+
+
+def test_fritz_call_bridges_to_the_intercom_target(station_factory):
+    """an INVITE from the fritz addr is an inbound SIP call: 100/180 + the
+    intercom target rings; the call remembers its trunk"""
+    st = fritz_station(station_factory)
+    st.registered.set()
+    st.on_invite(inbound_invite(), FRITZ)
+    assert [p.status_line for p, a in st.sent if a == FRITZ] == \
+        ["SIP/2.0 100 Trying", "SIP/2.0 180 Ringing"]
+    assert st.sent.first("INVITE sip:10000000001")
+    assert st.calls["appcall1"].trunk is st.fritz
+    # ... while a call from the provider addr still uses the provider trunk
+    st.on_invite(inbound_invite("appcall2"), PROXY)
+    assert st.calls["appcall2"].trunk is st.provider
+
+
+def test_fritz_leg_answers_with_the_fritz_identity(station_factory):
+    """the 200 OK SDP must carry this trunk's address - not the provider's
+    learned NAT identity"""
+    st = fritz_station(station_factory)
+    st.registered.set()
+    st.provider.public_ip, st.provider.public_port = "198.51.100.7", 57474
+    st.on_invite(inbound_invite(), FRITZ)
+    out_inv = st.sent.first("INVITE sip:10000000001")
+    st.on_response(response(out_inv, "200 OK"), ("127.0.0.1", 5098))
+    ok = next(p for p, a in st.sent if a == FRITZ and p.status_line == "SIP/2.0 200 OK")
+    assert "c=IN IP4 127.0.0.1" in ok.body and "198.51.100.7" not in ok.body
+
+
+# ----------------------------------------------------- door race to the fritzfon
+
+FRITZ_SDP = ("v=0\r\no=- 1 1 IN IP4 10.0.0.30\r\ns=-\r\nc=IN IP4 10.0.0.30\r\n"
+             "t=0 0\r\nm=audio 40000 RTP/AVP 0\r\na=rtpmap:0 PCMU/8000\r\n")
+
+
+def fritz_door_station(station_factory):
+    """provider + fritz trunk: the fritzfon races every bridged call"""
+    return station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                           "--sip-domain", "sip.linphone.org",
+                           "--sip-user", "alice", "--sip-pass", "secret",
+                           "--fritz", "--fritz-host", "127.0.0.1", "--fritz-port", "5077",
+                           "--fritz-user", "12345678", "--fritz-pass", "pw",
+                           "--fritz-call-button", "1")
+
+
+def fritz_invites(st):
+    return [p for p, a in st.sent if a == FRITZ and p.status_line.startswith("INVITE")]
+
+
+def test_door_call_rings_the_fritzfon_in_parallel(station_factory):
+    from test_door_video import door_invite
+    st = fritz_door_station(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    inv = fritz_invites(st)[0]
+    assert inv.status_line == "INVITE sip:1@fritz.box SIP/2.0"   # the Klingeltaste
+    assert "m=video" not in inv.body and "m=audio" in inv.body
+    assert "RTP/AVP" in inv.body                            # no SRTP on the fritz leg
+    assert call.fritz_leg["cid"] == inv.get("Call-ID") in st.fritz.own_ids
+    assert call.trunk is st.provider                        # prov_* still = provider leg
+
+
+def test_fritz_own_door_fork_is_ignored(station_factory):
+    """we registered as the fritzfon's account - the box forks our own
+    INVITE right back at us; that copy must not reach the inbound bridge"""
+    from test_door_video import door_invite
+    st = fritz_door_station(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    cid = st.calls["doorcall1"].fritz_leg["cid"]
+    n = len(st.sent)
+    fork = sip(f"INVITE sip:12345678@127.0.0.1 SIP/2.0\n"
+               f"Via: SIP/2.0/UDP 127.0.0.1:5077;branch=fork\nFrom: <sip:a@b>;tag=1\n"
+               f"To: <sip:x@y>\nCall-ID: {cid}\nCSeq: 1 INVITE\n\n")
+    st.on_invite(fork, FRITZ)
+    assert len(st.sent) == n and "doorcall1" in st.calls
+
+
+def test_fritz_wins_the_door_race(station_factory):
+    """fritzfon answers first: provider leg is CANCELLed, the fritz leg is
+    promoted into prov_* (ACK/teardown via call.trunk=fritz)"""
+    from test_door_video import door_invite
+    st = fritz_door_station(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    prov_via = provider_invites(st)[-1].get("Via")
+    finv = fritz_invites(st)[0]
+    st.on_response(response(finv, "200 OK", body=FRITZ_SDP), FRITZ)
+    can = next(p for p, a in st.sent if a == PROXY and p.status_line.startswith("CANCEL"))
+    assert can.get("Via") == prov_via                        # killed the racing leg
+    assert next(p for p, a in st.sent if a == FRITZ and p.status_line.startswith("ACK"))
+    assert call.trunk is st.fritz and call.state == "established"
+    assert call.fritz_leg is None and call.prov_call_id == finv.get("Call-ID")
+    assert any(p.status_line == "SIP/2.0 200 OK" and a == CALLER for p, a in st.sent)
+
+
+def test_provider_wins_the_door_race(station_factory):
+    """app answers first: the fritz leg is CANCELLed with its own branch/CSeq"""
+    from test_door_video import door_invite, provider_sdp
+    st = fritz_door_station(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    finv = fritz_invites(st)[0]
+    st.on_response(response(provider_invites(st)[0], "200 OK",
+                            body=provider_sdp()), PROXY)
+    can = next(p for p, a in st.sent if a == FRITZ and p.status_line.startswith("CANCEL"))
+    assert can.get("Via") == finv.get("Via")
+    assert can.get("CSeq") == finv.get("CSeq").replace("INVITE", "CANCEL")
+    assert call.fritz_leg is None and call.trunk is st.provider
+
+
+def test_fritz_leg_bye_ends_the_intercom_call(station_factory):
+    """fritzfon won the race and hangs up: its BYE arrives on the fritz
+    Call-ID (which lives in fritz.calls, not provider.calls) and must
+    tear down the intercom leg too"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    call = st.calls["extcall1"]
+    finv = fritz_invites(st)[0]
+    st.on_response(response(finv, "200 OK", body=FRITZ_SDP), FRITZ)
+    assert call.trunk is st.fritz
+    st.on_bye(sip(f"BYE sip:x@127.0.0.1 SIP/2.0\nVia: SIP/2.0/UDP 127.0.0.1:5077;branch=b\n"
+                  f"From: <sip:a@b>;tag=1\nTo: <sip:x@y>;tag=t\n"
+                  f"Call-ID: {finv.get('Call-ID')}\nCSeq: 2 BYE\n\n"), FRITZ)
+    bye = next(p for p, a in st.sent if a == CALLER and p.status_line.startswith("BYE"))
+    assert bye.get("Call-ID") == "extcall1"
+    assert "extcall1" not in st.calls
+
+
+def test_provider_bye_while_the_fritz_leg_races_cancels_it(station_factory):
+    """app-side BYE on a still-racing call must CANCEL the fritz leg too -
+    otherwise the fritzfon keeps ringing an orphaned INVITE"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    pcid = provider_invites(st)[0].get("Call-ID")
+    st.on_bye(sip(f"BYE sip:x@127.0.0.1 SIP/2.0\nVia: SIP/2.0/UDP 127.0.0.1:5099;branch=b\n"
+                  f"From: <sip:a@b>;tag=1\nTo: <sip:x@y>;tag=t\n"
+                  f"Call-ID: {pcid}\nCSeq: 3 BYE\n\n"), PROXY)
+    assert any(p.status_line.startswith("CANCEL") and a == FRITZ for p, a in st.sent)
+    assert "extcall1" not in st.calls
+
+
+def test_fritz_leg_loss_is_not_fatal_while_the_app_rings(station_factory):
+    """a transport-ish leg failure (timeout, error) drops only that leg -
+    the remaining racing leg keeps ringing"""
+    from test_door_video import door_invite, provider_sdp
+    st = fritz_door_station(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    st.on_response(response(fritz_invites(st)[0], "408 Request Timeout"), FRITZ)
+    assert call.fritz_leg is None and "doorcall1" in st.calls   # app still rings
+    assert not any(p.status_line.startswith("SIP/2.0 486") for p, _ in st.sent)
+    st.on_response(response(provider_invites(st)[0], "200 OK",
+                            body=provider_sdp()), PROXY)
+    assert call.state == "established"
+
+
+def test_linphone_decline_ends_the_whole_race(station_factory):
+    """an explicit decline on the app is a user rejection, not a device
+    failure: the fritz leg is CANCELLed and the indoor sees the decline"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    st.on_response(response(provider_invites(st)[0], "603 Decline"), PROXY)
+    assert any(p.status_line.startswith("CANCEL") and a == FRITZ for p, a in st.sent)
+    assert any(p.status_line == "SIP/2.0 603 Decline" and a == CALLER for p, a in st.sent)
+    assert "extcall1" not in st.calls
+
+
+def test_fritz_decline_ends_the_whole_race(station_factory):
+    """same on the fritz leg: an explicit decline there cancels the still
+    ringing provider leg instead of leaving it orphaned"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    st.on_response(response(fritz_invites(st)[0], "603 Decline"), FRITZ)
+    assert any(p.status_line.startswith("CANCEL") and a == PROXY for p, a in st.sent)
+    assert any(p.status_line == "SIP/2.0 603 Decline" and a == CALLER for p, a in st.sent)
+    assert "extcall1" not in st.calls
+
+
+def test_dead_leg_final_response_still_gets_acked(station_factory):
+    """after a leg is torn down its peer keeps retransmitting the final
+    response until it sees the transaction ACK - which we must still send
+    (the branch sits in the response's bottom Via)"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    finv = fritz_invites(st)[0]
+    st.on_response(response(fritz_invites(st)[0], "603 Decline"), FRITZ)
+    st.sent.clear()
+    st.on_response(response(finv, "487 Request Terminated"), FRITZ)   # retransmit
+    ack = next(p for p, a in st.sent if a == FRITZ and p.status_line.startswith("ACK"))
+    assert ack.get("Call-ID") == finv.get("Call-ID")
+    assert ack.get("CSeq") == finv.get("CSeq").replace("INVITE", "ACK")
+    assert finv.get("Via").split("branch=")[1] in ack.get("Via")
+
+
+def test_dead_provider_leg_is_not_cancelled_again(station_factory):
+    """indoor hangs up after the provider leg already failed: CANCEL goes to
+    the still-live fritz leg but NOT to the dead provider transaction (481)"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    st.on_response(response(provider_invites(st)[0], "408 Request Timeout"), PROXY)
+    st.sent.clear()
+    st.on_bye(sip("BYE sip:x@127.0.0.1 SIP/2.0\nVia: SIP/2.0/UDP 127.0.0.1:5097;branch=b\n"
+                  "From: <sip:a@b>;tag=1\nTo: <sip:x@y>;tag=t\n"
+                  "Call-ID: extcall1\nCSeq: 21 BYE\n\n"), CALLER)
+    assert any(p.status_line.startswith("CANCEL") and a == FRITZ for p, a in st.sent)
+    assert not any(p.status_line.startswith("CANCEL") and a == PROXY for p, a in st.sent)
+
+
+def test_outbound_leg_failure_is_acked(station_factory):
+    """the registrar retransmits a non-2xx final on our outbound INVITE until
+    it sees the transaction ACK - ~30s of 603/487 noise otherwise"""
+    st = station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                         "--sip-domain", "sip.linphone.org",
+                         "--sip-user", "alice", "--sip-pass", "secret")
+    st.registered.set()
+    st.call_out("10000000000")
+    inv = next(p for p, a in st.sent if a == st.server and p.status_line.startswith("INVITE"))
+    st.on_response(response(inv, "603 Decline"), st.server)
+    ack = next(p for p, a in st.sent if a == st.server and p.status_line.startswith("ACK"))
+    assert ack.get("Call-ID") == inv.get("Call-ID") and ack.get("CSeq") == "1 ACK"
+
+
+def test_intercom_call_also_rings_the_fritzfon(station_factory):
+    """--fritz makes the ONE registered extension behave like a trunk:
+    every bridged call races Linphone and the fritzfon - not just door
+    calls (no separate intercom contact; the registrar keys devices by
+    source IP so a second extension can never coexist anyway)"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    inv = fritz_invites(st)[0]
+    assert inv.status_line == "INVITE sip:1@fritz.box SIP/2.0"
+    assert "m=video" not in inv.body
+    call = st.calls["extcall1"]
+    assert call.trunk is st.provider and call.fritz_leg is not None
+
+
+def test_fritz_wins_an_intercom_call(station_factory):
+    """fritzfon answers an extension call first: the provider leg is
+    cancelled and the promoted fritz leg takes ACK/teardown"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    call = st.calls["extcall1"]
+    prov_via = provider_invites(st)[-1].get("Via")
+    finv = fritz_invites(st)[0]
+    st.on_response(response(finv, "200 OK", body=FRITZ_SDP), FRITZ)
+    can = next(p for p, a in st.sent if a == PROXY and p.status_line.startswith("CANCEL"))
+    assert can.get("Via") == prov_via
+    assert call.trunk is st.fritz and call.state == "established"
+    assert call.fritz_leg is None and call.prov_call_id == finv.get("Call-ID")
+    assert call.media.peer == ("10.0.0.30", 40000)         # fritz audio peer
