@@ -1,0 +1,64 @@
+flowchart LR
+    subgraph LAN["Intercom LAN"]
+        DOOR["Door station .48<br/>SIP :5060 · RTSP :554"]
+        MAIN["Main indoor .38<br/>registrar :5065 · SIP :5060 · RTSP :554"]
+        EXT["Indoor extension .47<br/>SIP :5060 · RTSP :554"]
+    end
+
+    subgraph HOST["metzler package (this host, SIP :5060)"]
+        CLI["cli.py + config.py<br/>.env / argv → Options"]
+
+        subgraph STA["station/ — call state machine"]
+            CORE["core.py<br/>UDP listener · request router · lifecycle"]
+            REGS["registration.py<br/>REGISTER + heartbeat"]
+            BRG["bridge.py<br/>indoor call → provider"]
+            LOC["local_answer.py<br/>indoor call → headset"]
+            OUTB["outbound.py<br/>station → station calls"]
+            TD["teardown.py<br/>CANCEL / BYE"]
+        end
+
+        subgraph SIPP["sip/ — wire format"]
+            MSG["message.py<br/>Packet + header helpers"]
+            DIG["digest.py<br/>MD5 · SHA-256"]
+            SDP["sdp.py<br/>parse + offer/answer templates"]
+        end
+
+        subgraph MED["media/"]
+            RTS["rtsp_server.py<br/>:554 — what callers pull"]
+            PULL["rtsp_puller.py<br/>pull the caller's :554"]
+            RELAY["rtp.py — RtpRelay"]
+            ICM["intercom.py<br/>RTSP↔RTP adapters"]
+            LCL["local.py — ALSA/ffplay"]
+            SRT["srtp.py — optional AES-SRTP"]
+            G7["g711.py — PCMU/PCMA"]
+        end
+
+        PROV["provider.py — SipProvider<br/>register · invite · digest · loop-guard"]
+    end
+
+    subgraph WAN["Standard SIP world"]
+        LIN["sip.linphone.org :5060"]
+        AND["Linphone app (alice)"]
+        PBX["Asterisk / PBX trunk"]
+    end
+
+    CLI --> STA
+    REGS -->|"REGISTER to :5065"| MAIN
+    CORE <-->|"SIP :5060"| MAIN
+    CORE <-->|"SIP :5060"| EXT
+    DOOR -->|"visitor rings"| MAIN
+    MAIN -.->|"fan-out INVITE"| CORE
+    MAIN & EXT & DOOR -.->|"pull our stream"| RTS
+    PULL -.->|"we pull their :554"| MAIN & EXT & DOOR
+    RELAY <-->|"RTP PCMU + H264"| DOOR
+    BRG --> PROV
+    PROV <-->|"REGISTER · INVITE"| LIN
+    LIN <--> AND
+    PROV <-.->|"IP trunk, no REGISTER"| PBX
+    LOC --- LCL
+    ICM --- RTS
+    ICM --- PULL
+    STA -.-> SIPP
+    STA -.-> MED
+    PROV -.-> SIPP
+    PROV -.-> SRT

@@ -1,0 +1,29 @@
+[project]
+name = "metzler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "lodzen", email = "dalodzik@googlemail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "cryptography>=44",
+]
+
+[project.scripts]
+metzler = "metzler:main"
+indoor-station = "metzler.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: spawns the simulator as a subprocess on localhost"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1,<9.2",
+]

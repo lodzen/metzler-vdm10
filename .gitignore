@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+/decompiled*
+/fw_extracted*
+/ghidra_*
+/tools/*
+!/tools/check_mermaid.py
+!/tools/mermaid
+/tools/mermaid/node_modules/
+node_modules/
+/scripts*
+*.dav
+.env*

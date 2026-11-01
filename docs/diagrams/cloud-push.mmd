@@ -1,0 +1,7 @@
+flowchart TD
+    INV["inbound INVITE rings<br/>on a device"] --> GATE{"push gate:<br/>is the MAIN room device AND<br/>cloud online AND<br/>caller devType ∉ {7, 8, 0xb}"}
+    GATE -- pass --> S0["ezviz_NewCallProc →<br/>cloud call state 0 (ringing)"]
+    GATE -- blocked --> SKIP["no cloud state<br/>(netAltRoute()==0 for non-main devices)"]
+    S0 --> TERM["call ends:<br/>BYE · CANCEL · 4xx except 401/407 · 6xx · timeout"]
+    TERM --> S1["ezviz_CancelCallProc / call_cloudHangPost →<br/>cloud call state 1 (hangup)"]
+    S1 --> APP["Hik-Connect shows<br/>'call declined / missed call'"]

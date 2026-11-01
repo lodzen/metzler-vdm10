@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    participant C as Indoor caller
+    participant S as Simulator
+    participant P as Provider / app
+
+    alt app hangs up
+        P->>S: BYE
+        S-->>P: 200 OK
+        S->>C: BYE (on the indoor dialog)
+        C-->>S: 200 OK
+    else indoor caller hangs up
+        C->>S: BYE
+        S-->>C: 200 OK
+        S->>P: BYE (provider leg)
+    else indoor caller cancels before answer
+        C->>S: CANCEL
+        S-->>C: 200 OK · then 487 to the INVITE
+        S->>P: CANCEL (provider leg still ringing)
+    end
+    Note over S: media stopped, Call-IDs released —<br/>shutdown also sends Expires:0 unregisters

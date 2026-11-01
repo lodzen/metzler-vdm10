@@ -1,0 +1,11 @@
+{
+  "name": "metzler-mermaid-validation",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "mermaid": "12.2.0"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
+}

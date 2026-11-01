@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    participant S as Simulator (local_ip:5060)
+    participant R as Registrar — main indoor (.38:5065)
+
+    Note over S,R: REGISTER · Expires: 600
+    S->>R: REGISTER sip:R — Content-Type: text/xml
+    Note right of S: regXML: regDevSerial · regDevMacAddr<br/>regDevName · floorNum
+    R-->>S: 401 Unauthorized<br/>WWW-Authenticate: Digest realm="Hikvision", nonce, opaque
+    S->>R: REGISTER + Authorization: Digest (MD5)
+    R-->>S: 200 OK
+
+    Note over S,R: keepalive while registered
+    loop every heartbeat_interval (firmware ~120 s)
+        S->>R: MESSAGE sip:target@R — videoIntercomMsg method=1 action=1
+        R-->>S: 200 OK
+    end
+    R->>S: OPTIONS (liveness probe)
+    S-->>R: 200 OK
+
+    Note over S,R: shutdown — remove the dev_reg row
+    S->>R: REGISTER, Expires: 0, empty body
+    R-->>S: 200 OK

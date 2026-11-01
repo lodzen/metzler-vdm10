@@ -1,0 +1,18 @@
+sequenceDiagram
+    autonumber
+    participant D as Door station (.48)
+    participant M as Main indoor (.38)
+    participant S as Simulator (:5060)
+    participant P as Provider → app
+
+    D->>M: INVITE (visitor rings)
+    M->>S: fan-out INVITE sip:ext@sim:5060<br/>From: door devLongNum @.38 · Subject "call to app"<br/>SDP c=<door ip> · doorType:1 · no m= lines
+    S-->>M: 180 Ringing
+    S->>P: INVITE (bridge as usual)
+    alt app answers
+        P-->>S: 200 OK
+        S-->>M: 200 OK (header-only SDP)
+        Note over D,S: sim pulls rtsp://<door ip>:554 —<br/>the SDP c= address, i.e. the door itself
+    else nobody answers / times out
+        M->>S: CANCEL → S-->>M: 487 Request Terminated
+    end

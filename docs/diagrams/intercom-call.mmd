@@ -1,0 +1,31 @@
+sequenceDiagram
+    autonumber
+    participant C as Indoor caller (.38:5060)
+    participant S as Simulator (:5060 · RTSP :554)
+    participant P as Provider (sip.linphone.org)
+    participant A as Linphone app
+
+    C->>S: INVITE sip:ext@sim<br/>Subject "call to extension" · header-only SDP
+    S-->>C: 100 Trying
+    S-->>C: 180 Ringing (+to-tag)
+    S->>P: INVITE sip:alice@sip.linphone.org<br/>SDP RTP/SAVP PCMU + a=crypto
+    P-->>S: 407 Proxy Authentication Required
+    S->>P: ACK (non-2xx, stops retransmits)
+    S->>P: INVITE + Proxy-Authorization: Digest SHA-256
+    P->>A: INVITE (push-wake if needed)
+    A-->>P: 180 Ringing
+    P-->>S: 180 Ringing
+    A-->>P: 200 OK SDP (SAVP, its key)
+    P-->>S: 200 OK
+    S->>P: ACK
+    S-->>C: 200 OK — header-only SDP · responseType:0 · isSpecialType:2
+    C->>S: ACK
+
+    Note over C,S: media = symmetric RTSP pulls (firmware model)
+    C->>S: RTSP :554 DESCRIBE/SETUP/PLAY<br/>hears app audio on ch2 (PCMU)
+    S->>C: pull rtsp://C:554/ch1/main/av_stream<br/>caller PCMU ch2 → provider RTP
+
+    Note over S,A: PCMU relay — caller's audio → RTP/SAVP to app ·<br/>app's RTP → rtsp.mic → caller's pull
+    A->>P: BYE
+    P->>S: BYE
+    S->>C: BYE — indoor leg closed too
