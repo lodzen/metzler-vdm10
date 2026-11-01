@@ -1,0 +1,33 @@
+sequenceDiagram
+    autonumber
+    participant FW as hicore (ezviz supervisor)
+    participant LBS as LBS (litedev.ys7.com / ezvizlife)
+    participant DAS as DAS (:8666)
+    participant AL as alarm.ys7.com (TLS)
+    participant APP as Hik-Connect app
+
+    Note over FW: ezvizopenTask — wait for net + enable flag cfg+0x328d0
+    FW->>FW: write /home/config/dev_info JSON<br/>serial · verification code · MAC
+    FW->>LBS: ezDevSDK_Init + Start (bootstrap, STUN auth · RSA key · MQTT reg)
+    LBS-->>FW: base msg 0x13 — LBS/DAS domain push<br/>cfg+0x3280c, port 8666
+    FW->>DAS: TCP 8666 ezdev frames (magic E9ACBA9E + MD5 digest)
+    DAS-->>FW: regist to DAS ok (event 0) · user-id (msg 0)
+    Note over FW,AL: domains up — sub 3700 · special 3999<br/>base · preview · talk · third-party · alarm
+    FW->>AL: TLS connect (alarm channel ops)
+    loop ~60 s while user-id valid
+        FW->>DAS: svc 0x305e status — DevSerial + DEVICE[] + lockNum
+    end
+
+    Note over FW,APP: door call — SIP INVITE ringing
+    FW->>DAS: send_call(0) svc 0x348e — "call income" push<br/>gated: main-room · cloud online · devType∉{7,8,0xb}
+    DAS->>APP: push notification
+    alt app answers (apiId 3, cmdId 2)
+        DAS->>FW: callsignal → appUASCallNormalProc (type 2, no push)
+        FW->>APP: preview + talk streams (DAS relay or P2P)
+        APP->>DAS: cmdId 3 / 5 (hangup or over)
+        DAS->>FW: appUASCallHangupProc → send_call(1)
+        DAS->>APP: call-ended card
+    else BYE · CANCEL · timeout · reject
+        FW->>DAS: send_call(1) — hangup push
+        DAS->>APP: "call declined / missed call" card
+    end

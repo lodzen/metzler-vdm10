@@ -1,5 +1,7 @@
 """IndoorStation signalling against captured/derived firmware behaviour.
 Outgoing packets are recorded (conftest.station_factory), never sent."""
+import time
+
 import pytest
 from conftest import sip
 from test_digest import LINPHONE_CHALLENGE
@@ -270,3 +272,172 @@ def test_nat_identity_is_learned_from_the_echoed_via(linphone_station):
     p._learn_public(sip("SIP/2.0 401 Unauthorized\nVia: SIP/2.0/UDP 10.0.0.96:5060;"
                         "rport=57474;branch=z9;received=198.51.100.7\n\n"))
     assert (p.sdp_ip(), p.sdp_port()) == ("198.51.100.7", 57474)
+
+
+# ---------------------------------------------------------------- retransmits
+
+def test_retransmitted_invite_resends_the_last_response(linphone_station):
+    """a UDP retransmit of an INVITE in progress must not spawn a second Call:
+    the last response sent for that transaction is resent instead"""
+    st = linphone_station
+    inv = intercom_invite()
+    st.on_invite(inv, CALLER)
+    n = len(st.sent)
+    st.on_invite(inv, CALLER)
+    assert len(st.calls) == 1 and len(provider_invites(st)) == 1
+    assert [p.status_line for p, a in st.sent[n:] if a == CALLER] == ["SIP/2.0 180 Ringing"]
+
+
+def test_retransmitted_invite_after_the_call_gets_the_final_response(linphone_station):
+    st = linphone_station
+    inv = intercom_invite()
+    st.on_invite(inv, CALLER)
+    cancel = sip(f"CANCEL sip:10000000003@127.0.0.1 SIP/2.0\nVia: {inv.get('Via')}\n"
+                 f"From: {inv.get('From')}\nTo: {inv.get('To')}\nCall-ID: extcall1\n"
+                 "CSeq: 20 CANCEL\n\n")
+    st.on_cancel(cancel, CALLER)
+    assert st.calls == {}
+    n = len(st.sent)
+    st.on_invite(inv, CALLER)
+    assert [p.status_line for p, a in st.sent[n:] if a == CALLER] == \
+        ["SIP/2.0 487 Request Terminated"]
+    assert st.calls == {} and not provider_invites(st)[1:]
+
+
+def test_own_ids_expire_so_the_loop_guard_cannot_grow_forever(linphone_station):
+    p = linphone_station.provider
+    p.own_ids["stale"] = time.time() - p.FORK_TTL - 1
+    p.own_ids["fresh"] = time.time()
+    assert not p.owns("stale") and "stale" not in p.own_ids
+    assert p.owns("fresh")
+
+
+def test_sip_from_sets_the_display_name_not_the_uri(station_factory):
+    """providers (linphone.org) 403 a foreign From URI: --sip-from changes
+    the display name only; a full 'u@h'/'Name <sip:u@h>' spec is verbatim"""
+    st = station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                         "--sip-domain", "sip.linphone.org",
+                         "--sip-user", "alice", "--sip-pass", "secret",
+                         "--sip-from", "klingel")
+    st.on_invite(intercom_invite(), CALLER)
+    assert provider_invites(st)[0].get("From").startswith(
+        '"klingel" <sip:alice@sip.linphone.org>;tag=')
+    st = station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                         "--sip-domain", "sip.linphone.org",
+                         "--sip-user", "alice", "--sip-pass", "secret",
+                         "--sip-from", "Klingel <sip:klingel@sip.linphone.org>")
+    st.on_invite(intercom_invite(), CALLER)
+    assert provider_invites(st)[0].get("From").startswith(
+        "Klingel <sip:klingel@sip.linphone.org>;tag=")
+
+
+def test_sip_from_num_gives_each_station_its_own_caller_id(station_factory):
+    """--sip-from {num}: the display name carries the calling station's
+    intercom number, so the app can tell stations apart"""
+    st = station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                         "--sip-domain", "sip.linphone.org",
+                         "--sip-user", "alice", "--sip-pass", "secret",
+                         "--sip-from", "{num}")
+    st.on_invite(intercom_invite(), CALLER)      # From: sip:10000000000@127.0.0.1
+    inv = provider_invites(st)[0]
+    assert inv.get("From").startswith('"10000000000" <sip:alice@sip.linphone.org>;tag=')
+    assert inv.get("Subject") == "10000000000"
+
+
+def test_sip_names_maps_station_numbers_to_display_names(station_factory):
+    """--sip-from {name}: --sip-names gives each station its contact name"""
+    st = station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                         "--sip-domain", "sip.linphone.org",
+                         "--sip-user", "alice", "--sip-pass", "secret",
+                         "--sip-from", "{name}",
+                         "--sip-names", "10000000000=Oben")
+    st.on_invite(intercom_invite(), CALLER)
+    inv = provider_invites(st)[0]
+    assert inv.get("From").startswith('"Oben" <sip:alice@sip.linphone.org>;tag=')
+    assert inv.get("Subject") == "Oben"
+
+
+# ---------------------------------------------------------------- inbound calls
+
+def inbound_invite(call_id="appcall1"):
+    """the Linphone app dialing our registered account: real SDP offer"""
+    return sip(f"INVITE sip:alice@sip.linphone.org SIP/2.0\n"
+               f"Via: SIP/2.0/UDP 127.0.0.1:5099;branch=z9app\n"
+               f"From: <sip:alice@sip.linphone.org>;tag=app1\n"
+               f"To: <sip:alice@sip.linphone.org>\nCall-ID: {call_id}\nCSeq: 1 INVITE\n"
+               f"Contact: <sip:alice@10.9.9.9:41000>\nContent-Type: application/sdp\n\n"
+               "v=0\r\no=- 1 1 IN IP4 10.9.9.9\r\ns=-\r\nc=IN IP4 10.9.9.9\r\nt=0 0\r\n"
+               "m=audio 41002 RTP/AVP 0\r\na=rtpmap:0 PCMU/8000\r\n"
+               "m=video 41004 RTP/AVP 96\r\na=rtpmap:96 H264/90000\r\n")
+
+
+def inbound_station(station_factory):
+    return station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                           "--sip-domain", "sip.linphone.org",
+                           "--sip-user", "alice", "--sip-pass", "secret",
+                           "--inbound-target", "10000000001")
+
+
+def test_inbound_provider_call_rings_the_intercom_target(station_factory):
+    st = inbound_station(station_factory)
+    st.registered.set()
+    st.on_invite(inbound_invite(), PROXY)
+    assert [p.status_line for p, a in st.sent if a == PROXY] == \
+        ["SIP/2.0 100 Trying", "SIP/2.0 180 Ringing"]
+    out_inv = st.sent.first("INVITE sip:10000000001")
+    assert out_inv and st.calls["appcall1"].out_cid == out_inv.get("Call-ID")
+    # intercom 18x -> the app hears ringing
+    st.on_response(response(out_inv, "180 Ringing"), ("127.0.0.1", 5098))
+    assert [p.status_line for p, a in st.sent if a == PROXY][-1] == "SIP/2.0 180 Ringing"
+
+
+def test_inbound_call_answered_bridges_both_legs(station_factory):
+    st = inbound_station(station_factory)
+    st.registered.set()
+    st.on_invite(inbound_invite(), PROXY)
+    out_inv = st.sent.first("INVITE sip:10000000001")
+    st.on_response(response(out_inv, "200 OK"), ("127.0.0.1", 5098))
+    ok = next(p for p, a in st.sent if a == PROXY and p.status_line == "SIP/2.0 200 OK")
+    sdp = parse_sdp(ok.body)
+    assert sdp["media"][0]["port"] > 0            # audio accepted
+    assert sdp["media"][1]["port"] == 0           # video rejected
+    assert st.calls["appcall1"].state == "established"
+
+
+def test_app_bye_ends_the_intercom_leg(station_factory):
+    st = inbound_station(station_factory)
+    st.registered.set()
+    st.on_invite(inbound_invite(), PROXY)
+    out_inv = st.sent.first("INVITE sip:10000000001")
+    st.on_response(response(out_inv, "200 OK"), ("127.0.0.1", 5098))
+    st.on_bye(sip("BYE sip:alice@127.0.0.1 SIP/2.0\nVia: SIP/2.0/UDP 127.0.0.1:5099;branch=b\n"
+                  "From: <sip:alice@sip.linphone.org>;tag=app1\nTo: <sip:x@y>;tag=t\n"
+                  "Call-ID: appcall1\nCSeq: 2 BYE\n\n"), PROXY)
+    bye = next(p for p, a in st.sent if a == ("127.0.0.1", 5098)
+               and p.status_line.startswith("BYE"))
+    assert bye.get("Call-ID") == out_inv.get("Call-ID")
+    assert "appcall1" not in st.calls and st.out_calls == {}
+
+
+def test_intercom_bye_ends_the_app_leg(station_factory):
+    st = inbound_station(station_factory)
+    st.registered.set()
+    st.on_invite(inbound_invite(), PROXY)
+    out_inv = st.sent.first("INVITE sip:10000000001")
+    st.on_response(response(out_inv, "200 OK"), ("127.0.0.1", 5098))
+    st.on_bye(sip(f"BYE sip:10000000003@127.0.0.1 SIP/2.0\nVia: SIP/2.0/UDP 127.0.0.1:5098;branch=b\n"
+                  f"From: <sip:10000000001@127.0.0.1>;tag=in1\nTo: <sip:x@y>;tag=t\n"
+                  f"Call-ID: {out_inv.get('Call-ID')}\nCSeq: 2 BYE\n\n"), ("127.0.0.1", 5098))
+    bye = next(p for p, a in st.sent if a == PROXY and p.status_line.startswith("BYE"))
+    assert bye.get("Call-ID") == "appcall1"
+    assert "appcall1" not in st.calls
+
+
+def test_busy_intercom_486es_the_app(station_factory):
+    st = inbound_station(station_factory)
+    st.registered.set()
+    st.on_invite(inbound_invite(), PROXY)
+    st.on_response(response(st.sent.first("INVITE sip:10000000001"),
+                            "486 Busy Here"), ("127.0.0.1", 5098))
+    assert [p.status_line for p, a in st.sent if a == PROXY][-1] == "SIP/2.0 486 Busy Here"
+    assert "appcall1" not in st.calls

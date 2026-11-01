@@ -57,6 +57,13 @@ def uri_of(header):
     """'"Name" <sip:x@y>;tag=1' (Contact/To/From value) -> 'sip:x@y'"""
     return (re.findall(r"<(.*?)>", header) or [header.strip()])[0]
 
+
+def userpart(header):
+    """'"Name" <sip:10000000003@1.2.3.4>;tag=x' -> '10000000003'"""
+    uri = uri_of(header).split(":", 1)
+    uri = uri[1] if len(uri) > 1 else uri[0]
+    return uri.split("@")[0].split(";")[0]
+
 def call_id(): return "".join(random.choice("0123456789") for _ in range(10))
 
 

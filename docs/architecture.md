@@ -118,6 +118,7 @@ standalone `python3 src/metzler/__main__.py` (stdlib only).
 | PBX trunk | `--sip-host <pbx>` without credentials | same bridging, no provider REGISTER — the PBX authenticates our IP |
 | Local headset | no `--sip-host` | answers indoor calls on the local mic/speaker (`auto_answer` policy: `extension`, `all`, `none`) |
 | Outbound | `--call <num>` / `--call <num>@<ip>` | places a station→station call through the registrar or directly at `ip:5060` |
+| Inbound bridge | `--inbound-target <num>` | a call from the SIP app rings `<num>` on the intercom and bridges the legs (declines 486 without it); `--sip-from` sets the caller-ID the app sees (`{num}` = the calling station's number) |
 
 `SipProvider` is only constructed when `--sip-host` is set and local mode is
 off. Registration on the provider is skipped when `--sip-user/--sip-pass` are
@@ -164,7 +165,13 @@ Local mode swaps step 3–5 for `answer_locally` (`IntercomMedia` or
   Media = symmetric RTSP pulls — the caller pulls our `:554`, our
   `RtspPuller` pulls the caller's `:554`. `SipIntercomMedia` feeds provider
   RTP into `RtspServer.mic` (what the caller hears) and forwards pulled PCMU
-  as PT0 RTP to the provider peer. See [protocol.md](protocol.md#intercom).
+  as PT0 RTP to the provider peer. Audio-only by design.
+  See [protocol.md](protocol.md#intercom).
+- **Outdoor/door calls via RTSP** (caller class 1 / `call to app` /
+  `doorType>0`, no `m=` lines): same RTSP pull model, plus an
+  `IntercomVideoLeg` — the pulled door H264 stream is repacked as PT96 RTP
+  and sent on a `m=video` provider leg, starting at the first SDP-bearing
+  `18x` (early media, video while the app rings).
 - **Door calls** (`m=audio`/`m=video` in the offer): classic RTP on the
   negotiated ports; `RtpRelay` bridges each direction to the provider leg.
 - **Provider leg**: PCMU/8000 PT0 only; `RTP/SAVP` + `a=crypto` when SRTP is

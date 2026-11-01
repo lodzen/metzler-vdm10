@@ -13,10 +13,13 @@ log = logging.getLogger("indoor")
 class OutboundCallMixin:
     """Outbound calls to other stations (--call, mimics _client_call)."""
 
-    def call_out(self, num):
-        """place a call to devLongNum `num` via the registrar (request-uri :5065)"""
+    def call_out(self, num, bridged=None):
+        """place a call to devLongNum `num` via the registrar (request-uri :5065).
+        `bridged` links an inbound provider Call: its answer/ring/fail events
+        get forwarded to the app instead of driving local headset media."""
         if not self.registered.wait(15):
-            return log.error("not registered, cannot call")
+            log.error("not registered, cannot call")
+            return False
         # --call accepts "num" (via registrar) or "num@ip" (direct :5060 —
         # the firmware's netAltRoute path in sip_callLongNum, sip_client.c)
         peer_ip = None
@@ -35,15 +38,20 @@ class OutboundCallMixin:
         p.body = sdp_answer_talkback(self.o.serial, self.o.local_ip, opts=self.o)
         cid = p.get("Call-ID")
         self.out_calls[cid] = {"num": num, "invite": p, "local": None,
-                               "to_tag": None, "peer": self.server}
+                               "to_tag": None, "peer": self.server,
+                               "bridged": bridged}
+        if bridged: bridged.out_cid = cid
         log.info("calling %s via %s:%d ...", num, host, port)
         self.out_calls[cid]["peer"] = (host, port)
         self.send(p, (host, port))
+        return True
 
     def out_answered(self, out, resp, addr):
         resp_sdp = parse_sdp(resp.body)
         self._ack_outbound(out, resp)
         out["established"] = True
+        if out.get("bridged"):
+            return self.inbound_bridged_answered(out, resp_sdp, addr)
         try:
             out["local"] = self._outbound_media(resp_sdp, addr)
             out["local"].start()

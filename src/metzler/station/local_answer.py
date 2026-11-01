@@ -39,8 +39,8 @@ class LocalAnswerMixin:
             # e.g. a prior call's bridge still holds the fixed talkback port —
             # decline rather than leave the caller ringing forever
             log.warning("media bridge init failed (%s) - declining call", e)
-            self.send(self.in_dialog_response(call.invite, "486 Busy Here",
-                                              extra_to_tag=call.to_tag), call.addr)
+            self.reply(call, self.in_dialog_response(call.invite, "486 Busy Here",
+                                                     extra_to_tag=call.to_tag))
             call.state = "closed"
             return
         call.local.start()
@@ -49,7 +49,7 @@ class LocalAnswerMixin:
         ok = self.in_dialog_response(call.invite, "200 OK", ctype="application/sdp",
                                      extra_to_tag=call.to_tag)
         ok.body = self._local_answer_sdp(call, talkback)
-        self.send(ok, call.addr)
+        self.reply(call, ok)
         call.state = "established"
         self._log_local_answer(call, talkback, intercom)
 

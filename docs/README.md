@@ -7,6 +7,10 @@
   dialect (registration XML, heartbeat, call classification, private SDP
   attributes, RTSP media model) plus the standard-SIP provider leg and the
   Hik-Connect cloud side effects.
+- **[firmware/](firmware/)** — what the `hicore` firmware itself does:
+  intercom registration, doorbell pairing, the Hik-Connect cloud channel, and
+  the door→indoor call flow — documented from `readable/` pseudocode with
+  function/address citations.
 - **[diagrams/](diagrams/)** — every chart as a standalone `.mmd` file for the
   Mermaid Chart extension preview (open file → *Mermaid Chart: Preview
   Diagram*).

@@ -6,11 +6,11 @@ import re
 import socket
 import threading
 import time
+from types import SimpleNamespace
 
-from metzler.media.intercom import SipIntercomMedia
 from metzler.media.srtp import SrtpSession
 from metzler.sip.digest import digest_response
-from metzler.sip.message import UA, Packet, branch, call_id, tag, uri_of
+from metzler.sip.message import UA, Packet, branch, call_id, tag, uri_of, userpart
 
 log = logging.getLogger("indoor")
 
@@ -32,8 +32,11 @@ class SipProvider:
     The provider object sends on the station's UDP socket (shared source port)
     via the `st` back-reference; it owns no sockets of its own."""
 
+    FORK_TTL = 600   # s a forked-back Call-ID stays recognisable in own_ids
+
     def __init__(self, st, o):
         self.st, self.o = st, o
+        self.label = "provider"
         self.proxy = (o.sip_host, o.sip_port)
         self.reg_call_id = call_id()
         self.reg_cseq = 1
@@ -42,12 +45,14 @@ class SipProvider:
         self.public_ip = None           # Via received= learned from the proxy
         self.public_port = None         # Via rport= (our NAT'ed source port)
         self.calls = {}                 # provider-leg Call-ID -> Call
-        self.own_ids = set()            # every Call-ID we originated (loop guard)
+        self.own_ids = {}               # Call-ID we originated -> added-at (loop guard)
         try: self.proxy_ip = socket.gethostbyname(o.sip_host)
         except OSError: self.proxy_ip = None
         # SIP identity: the account name, or - for a credential-less PBX trunk
         # (e.g. Asterisk with IP auth) - the station's own extension number
         self.user = o.sip_user or o.username
+        # station number -> display name (--sip-names) for _from_header {name}
+        self.names = dict(p.split("=", 1) for p in (o.sip_names or "").split(",") if "=" in p)
 
     def needs_register(self):
         """hosted providers need REGISTER; an IP-authenticated PBX trunk does not"""
@@ -74,7 +79,11 @@ class SipProvider:
 
     def owns(self, call_id):
         """did we ever originate this Call-ID? (forked-call loop guard - kept
-        after the call ends, late fork retransmits must not look like new calls)"""
+        a while after the call ends so late fork retransmits still don't look
+        like new calls; lazily pruned so it cannot grow forever)"""
+        now = time.time()
+        for cid in [c for c, ts in self.own_ids.items() if now - ts > self.FORK_TTL]:
+            del self.own_ids[cid]
         return call_id in self.own_ids
 
     def is_provider_addr(self, addr):
@@ -105,7 +114,7 @@ class SipProvider:
             try:
                 self._register_once()
             except (RuntimeError, OSError) as e:
-                log.warning("provider register failed: %s", e)
+                log.warning("%s register failed: %s", self.label, e)
                 self.registered.clear()
             time.sleep(240)
 
@@ -118,17 +127,17 @@ class SipProvider:
         for attempt in range(3):
             resp = self._wait_reply(time.time() + 10)
             if resp is None:
-                return log.warning("provider register timed out (next retry in 30s)")
+                return log.warning("%s register timed out (next retry in 30s)", self.label)
             self._learn_public(resp)
             if resp.status_line.startswith("SIP/2.0 2"):
                 return self._mark_registered()
             if resp.status_line.startswith(("SIP/2.0 401", "SIP/2.0 407")):
                 if attempt == 2:
-                    return log.warning("provider auth failed (check sip password)")
+                    return log.warning("%s auth failed (check sip password)", self.label)
                 self.reg_cseq += 1
                 self.st.send(self._register_pkt(self._reg_auth(resp)), self.proxy)
             elif re.match(r"SIP/2\.0 [456]", resp.status_line):
-                return log.warning("provider register rejected: %s", resp.status_line)
+                return log.warning("%s register rejected: %s", self.label, resp.status_line)
 
     def _wait_reply(self, deadline):
         try: return self.reg_queue.get(timeout=max(0.1, deadline - time.time()))
@@ -141,7 +150,7 @@ class SipProvider:
 
     def _mark_registered(self):
         if not self.registered.is_set():
-            log.info("provider REGISTERED at %s:%d as %s@%s (public %s:%s)",
+            log.info("%s REGISTERED at %s:%d as %s@%s (public %s:%s)", self.label,
                      *self.proxy, self.o.sip_user, self.o.sip_domain,
                      self.public_ip, self.public_port)
         self.registered.set()
@@ -167,8 +176,12 @@ class SipProvider:
         """provider leg offer: PCMU audio (intercom calls) or audio + H264
         video (door calls). With --sip-srtp each m= line is RTP/SAVP carrying
         its own SDES key; the media objects keep the matching SrtpSession."""
-        streams = ([("audio", call.media)] if call.kind == "intercom"
-                   else [("audio", call.audio), ("video", call.video)])
+        if call.kind == "intercom":
+            streams = [("audio", call.media)]
+            if call.media.video:                 # door call: door's RTSP H264
+                streams.append(("video", call.media.video))
+        else:
+            streams = [("audio", call.audio), ("video", call.video)]
         ip = self.sdp_ip()
         body = f"v=0\r\no=- 0 0 IN IP4 {ip}\r\ns=Talk session\r\nc=IN IP4 {ip}\r\nt=0 0\r\n"
         for kind, media in streams:
@@ -176,9 +189,25 @@ class SipProvider:
             body += self._media_block(kind, media)
         return body
 
+    def answer_sdp(self, offer, media):
+        """200 OK body for an inbound provider call: accept the first audio
+        m= line (SRTP when the offer was SAVP and we bound a session),
+        reject every other stream (port 0, offered proto kept)"""
+        ip = self.sdp_ip()
+        body = f"v=0\r\no=- 0 0 IN IP4 {ip}\r\ns=Talk session\r\nc=IN IP4 {ip}\r\nt=0 0\r\n"
+        answered = False
+        for m in offer["media"]:
+            if m["type"] == "audio" and m["port"] and not answered:
+                body += self._media_block("audio", media)
+                answered = True
+            else:
+                body += (f"m={m['type']} 0 {m.get('proto') or 'RTP/AVP'} "
+                         f"{' '.join(m['formats']) or '0'}\r\n")
+        return body
+
     @staticmethod
     def _media_block(kind, media):
-        port = media.rtp_port if isinstance(media, SipIntercomMedia) else media.port_b
+        port = media.rtp_port
         proto = "RTP/SAVP" if media.srtp else "RTP/AVP"
         crypto = media.srtp.crypto_attr() if media.srtp else ""
         if kind == "audio":
@@ -197,11 +226,33 @@ class SipProvider:
         media.srtp = None
         return "rtp"
 
+    def _caller_name(self, call):
+        """the calling station's --sip-names entry, else its number"""
+        num = userpart(call.invite.get("From") or "") if call else ""
+        return self.names.get(num, num) or None
+
+    def _from_header(self, call):
+        """From for the provider INVITE leg: --sip-from sets the DISPLAY NAME
+        ({num} = calling station's number, {name} = its --sip-names entry)
+        while the URI stays our account - providers answer 403 for a foreign
+        From user. A full 'Name <sip:u@h>' or 'u@h' spec is sent verbatim
+        (for trunks that allow arbitrary caller IDs)."""
+        spec = (self.o.sip_from or "").strip()
+        num = userpart(call.invite.get("From") or "") if call else ""
+        name = self.names.get(num, num)
+        spec = spec.replace("{num}", num).replace("{name}", name)
+        if "<" in spec or "sip:" in spec:
+            return f"{spec};tag={tag()}"
+        if "@" in spec:
+            user, _, dom = spec.partition("@")
+            return f'"{user}" <sip:{user}@{dom}>;tag={tag()}'
+        return f'"{spec or self.o.name}" <sip:{self.user}@{self.o.sip_domain}>;tag={tag()}'
+
     def invite(self, call):
         """send the outbound INVITE for a bridged call; registers the leg so
         listener() can route its replies via calls[prov_call_id]"""
         self.calls[call.prov_call_id] = call
-        self.own_ids.add(call.prov_call_id)
+        self.own_ids[call.prov_call_id] = time.time()
         self.st.send(self._invite_pkt(call), self.proxy)
         call.state = "bridging"
 
@@ -209,13 +260,13 @@ class SipProvider:
         uri = self.o.sip_target
         call.prov_branch = branch()
         call.prov_cseq += 1
-        p = self._base("INVITE", uri,
-                       f'"{self.o.name}" <sip:{self.user}@{self.o.sip_domain}>;tag={tag()}',
-                       call.prov_branch)
+        p = self._base("INVITE", uri, self._from_header(call), call.prov_branch)
         p.set("Contact", f"<sip:{self.user}@{self.sdp_ip()}:{self.sdp_port()}>")
         p.set("To", f"<{uri}>")
         p.set("Call-ID", call.prov_call_id)
         p.set("CSeq", f"{call.prov_cseq} INVITE")
+        subj = self._caller_name(call)
+        if subj: p.set("Subject", subj)           # linphone renders the subject too
         p.set("Allow", "INVITE, ACK, CANCEL, BYE, REFER, INFO, OPTIONS, MESSAGE")
         p.set("Content-Type", "application/sdp")
         if auth: p.set(auth_name, auth)
@@ -251,7 +302,10 @@ class SipProvider:
             name = "Proxy-Authorization" if code == 407 else "Authorization"
             self.st.send(self._invite_pkt(call, auth, name), self.proxy)
             return "auth"
-        if code < 200: return "ringing"                 # 100/110/180/183 - provisional
+        if code < 200:
+            # 18x carrying SDP = early media: the callee's media address is
+            # known, door video can start flowing before the answer
+            return "early" if "m=" in resp.body else "ringing"
         if 200 <= code < 300:  return "answered"
         self._ack_failure(call, resp)                   # >=300 final: ACK to stop retransmits
         if code == 488 and self.o.sip_srtp and not call.prov_plain:
@@ -292,3 +346,20 @@ class SipProvider:
     def bye(self, call):
         try: self.st.send(self._leg_pkt(call, "BYE", "2 BYE"), self.proxy)
         except OSError: pass
+
+
+class FritzTrunk(SipProvider):
+    """A second, inbound-only SIP account on the same socket: --fritz makes the
+    station REGISTER as an IP phone at a Fritz!Box. INVITEs arriving from the
+    box get bridged to --inbound-target exactly like provider app calls;
+    intercom/door calls still go to the main provider trunk (no fritz outbound
+    legs), so Fritz needs no target/from/SRTP settings."""
+    def __init__(self, st, o):
+        fo = SimpleNamespace(**vars(o))
+        fo.sip_host, fo.sip_port = o.fritz_host, o.fritz_port
+        fo.sip_domain = o.fritz_domain
+        fo.sip_user, fo.sip_pass = o.fritz_user, o.fritz_pass
+        fo.sip_target, fo.sip_from = "", ""
+        fo.sip_srtp = False            # Fritz!Box IP phones talk plain RTP
+        super().__init__(st, fo)
+        self.label = "fritz"

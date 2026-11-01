@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    participant D as Door station
+    participant M as Main indoor :5060
+    participant E1 as Extension 01 :5060
+    participant EN as Extensions 02-05 :5060
+
+    D->>M: INVITE sip:room@main<br/>header-only SDP
+    M-->>D: 100 Trying / 180 Ringing
+    Note over M: uas_handleInvite 0xe6e20<br/>callType=1 door, sess[0] claimed<br/>EXTENSION_INVITE -> /extensionEventMsgQ
+    M->>E1: INVITE sip:10000000001@e1:5060<br/>From door num, c=door ip
+    M->>EN: INVITE sip:1000000000N@eN:5060
+    E1-->>M: 180 Ringing
+    EN-->>M: 180 Ringing
+    Note over M,EN: every unit rings, each opens an RTSP<br/>preview pull to door :554
+    alt extension 01 answers first
+        E1-->>M: 200 OK (responseType:0)
+        M->>E1: ACK
+        M->>EN: CANCEL
+        EN-->>M: 487
+        M-->>D: 200 OK, c=ext01 ip (sess+0xbc)
+        D->>M: ACK
+        Note over D,E1: E1 pulls rtsp://door:554/ch1/main/av_stream<br/>door pulls rtsp://e1:554 (inferred)
+    else main indoor answers
+        M-->>D: 200 OK, c=main ip
+        D->>M: ACK
+        M->>E1: CANCEL (all ext legs)
+        Note over D,M: M pulls door :554 and door pulls M :554
+    else nobody answers
+        M-->>D: 408 (timeout) or 487 (cancel)
+        M->>E1: CANCEL (all ext legs)
+    end
+    Note over M,D: in-call INFO application/dtmf-relay unlocks the door
+    D->>M: BYE
+    M-->>D: 200 OK
+    M->>E1: BYE (EXTENSION_BYE -> appHang)
+    E1-->>M: 200 OK

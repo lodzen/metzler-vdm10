@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant C as Config (iVMS/ISAPI)
+    participant I as Indoor hicore (UAS :5060 · visNet :8102)
+    participant D as Door hicore (UAS :5060 · registrar :5065 · visNet :8102)
+
+    C->>I: PUT RelatedDeviceAddress<br/>MainOutdoorAddress → cfg+0x5fe8
+    I->>I: sess_cfg_notify → RegistCtrl wakes<br/>old devLongNum parked at cfg+0x2d364
+
+    Note over I,D: runtime pairing — Pre-Regist (devLongNum empty)
+    I->>D: MESSAGE sip:Pre-Regist@door:5060<br/>m3 a1 · roomNum delFlag delLongNum floorNum sipNum
+    D->>D: sipcli_on_msg · assign T FFF UU + roomNum<br/>dpi_pre_register_dev_reg_info
+    D->>I: MESSAGE m5 a2 to :5060<br/>responseStatus 200 · roomNum = assigned devLongNum
+    I->>I: store cfg+0x2d354 · writeDevParam · reg flags set
+
+    Note over I,D: steady state
+    I->>D: REGISTER sip:door:5065 · Expires 900 (every ~600 s)<br/>opt REGISTER kind 9 → door-acct:5060 when cfg+0x34f2c set
+    D-->>I: 401 → REGISTER + Digest MD5 → 200 OK
+    loop every ~120 s
+        I->>D: MESSAGE sipCmd@door:5065 · m1 a1 num=devLongNum
+    end
+    I->>D: TCP :8102 cmd 0x2006 PASSWD<br/>roomNum + unlockPwd + hijackPwd → dpi_register_acs_pwd_info
+    I->>D: TCP :8102 cmd 0x2004 SUBDOOR → 0x224 reply<br/>subDoorInfo list (devLongNum + ip)
+    alt door call in progress
+        I->>D: INFO application/dtmf-relay Signal=# — in-call unlock
+    else out-of-call / relayed
+        I->>D: TCP :8102 cmd 0x2001/0x2016/0x2017 → vns_opendoor_up
+    end

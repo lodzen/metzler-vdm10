@@ -34,6 +34,8 @@ def main(argv=None):
 def build_parser(env):
     """CLI options; every default comes from the INDOOR_* keys of `env`"""
     d = lambda k, default=None, cast=None: env_default(env, k, default, cast)
+    fd = lambda k, default=None, cast=None: (lambda v: cast(v) if cast and v is not None else v)(
+        env.get("INDOOR_FRITZ_" + k.upper()) or env.get("FRITZ_BOX_" + k.upper()) or default)
     ap = argparse.ArgumentParser(description="Simulated Hikvision/Metzler indoor station -> SIP bridge. "
                                  "All options can also be set via .env (INDOOR_* keys).")
     ap.add_argument("--server", default=d("server"), help="registrar IP (door station / primary indoor)")
@@ -63,10 +65,38 @@ def build_parser(env):
     ap.add_argument("--sip-target", default=d("sip_target", ""),
                     help="SIP URI to ring on incoming intercom/door call "
                          "(default: sip:<user>@<domain> - rings all devices on the account)")
+    ap.add_argument("--sip-from", default=d("sip_from", ""),
+                    help="From identity on the provider leg: 'Klingel', user@domain, "
+                         "'Name <sip:user@host>'; {num} expands to the calling station's "
+                         "number, {name} to its mapped --sip-names entry (default: num) "
+                         "- one caller-ID per station "
+                         "(default: the --sip-user account)")
+    ap.add_argument("--sip-names", default=d("sip_names", ""),
+                    help="station number -> display name map for --sip-from {name}, "
+                         "comma-separated: 10000000001=Oben,10010100000=Klingel")
+    ap.add_argument("--inbound-target", default=d("inbound_target", ""),
+                    help="intercom devLongNum to ring when a call arrives from the SIP "
+                         "app (e.g. 10000000001 = the indoor unit; 'num@ip' for a "
+                         "direct :5060 call). Default: decline inbound calls with 486")
     ap.add_argument("--sip-srtp", action=argparse.BooleanOptionalAction,
                     default=d("sip_srtp", "1") not in ("0", "no", "off", "false"),
                     help="encrypt the provider media leg with SDES-SRTP "
                          f"({SRTP_SUITE}); --no-sip-srtp offers plain RTP")
+    # --- optional second trunk: REGISTER as an IP phone at a Fritz!Box ---
+    ap.add_argument("--fritz", action="store_true", default=env_bool(env, "fritz"),
+                    help="also REGISTER at a Fritz!Box as one of its IP phones; "
+                         "inbound fritz calls bridge to --inbound-target like app "
+                         "calls (needs --fritz-user/--fritz-pass)")
+    ap.add_argument("--fritz-host", default=fd("host") or fd("ip", "fritz.box"),
+                    help="Fritz!Box address (env FRITZ_BOX_IP; default fritz.box)")
+    ap.add_argument("--fritz-port", type=int, default=fd("port", 5060, int),
+                    help="Fritz!Box SIP port")
+    ap.add_argument("--fritz-domain", default=fd("domain", "fritz.box"),
+                    help="registrar domain in the fritz REGISTER (default fritz.box)")
+    ap.add_argument("--fritz-user", default=fd("user", ""),
+                    help="fritz IP-phone username (env FRITZ_BOX_USER)")
+    ap.add_argument("--fritz-pass", default=fd("password") or fd("pass", ""),
+                    help="fritz IP-phone password (env FRITZ_BOX_PASSWORD)")
     # --- local-audio mode: no provider, talk through local headset ---
     ap.add_argument("--local-audio", action="store_true", default=env_bool(env, "local_audio"),
                     help="door audio -> local speaker (aplay)")
@@ -117,6 +147,9 @@ def finalize_options(o, ap):
     for f in ("server", "username", "local_ip") + (() if local_mode else ("sip_host", "sip_target")):
         if getattr(o, f) in (None, ""):
             ap.error(f"--{f.replace('_','-')} required (or set INDOOR_{f.upper()} in .env)")
+    if o.fritz and not (o.fritz_user and o.fritz_pass):
+        ap.error("--fritz needs credentials (--fritz-user/--fritz-pass, or "
+                 "FRITZ_BOX_USER/FRITZ_BOX_PASSWORD in .env)")
     if o.sip_srtp and not local_mode and not srtp_available():
         log.warning("SRTP requested but the 'cryptography' package is missing - "
                     "offering plain RTP (install it: uv add cryptography / pip install cryptography)")

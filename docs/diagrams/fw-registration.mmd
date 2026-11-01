@@ -1,0 +1,23 @@
+sequenceDiagram
+    participant E as Extension hicore (eXosip :5060)
+    participant R as Registrar hicore (main indoor :5065)
+    participant V as visNet TCP 8102 (all exts)
+
+    Note over E: _client_handle_register kind 1<br/>Expires 900 · text/xml
+    E->>R: REGISTER sip:registrar:5065<br/>From sip:devLongNum@ext-ip · regXML
+    R-->>E: 401 Unauthorized (observed live<br/>challenge origin unverified)
+    E->>R: REGISTER + Authorization Digest MD5
+    R->>R: sip_registerMode · extract_aor<br/>splitDevNum · dev_reg dedup insert
+    R-->>E: 200 OK · Via +received +rport=5060<br/>To +tag=CRC16
+    R->>V: TCP :8102 cmd 0x2033<br/>push 1000000000-series dev_reg table
+    loop every ~120 s · skipped while in call
+        E->>R: MESSAGE sip:sipCmd@registrar:5065<br/>videoIntercomMsg m1 a1 · num=devLongNum
+        R->>R: lookUp sipCmd · dev_reg freshness on num
+        R-->>E: 200 OK
+    end
+    loop every ~600 s
+        E->>R: re-REGISTER (same rid)
+    end
+    E->>R: REGISTER Expires 0 · empty body
+    R->>R: del dev_reg where serial_no or dev_ip<br/>+ call_num map + room ACS rows
+    R-->>E: 200 OK

@@ -70,10 +70,10 @@ class IntercomMedia:
             try: self.aplay.stdin.write(ulaw_to_pcm(ulaw))
             except (BrokenPipeError, OSError, ValueError): pass
 
-    def on_video(self, h264, pt):
+    def on_video(self, frame):
         self.rx[False] += 1
         if self.ffplay and self.ffplay.stdin:
-            try: self.ffplay.stdin.write(h264)
+            try: self.ffplay.stdin.write(frame[12:])
             except (BrokenPipeError, OSError, ValueError): pass
 
     def stop(self):
@@ -93,13 +93,50 @@ class IntercomMedia:
                 p.kill(); p.wait()
 
 
+class IntercomVideoLeg:
+    """provider-facing video channel for door calls: repacks each pulled
+    H264 RTP frame as PT96 with our seq/ssrc (source timestamp kept) and
+    protects it when the provider leg is SRTP. offer_sdp/_media_block use
+    the .rtp_port/.srtp attributes like any other media object."""
+    def __init__(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        bind_rtp(self.sock)
+        self.rtp_port = self.sock.getsockname()[1]
+        self.peer = None                # provider video addr from answer SDP
+        self.srtp = None                # SrtpSession bound via bind_srtp
+        self.seq = random.getrandbits(15)
+        self.ssrc = random.getrandbits(32)
+        self.tx = 0
+
+    def forward(self, frame):
+        """door's pulled RTP frame -> provider leg (PT96, our seq/ssrc)"""
+        if not self.peer or len(frame) < 12:
+            return
+        pkt = bytes([frame[0], (frame[1] & 0x80) | 96]) + struct.pack(">H", self.seq) \
+            + frame[4:8] + struct.pack(">I", self.ssrc) + frame[12:]
+        self.seq = (self.seq + 1) & 0xFFFF
+        if self.srtp: pkt = self.srtp.tx.protect(pkt)
+        try:
+            self.sock.sendto(pkt, self.peer)
+            self.tx += 1
+        except OSError:
+            pass
+
+    def close(self):
+        try: self.sock.close()
+        except OSError: pass
+
+
 class SipIntercomMedia:
     """provider-mode media for intercom calls (header-only SDP): pulls the
     caller's rtsp://<caller>:554 PCMU and forwards it as RTP (PT0) to the SIP
     peer; incoming SIP peer RTP feeds RtspServer.mic so the caller's pull
-    hears the peer. Replaces the ALSA headset with a UDP RTP socket."""
-    def __init__(self, o, server, caller_ip):
+    hears the peer. Replaces the ALSA headset with a UDP RTP socket.
+    With video=True (door calls only) also forwards the pulled H264 stream
+    as a PT96 RTP leg to the provider peer."""
+    def __init__(self, o, server, caller_ip, video=False):
         self.o, self.server, self.caller_ip = o, server, caller_ip
+        self.video = IntercomVideoLeg() if video else None
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         bind_rtp(self.sock)
         self.rtp_port = self.sock.getsockname()[1]
@@ -136,8 +173,10 @@ class SipIntercomMedia:
             self.ts = (self.ts + len(ulaw)) & 0xFFFFFFFF
         except OSError: pass
 
-    def on_video(self, h264, pt):
-        self.rx[False] += 1              # dropped - linphone leg is audio-only
+    def on_video(self, frame):
+        self.rx[False] += 1
+        if self.video:                   # door call: forward the door's H264
+            self.video.forward(frame)
 
     def _recv_loop(self):
         self.sock.settimeout(0.5)
@@ -173,8 +212,9 @@ class SipIntercomMedia:
         return p[:160]
 
     def stop(self):
-        log.info("sip intercom media stopped: RTSP rx audio=%d video=%d, tx audio=%d",
-                 self.rx[True], self.rx[False], self.tx)
+        log.info("sip intercom media stopped: RTSP rx audio=%d video=%d, tx audio=%d video=%d",
+                 self.rx[True], self.rx[False], self.tx, self.video.tx if self.video else 0)
+        if self.video: self.video.close()
         self.running = False
         if self.puller: self.puller.stop()
         if self.server and self.server.mic == self.mic_frame:

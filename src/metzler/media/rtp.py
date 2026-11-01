@@ -44,6 +44,11 @@ class RtpRelay(threading.Thread):
         self.srtp = None                # SrtpSession on the provider (b) side
         self.running = True
 
+    @property
+    def rtp_port(self):
+        """the provider-facing port — what offer_sdp advertises in m= lines"""
+        return self.port_b
+
     def set_peer(self, a=None, b=None):
         if a: self.peer_a = a
         if b: self.peer_b = b

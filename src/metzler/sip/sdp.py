@@ -12,7 +12,8 @@ def parse_sdp(body):
             else: ip = line.split()[-1]
         elif line.startswith("m="):
             p = line[2:].split()
-            cur = {"type": p[0], "port": int(p[1]), "formats": p[3:], "ip": ip}
+            cur = {"type": p[0], "port": int(p[1]),
+                   "proto": p[2] if len(p) > 2 else "RTP/AVP", "formats": p[3:], "ip": ip}
             media.append(cur)
         elif cur is not None and line.startswith("a="):
             cur.setdefault("attrs", []).append(line[2:])

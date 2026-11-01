@@ -11,10 +11,16 @@ class Call:
         self.id = invite.get("Call-ID")
         self.to_tag = tag()
         self.state = "early"            # early -> bridging -> established -> ended
+        self.last_resp = None           # last response to invite (resent on retransmit)
         self.audio = self.video = None  # RtpRelay pair (door calls, created lazily)
         self.media = None               # SipIntercomMedia (intercom calls)
         self.local = None               # IntercomMedia/LocalMediaBridge (local mode)
         self.kind = None                # "door" | "intercom"
+        self.door = False               # caller is an outdoor station (doorbell)
+        self.inbound = False            # SIP app -> intercom call (reversed bridge)
+        self.trunk = None               # inbound leg's trunk (provider or fritz)
+        self.out_cid = None             # Call-ID of our outbound intercom leg (inbound)
+        self.provider_media = False     # provider peers latched + media streaming
         self.prov_call_id = call_id()
         self.prov_from = None           # our From on the provider leg
         self.prov_to = None             # remote To (with tag) from 200 OK

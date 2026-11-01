@@ -11,7 +11,7 @@ import time
 from typing import ClassVar
 
 from metzler.media.rtsp_server import RtspServer
-from metzler.provider import SipProvider
+from metzler.provider import FritzTrunk, SipProvider
 from metzler.sip.message import UA, Packet, branch, call_id, tag
 
 log = logging.getLogger("indoor")
@@ -33,6 +33,7 @@ class StationCore:
         self.expires = o.expires
         self.registered = threading.Event()
         self.calls = {}                 # intercom/door-side Call-ID -> Call
+        self.ended_invites = {}         # ended Call-ID -> (final resp, ts); retransmit answers
         self.out_calls = {}             # our outbound Call-ID -> dict
         self.reg_queue = queue.Queue()  # responses matching reg_call_id
         self.running = True
@@ -40,6 +41,10 @@ class StationCore:
         self.local_mode = bool(o.local_audio or o.local_mic or o.local_tone or o.video_player)
         # standard-SIP trunk to the provider (None in local headset mode)
         self.provider = SipProvider(self, o) if (o.sip_host and not self.local_mode) else None
+        # --fritz: second, inbound-only trunk - REGISTERs as an IP phone at a
+        # Fritz!Box; its calls reach us on this same socket, told apart from
+        # intercom/provider traffic by the sender's address (is_provider_addr)
+        self.fritz = FritzTrunk(self, o) if (o.fritz and not self.local_mode) else None
         self.rtsp = None
         # the intercom RTSP server is needed in BOTH modes: local (headset mic)
         # and provider (the caller pulls :554 to receive the SIP peer's audio)
@@ -91,6 +96,29 @@ class StationCore:
         p.body = body
         return p
 
+    def reply(self, call, pkt):
+        """answer call.invite and remember the response - a retransmitted
+        INVITE gets it resent (see _retransmitted_invite)"""
+        call.last_resp = pkt
+        self.send(pkt, call.addr)
+
+    def _close_call(self, call, cid):
+        """stop the call and drop it from self.calls; its final response is
+        kept ~64s (INVITE client transaction lifetime) so a late retransmit
+        still gets answered instead of spawning a ghost call"""
+        if call.last_resp is not None:
+            self.ended_invites[cid] = (call.last_resp, time.time())
+        call.stop()
+        self.calls.pop(cid, None)
+
+    def ended_resp(self, cid):
+        """the final response of a just-ended call, or None; lazily prunes"""
+        now = time.time()
+        for old in [c for c, (_, ts) in self.ended_invites.items() if now - ts > 64]:
+            del self.ended_invites[old]
+        ent = self.ended_invites.get(cid)
+        return ent[0] if ent else None
+
     # request method -> handler name; ACK needs no action (our 200s are not retransmitted)
     REQUEST_HANDLERS: ClassVar[dict] = {"OPTIONS": "on_options", "MESSAGE": "on_message", "INVITE": "on_invite",
                                         "CANCEL": "on_cancel", "BYE": "on_bye", "INFO": "on_info", "ACK": None}
@@ -114,6 +142,8 @@ class StationCore:
             return self.reg_queue.put(pkt)
         if sl.startswith("SIP/2.0") and self.provider and self.provider.is_reg_response(pkt):
             return self.provider.reg_queue.put(pkt)
+        if sl.startswith("SIP/2.0") and self.fritz and self.fritz.is_reg_response(pkt):
+            return self.fritz.reg_queue.put(pkt)
         name = "on_response" if sl.startswith("SIP/2.0") else self.REQUEST_HANDLERS.get(sl.split(" ", 1)[0])
         if not name: return
         try:
@@ -133,31 +163,44 @@ class StationCore:
         log.info("INFO body: %s", pkt.body[:200])
         self.send(self.in_dialog_response(pkt, "200 OK"), addr)
 
+    def _out_invite_response(self, out, pkt, addr):
+        """response on an outbound intercom leg; a bridged app call gets the
+        intercom's ringing and its final result forwarded"""
+        cid, code = pkt.get("Call-ID"), int(pkt.status_line.split()[1])
+        call = out.get("bridged")
+        if code in (180, 183):
+            log.info("outbound call %s ringing", out["num"])
+            if call:                                # the app hears the intercom ring
+                self.reply(call, self.in_dialog_response(
+                    call.invite, "180 Ringing", extra_to_tag=call.to_tag))
+        elif 200 <= code < 300:
+            self.out_answered(out, pkt, addr)
+        elif code >= 300:
+            log.warning("outbound call to %s failed: %s", out["num"], pkt.status_line)
+            self.out_calls.pop(cid, None)
+            if call:                                # callee busy/gone -> tell the app
+                self.reply(call, self.in_dialog_response(
+                    call.invite, pkt.status_line[8:], extra_to_tag=call.to_tag))
+                self._close_call(call, call.id)
+
     def on_response(self, pkt, addr):
         cseq = pkt.get("CSeq") or ""
         cid = pkt.get("Call-ID") or ""
-        code = int(pkt.status_line.split()[1])
         log.info("response %s (CSeq %s, Call-ID %s)", pkt.status_line, cseq, cid)
         out = self.out_calls.get(cid)
         if out and "INVITE" in cseq:
-            if code in (180, 183):
-                log.info("outbound call %s ringing", out["num"])
-            elif 200 <= code < 300:
-                self.out_answered(out, pkt, addr)
-            elif code >= 300:
-                log.warning("outbound call to %s failed: %s", out["num"], pkt.status_line)
-                self.out_calls.pop(cid, None)
-            return
+            return self._out_invite_response(out, pkt, addr)
         call = self.provider.calls.get(cid) if self.provider else None
         if call and "INVITE" in cseq:                   # provider-leg INVITE reply
             result = self.provider.handle_response(call, pkt)
             if result == "answered":
                 self.provider_answered(call, pkt)
+            elif result == "early":
+                self.early_media(call, pkt)
             elif result == "fail":
-                self.send(self.in_dialog_response(call.invite, "486 Busy Here",
-                                                  extra_to_tag=call.to_tag), call.addr)
-                call.stop()
-                self.calls.pop(call.id, None)
+                self.reply(call, self.in_dialog_response(call.invite, "486 Busy Here",
+                                                         extra_to_tag=call.to_tag))
+                self._close_call(call, call.id)
                 self.provider.calls.pop(cid, None)
 
     def run(self):
@@ -182,6 +225,8 @@ class StationCore:
                 threading.Thread(target=self.provider.register_loop, daemon=True).start()
             else:
                 log.info("no --sip-user/--sip-pass: trunk mode, provider REGISTER skipped")
+            if self.fritz and self.fritz.needs_register():
+                threading.Thread(target=self.fritz.register_loop, daemon=True).start()
             log.info("indoor station sim on %s:%d -> registrar %s:%d, bridge via %s:%d to %s",
                      self.o.local_ip, self.bind_port, self.server[0], self.server[1],
                      self.provider.proxy[0], self.provider.proxy[1], self.o.sip_target)
@@ -208,6 +253,7 @@ class StationCore:
         try:
             self.send(self.build_register(expires=0), self.server)
             if self.provider and self.provider.needs_register(): self.provider.unregister()
+            if self.fritz and self.fritz.needs_register(): self.fritz.unregister()
             time.sleep(0.3)
         except OSError: pass
         self.sip.close()

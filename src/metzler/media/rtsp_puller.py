@@ -85,14 +85,14 @@ class RtspPuller(threading.Thread):
                 self._on_frame(ch, frame, ln)
 
     def _on_frame(self, ch, frame, ln):
-        pt, payload = frame[1] & 0x7F, frame[12:]
+        pt = frame[1] & 0x7F
         if ch not in self.seen:
             self.seen.add(ch)
             log.info("caller stream: first frame on channel %d, PT %d, %dB", ch, pt, ln)
         if ch < 2 and self.on_video:
-            self.on_video(payload, pt)
+            self.on_video(frame)                # whole RTP packet (seq/ts kept)
         elif pt == 0 and self.on_audio:
-            self.on_audio(payload)
+            self.on_audio(frame[12:])
 
     def stop(self):
         self.running = False

@@ -241,6 +241,18 @@ sequenceDiagram
   answers with `sdp_answer_firmware` (PCMU `m=audio`, H264 `m=video` on our
   RTP ports) and runs two `RtpRelay`s — door RTP ↔ provider RTP, SRTP
   wrapping the provider direction. Video is one-way H264 ES, PT 96.
+- **Door-call recognition** mirrors the firmware (`FUN_000f9ce0`): the
+  caller's number class (`10010100000`-style devLongNum → type 1) OR
+  `Subject: "call to app."` OR `a=doorType:` > 0 marks the call outdoor.
+  Only such calls get a video channel — extension calls stay audio-only.
+- **Door video → provider**: the pulled H264 stream (door's `:554`, the
+  `c=` address of the fan-out offer) is repacked as PT96 RTP — source
+  timestamps kept, our seq/ssrc — and forwarded on a `m=video` leg of the
+  provider call. With SRTP on, the video `m=` line gets its own `a=crypto`.
+- **Early media**: any 18x provider response carrying SDP (typically
+  `183 Session Progress`) latches the media address and starts streaming —
+  the app can receive the door's video while the call still rings; the
+  indoor leg keeps ringing until the provider's `200 OK`.
 - DTMF/unlock in-dialog: `INFO` with `application/dtmf-relay`
   (`Signal=<d>` / `Duration=160`); lock selection uses `MESSAGE` with
   `<locknumXML><lockNum>n</lockNum></locknumXML>`.
@@ -254,7 +266,8 @@ sequenceDiagram
 - Every non-2xx response to an outbound INVITE gets an **ACK on the same
   branch** — otherwise the proxy retransmits forever.
 - All `1xx` responses are progress: `100 Trying`, `110 Push sent`, `180`,
-  `183` — none of them may fail the call.
+  `183` — none of them may fail the call. A `1xx` **with SDP** additionally
+  enables early media (streaming starts immediately).
 - NAT: after a provider `200 OK`/`401` the Via's `received=`/`rport=` give our
   public endpoint; it is advertised in provider-leg SDP `c=`/Contact so media
   can return.
