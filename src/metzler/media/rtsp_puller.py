@@ -14,6 +14,7 @@ log = logging.getLogger("indoor")
 class RtspPuller(threading.Thread):
     """pulls the caller's rtsp://<caller>:554 stream -> their audio to the speaker,
     their video to ffplay. The callee side of the symmetric intercom pull."""
+
     def __init__(self, o, host, on_audio, on_video):
         super().__init__(daemon=True)
         self.o, self.host = o, host
@@ -29,26 +30,37 @@ class RtspPuller(threading.Thread):
         try:
             self.conn = socket.create_connection((self.host, self.o.rtsp_port), timeout=5)
         except OSError as e:
-            log.warning("cannot reach caller's RTSP %s: %s", self.uri, e); return
+            log.warning("cannot reach caller's RTSP %s: %s", self.uri, e)
+            return
         try:
             self._negotiate()
             self._receive()
         except OSError as e:
             log.warning("RTSP pull of %s failed: %s", self.uri, e)
-        try: self.conn.close()
-        except OSError: pass
+        try:
+            self.conn.close()
+        except OSError:
+            pass
         log.info("RTSP pull of %s ended", self.uri)
 
     def _request(self, method, url, extra=""):
+        conn = self.conn
+        assert conn is not None  # set by run() before _negotiate/_receive
         self.cseq += 1
-        self.conn.sendall((f"{method} {url} RTSP/1.0\r\nCSeq: {self.cseq}\r\n"
-                           f"Authorization: Basic {self.tok}\r\n"
-                           + (f"Session: {self.session}\r\n" if self.session else "")
-                           + extra + "\r\n").encode())
-        r, self.buf = read_rtsp_request(self.conn, self.buf)
+        conn.sendall(
+            (
+                f"{method} {url} RTSP/1.0\r\nCSeq: {self.cseq}\r\n"
+                f"Authorization: Basic {self.tok}\r\n"
+                + (f"Session: {self.session}\r\n" if self.session else "")
+                + extra
+                + "\r\n"
+            ).encode()
+        )
+        r, self.buf = read_rtsp_request(conn, self.buf)
         r = r.decode(errors="replace") if r else ""
         m = re.search(r"Session:\s*([^;\s]+)", r)
-        if m: self.session = m.group(1)     # the session id is issued by SETUP
+        if m:
+            self.session = m.group(1)  # the session id is issued by SETUP
         return r
 
     def _negotiate(self):
@@ -59,19 +71,30 @@ class RtspPuller(threading.Thread):
         tracks = re.findall(r"a=control:(\S+)", r) or ["trackID=1", "trackID=2"]
         tracks = [t for t in tracks if t != "*"][:2]
         for i, t in enumerate(tracks):
-            self._request("SETUP", f"{self.uri}/{t}",
-                          f"Transport: RTP/AVP/TCP;unicast;interleaved={i*2}-{i*2+1}\r\n")
+            self._request(
+                "SETUP", f"{self.uri}/{t}", f"Transport: RTP/AVP/TCP;unicast;interleaved={i * 2}-{i * 2 + 1}\r\n"
+            )
         r = self._request("PLAY", self.uri, "Range: npt=0.000-\r\n")
-        log.info("pulling caller's stream %s (session %s): %s",
-                 self.uri, self.session or "?", r.split("\r\n")[0] if r else "no reply")
+        log.info(
+            "pulling caller's stream %s (session %s): %s",
+            self.uri,
+            self.session or "?",
+            r.split("\r\n")[0] if r else "no reply",
+        )
 
     def _receive(self):
-        self.conn.settimeout(5)
+        conn = self.conn
+        assert conn is not None
+        conn.settimeout(5)
         while self.running:
-            try: d = self.conn.recv(65535)
-            except TimeoutError: continue
-            except OSError: break
-            if not d: break
+            try:
+                d = conn.recv(65535)
+            except TimeoutError:
+                continue
+            except OSError:
+                break
+            if not d:
+                break
             self.buf += d
             self._drain_frames()
 
@@ -79,8 +102,9 @@ class RtspPuller(threading.Thread):
         """split $-interleaved frames: {'$', channel, u16 length, RTP}"""
         while len(self.buf) >= 4 and self.buf[:1] == b"$":
             ch, ln = self.buf[1], int.from_bytes(self.buf[2:4], "big")
-            if len(self.buf) < 4 + ln: break
-            frame, self.buf = self.buf[4:4 + ln], self.buf[4 + ln:]
+            if len(self.buf) < 4 + ln:
+                break
+            frame, self.buf = self.buf[4 : 4 + ln], self.buf[4 + ln :]
             if len(frame) >= 13:
                 self._on_frame(ch, frame, ln)
 
@@ -90,7 +114,7 @@ class RtspPuller(threading.Thread):
             self.seen.add(ch)
             log.info("caller stream: first frame on channel %d, PT %d, %dB", ch, pt, ln)
         if ch < 2 and self.on_video:
-            self.on_video(frame)                # whole RTP packet (seq/ts kept)
+            self.on_video(frame)  # whole RTP packet (seq/ts kept)
         elif pt == 0 and self.on_audio:
             self.on_audio(frame[12:])
 
@@ -100,4 +124,5 @@ class RtspPuller(threading.Thread):
             if self.conn:
                 self.conn.sendall(b"TEARDOWN rtsp://x RTSP/1.0\r\nCSeq: 99\r\n\r\n")
                 self.conn.close()
-        except OSError: pass
+        except OSError:
+            pass

@@ -6,7 +6,7 @@ import select
 import socket
 import threading
 
-RTP_RANGE = None   # (lo, hi) from --rtp-port-min/max: a fixed range so one firewall rule covers all RTP
+RTP_RANGE = None  # (lo, hi) from --rtp-port-min/max: a fixed range so one firewall rule covers all RTP
 
 
 def set_rtp_range(lo, hi):
@@ -21,8 +21,10 @@ def bind_rtp(sock):
     ports = list(range(RTP_RANGE[0], RTP_RANGE[1] + 1))
     random.shuffle(ports)
     for p in ports:
-        try: return sock.bind(("0.0.0.0", p))
-        except OSError: continue
+        try:
+            return sock.bind(("0.0.0.0", p))
+        except OSError:
+            continue
     raise OSError(f"no free RTP port in {RTP_RANGE[0]}-{RTP_RANGE[1]}")
 
 
@@ -33,15 +35,18 @@ def is_rtp(pkt):
 
 class RtpRelay(threading.Thread):
     """Bidirectional UDP relay between door-side and provider-side endpoints."""
+
     def __init__(self):
         super().__init__(daemon=True)
         self.sock_a = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # door side
         self.sock_b = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # pbx side
-        bind_rtp(self.sock_a); bind_rtp(self.sock_b)
+        bind_rtp(self.sock_a)
+        bind_rtp(self.sock_b)
         self.port_a = self.sock_a.getsockname()[1]
         self.port_b = self.sock_b.getsockname()[1]
-        self.peer_a = None; self.peer_b = None
-        self.srtp = None                # SrtpSession on the provider (b) side
+        self.peer_a = None
+        self.peer_b = None
+        self.srtp = None  # SrtpSession on the provider (b) side
         self.running = True
 
     @property
@@ -50,40 +55,52 @@ class RtpRelay(threading.Thread):
         return self.port_b
 
     def set_peer(self, a=None, b=None):
-        if a: self.peer_a = a
-        if b: self.peer_b = b
+        if a:
+            self.peer_a = a
+        if b:
+            self.peer_b = b
 
     def _to_b(self, data):
-        if self.srtp and is_rtp(data): data = self.srtp.tx.protect(data)
-        if self.peer_b: self.sock_b.sendto(data, self.peer_b)
+        if self.srtp and is_rtp(data):
+            data = self.srtp.tx.protect(data)
+        if self.peer_b:
+            self.sock_b.sendto(data, self.peer_b)
 
     def _to_a(self, data):
         if self.srtp and self.srtp.rx and is_rtp(data):
             data = self.srtp.rx.unprotect(data)
-            if data is None: return                         # bad auth tag
-        if self.peer_a: self.sock_a.sendto(data, self.peer_a)
+            if data is None:
+                return  # bad auth tag
+        if self.peer_a:
+            self.sock_a.sendto(data, self.peer_a)
 
     def run(self):
         socks = [self.sock_a, self.sock_b]
         while self.running:
             r, _, _ = select.select(socks, [], [], 0.5)
             for s in r:
-                try: data, addr = s.recvfrom(65535)
-                except OSError: return
+                try:
+                    data, addr = s.recvfrom(65535)
+                except OSError:
+                    return
                 self._on_datagram(s, data, addr)
 
     def _on_datagram(self, sock, data, addr):
         """forward to the other side; the first sender on a side becomes its
         peer (symmetric RTP, covers NAT'ed providers)"""
         if sock is self.sock_a:
-            if self.peer_a is None: self.peer_a = addr
+            if self.peer_a is None:
+                self.peer_a = addr
             self._to_b(data)
         else:
-            if self.peer_b is None: self.peer_b = addr
+            if self.peer_b is None:
+                self.peer_b = addr
             self._to_a(data)
 
     def stop(self):
         self.running = False
         for s in (self.sock_a, self.sock_b):
-            try: s.close()
-            except OSError: pass
+            try:
+                s.close()
+            except OSError:
+                pass

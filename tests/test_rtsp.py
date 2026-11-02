@@ -1,6 +1,7 @@
 """Our :554 must look exactly like a real indoor unit's stream: DESCRIBE
 advertises video+audio, the wire carries only PCMU on the audio channel,
 320-byte payloads every 40 ms, ssrc as declared in SETUP (pcap of .38/.47)."""
+
 import collections
 import itertools
 import socket
@@ -18,7 +19,7 @@ def rtsp(sock, method, url, cseq, extra=""):
         data += sock.recv(4096)
     head, _, rest = data.partition(b"\r\n\r\n")
     head = head.decode()
-    n = int(next((l.split(":")[1] for l in head.split("\r\n") if l.startswith("Content-Length")), 0))
+    n = int(next((line.split(":")[1] for line in head.split("\r\n") if line.startswith("Content-Length")), 0))
     while len(rest) < n:
         rest += sock.recv(4096)
     return head, rest[:n].decode()
@@ -30,8 +31,10 @@ def read_frames(sock, count):
         buf += sock.recv(8192)
         while len(buf) >= 4 and buf[0:1] == b"$":
             ln = int.from_bytes(buf[2:4], "big")
-            if len(buf) < 4 + ln: break
-            frames.append((buf[1], buf[4:4 + ln])); buf = buf[4 + ln:]
+            if len(buf) < 4 + ln:
+                break
+            frames.append((buf[1], buf[4 : 4 + ln]))
+            buf = buf[4 + ln :]
     return frames
 
 
@@ -53,14 +56,14 @@ def test_rtsp_stream_shape(station_factory):
     frames = read_frames(s, 5)
     elapsed = time.time() - t0
     s.close()
-    assert {ch for ch, _ in frames} == {2}                        # never a video packet
+    assert {ch for ch, _ in frames} == {2}  # never a video packet
     for _, pkt in frames:
-        assert pkt[1] & 0x7F == 0                                  # PCMU
-        assert len(pkt) - 12 == 320                                # 2 x 160 B = 40 ms
+        assert pkt[1] & 0x7F == 0  # PCMU
+        assert len(pkt) - 12 == 320  # 2 x 160 B = 40 ms
         assert struct.unpack(">I", pkt[8:12])[0] == ssrc
     ts = [struct.unpack(">I", p[4:8])[0] for _, p in frames]
     assert all(b - a == 320 for a, b in itertools.pairwise(ts))
-    assert elapsed >= 0.12                                         # paced, ~40 ms each
+    assert elapsed >= 0.12  # paced, ~40 ms each
 
 
 def test_sip_intercom_media_splits_peer_audio_into_160_byte_frames():
@@ -69,8 +72,8 @@ def test_sip_intercom_media_splits_peer_audio_into_160_byte_frames():
     media.tx = 0
     assert media.mic_frame() == b"a" * 160
     assert media.mic_frame() == b"b" * 160
-    assert media.mic_frame() == b"c" * 80 + b"\xff" * 80           # padded with mu-law silence
-    assert media.mic_frame() == b"\xff" * 160                      # underrun -> silence
+    assert media.mic_frame() == b"c" * 80 + b"\xff" * 80  # padded with mu-law silence
+    assert media.mic_frame() == b"\xff" * 160  # underrun -> silence
 
 
 def test_puller_pulls_our_own_server_like_two_stations_do(station_factory):
@@ -79,13 +82,15 @@ def test_puller_pulls_our_own_server_like_two_stations_do(station_factory):
     import types
 
     from metzler.media.rtsp_puller import RtspPuller
+
     st = station_factory()
     st.rtsp.mic = lambda: b"\x2a" * 160
     got, done = [], threading.Event()
 
     def on_audio(payload):
         got.append(payload)
-        if len(got) >= 3: done.set()
+        if len(got) >= 3:
+            done.set()
 
     opts = types.SimpleNamespace(rtsp_port=st.rtsp.ls.getsockname()[1], password="pw")
     puller = RtspPuller(opts, "127.0.0.1", on_audio, None)
@@ -93,4 +98,4 @@ def test_puller_pulls_our_own_server_like_two_stations_do(station_factory):
     assert done.wait(3), "no audio pulled"
     puller.stop()
     assert all(p == b"\x2a" * 320 for p in got[:3])
-    assert puller.session                                    # session id learned from SETUP
+    assert puller.session  # session id learned from SETUP

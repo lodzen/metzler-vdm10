@@ -12,15 +12,17 @@ class TeardownMixin:
 
     def _end_provider_leg(self, call):
         """one side went away -> drop the other leg too"""
-        if call.inbound:                        # app leg ended -> end our intercom call
+        if call.inbound:  # app leg ended -> end our intercom call
             return self.bye_outbound(call.out_cid)
-        if call.fritz_leg:                      # door-call race still open? CANCEL it
+        if call.fritz_leg:  # door-call race still open? CANCEL it
             self.fritz.cancel_leg(call)
             call.fritz_leg = None
-        trunk = call.trunk or self.provider     # the live/winning SIP leg
+        trunk = call.trunk or self.provider  # the live/winning SIP leg
         if trunk and call.prov_call_id in trunk.calls:
-            if call.state == "established": trunk.bye(call)
-            else: trunk.cancel(call)
+            if call.state == "established":
+                trunk.bye(call)
+            else:
+                trunk.cancel(call)
             trunk.calls.pop(call.prov_call_id, None)
 
     def on_cancel(self, pkt, addr):
@@ -28,32 +30,32 @@ class TeardownMixin:
         cid = pkt.get("Call-ID")
         call = self.calls.get(cid)
         if call:
-            self.reply(call, self.in_dialog_response(call.invite, "487 Request Terminated",
-                                                     extra_to_tag=call.to_tag))
+            self.reply(call, self.in_dialog_response(call.invite, "487 Request Terminated", extra_to_tag=call.to_tag))
             self._end_provider_leg(call)
             self._close_call(call, cid)
 
     def on_bye(self, pkt, addr):
         self.send(self.in_dialog_response(pkt, "200 OK"), addr)
         cid = pkt.get("Call-ID")
-        if cid in self.calls:                       # intercom/door caller hung up
+        if cid in self.calls:  # intercom/door caller hung up
             call = self.calls[cid]
             self._end_provider_leg(call)
             self._close_call(call, cid)
             return
         for trunk in (self.provider, self.fritz):
-            if trunk and cid in trunk.calls:        # a SIP leg's peer hung up
+            if trunk and cid in trunk.calls:  # a SIP leg's peer hung up
                 call = trunk.calls.pop(cid)
-                if call.fritz_leg:                  # don't leave the fritzfon ringing
+                if call.fritz_leg:  # don't leave the fritzfon ringing
                     self.fritz.cancel_leg(call)
                     call.fritz_leg = None
-                self.bye_intercom(call)             # end the intercom leg too
+                self.bye_intercom(call)  # end the intercom leg too
                 self._close_call(call, call.id)
                 return
         if cid in self.out_calls:
             out = self.out_calls.pop(cid)
-            if out.get("local"): out["local"].stop()
-            if out.get("bridged"):              # intercom hung up -> BYE the app
+            if out.get("local"):
+                out["local"].stop()
+            if out.get("bridged"):  # intercom hung up -> BYE the app
                 call = out["bridged"]
                 self.bye_intercom(call)
                 self._close_call(call, call.id)
@@ -71,7 +73,10 @@ class TeardownMixin:
         p.set("To", call.invite.get("From"))
         frm = call.invite.get("To") or ""
         p.set("From", f"{frm};tag={call.to_tag}" if "tag=" not in frm else frm)
-        p.set("Call-ID", call.id); p.set("CSeq", "1 BYE")
+        p.set("Call-ID", call.id)
+        p.set("CSeq", "1 BYE")
         p.set("User-Agent", UA)
-        try: self.send(p, call.addr)
-        except OSError: pass
+        try:
+            self.send(p, call.addr)
+        except OSError:
+            pass

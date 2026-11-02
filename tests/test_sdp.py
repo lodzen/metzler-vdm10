@@ -1,4 +1,5 @@
 """Private hicore SDP - values taken from live captures in this session."""
+
 from metzler.media.g711 import pcm_to_ulaw, ulaw_to_pcm
 from metzler.media.rtp import is_rtp
 from metzler.media.rtsp import RTSP_SDP_AV
@@ -11,16 +12,20 @@ from metzler.sip.sdp import (
 
 # .47 (10000000001, a real indoor extension) answering our direct INVITE,
 # 2026-11-01 10:44:45 - byte for byte
-REAL_47_ANSWER = ("v=0\r\no=Q12345678 0 0 IN IP4 10.0.0.47\r\ns=Talk session\r\n"
-                  "c=IN IP4 10.0.0.47\r\nt=0 0\r\n"
-                  "a=doorFloor:0\r\na=responseType:0\r\na=doorType:0\r\n"
-                  "a=isSpecialType:2\r\na=isConfirm:0\r\n")
+REAL_47_ANSWER = (
+    "v=0\r\no=Q12345678 0 0 IN IP4 10.0.0.47\r\ns=Talk session\r\n"
+    "c=IN IP4 10.0.0.47\r\nt=0 0\r\n"
+    "a=doorFloor:0\r\na=responseType:0\r\na=doorType:0\r\n"
+    "a=isSpecialType:2\r\na=isConfirm:0\r\n"
+)
 
 # what sip.linphone.org's media relay forwarded (it rewrites c= and adds nortpproxy)
-FLEXISIP_RELAYED = ("v=0\r\no=- 0 0 IN IP4 198.51.100.7\r\ns=Talk session\r\n"
-                    "c=IN IP4 176.31.149.179\r\nt=0 0\r\na=nortpproxy:yes\r\n"
-                    "m=audio 14842 RTP/AVP 0 101\r\na=rtpmap:0 PCMU/8000\r\n"
-                    "a=rtpmap:101 telephone-event/8000\r\na=fmtp:101 0-16\r\n")
+FLEXISIP_RELAYED = (
+    "v=0\r\no=- 0 0 IN IP4 198.51.100.7\r\ns=Talk session\r\n"
+    "c=IN IP4 176.31.149.179\r\nt=0 0\r\na=nortpproxy:yes\r\n"
+    "m=audio 14842 RTP/AVP 0 101\r\na=rtpmap:0 PCMU/8000\r\n"
+    "a=rtpmap:101 telephone-event/8000\r\na=fmtp:101 0-16\r\n"
+)
 
 
 class Opts:
@@ -57,8 +62,7 @@ def test_relayed_provider_sdp():
 
 
 def test_per_media_connection_line_wins():
-    sdp = parse_sdp("v=0\r\nc=IN IP4 1.1.1.1\r\nm=audio 10 RTP/AVP 0\r\nc=IN IP4 2.2.2.2\r\n"
-                      "m=video 20 RTP/AVP 96\r\n")
+    sdp = parse_sdp("v=0\r\nc=IN IP4 1.1.1.1\r\nm=audio 10 RTP/AVP 0\r\nc=IN IP4 2.2.2.2\r\nm=video 20 RTP/AVP 96\r\n")
     assert media_addr(sdp, "audio") == ("2.2.2.2", 10)
     assert media_addr(sdp, "video") == ("1.1.1.1", 20)
 
@@ -80,9 +84,9 @@ def test_rtsp_describe_advertises_both_tracks():
 def test_is_rtp_skips_rtcp():
     hdr = lambda pt: bytes([0x80, pt]) + b"\0" * 10
     assert is_rtp(hdr(0) + b"x" * 160)
-    assert is_rtp(hdr(0x80 | 96))                              # marker bit set
-    assert not is_rtp(hdr(200) + b"\0" * 16)                   # RTCP sender report
-    assert not is_rtp(b"\x00" * 20)                            # not RTP version 2
+    assert is_rtp(hdr(0x80 | 96))  # marker bit set
+    assert not is_rtp(hdr(200) + b"\0" * 16)  # RTCP sender report
+    assert not is_rtp(b"\x00" * 20)  # not RTP version 2
 
 
 def test_ulaw_round_trip():

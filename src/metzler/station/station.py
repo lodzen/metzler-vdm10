@@ -9,8 +9,15 @@ from metzler.station.registration import RegistrationMixin
 from metzler.station.teardown import TeardownMixin
 
 
-class IndoorStation(RegistrationMixin, ProviderBridgeMixin, LocalAnswerMixin,
-                    OutboundCallMixin, InboundCallMixin, TeardownMixin, StationCore):
+class IndoorStation(
+    RegistrationMixin,
+    ProviderBridgeMixin,
+    LocalAnswerMixin,
+    OutboundCallMixin,
+    InboundCallMixin,
+    TeardownMixin,
+    StationCore,
+):
     """A Hikvision/Metzler indoor extension (VTH) on the intercom LAN.
 
     StationCore           socket, RTSP server, receive loop, request routing, run/shutdown

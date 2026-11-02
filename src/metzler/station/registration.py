@@ -35,25 +35,31 @@ class IntercomRegistration:
 
     def reg_xml(self):
         # exact firmware field order (_sip_xml_get_reg_info_xml): serial, mac, name, floorNum
-        return (f"<regXML>\r\n<regDevSerial>{self.serial}</regDevSerial>\r\n"
-                f"<regDevMacAddr>{self.mac}</regDevMacAddr>\r\n"
-                f"<regDevName>{self.name}</regDevName>\r\n"
-                f"<floorNum>{self.o.floor_num}</floorNum>\r\n</regXML>")
+        return (
+            f"<regXML>\r\n<regDevSerial>{self.serial}</regDevSerial>\r\n"
+            f"<regDevMacAddr>{self.mac}</regDevMacAddr>\r\n"
+            f"<regDevName>{self.name}</regDevName>\r\n"
+            f"<floorNum>{self.o.floor_num}</floorNum>\r\n</regXML>"
+        )
 
     def build_register(self, expires=None, auth=None):
         st = self.st
         uri = f"sip:{self.o.server}:{self.o.server_port}"
         # firmware: From = sip:<devLongNum>@<localip>, To = sip:<devLongNum>@<registrar>
-        p = st.base_request("REGISTER", uri,
-                            to_uri=f"<sip:{self.username}@{self.o.server}:{self.o.server_port}>",
-                            frm_uri=f'"{self.name}"<sip:{self.username}@{self.o.local_ip}>;tag={st.local_tag}')
+        p = st.base_request(
+            "REGISTER",
+            uri,
+            to_uri=f"<sip:{self.username}@{self.o.server}:{self.o.server_port}>",
+            frm_uri=f'"{self.name}"<sip:{self.username}@{self.o.local_ip}>;tag={st.local_tag}',
+        )
         p.set("Call-ID", self.reg_call_id)
         p.set("CSeq", f"{self.reg_cseq} REGISTER")
         expires = self.o.expires if expires is None else expires
         p.set("Expires", str(expires))
         p.set("Content-Type", "text/xml")
-        if auth: p.set("Authorization", auth)
-        p.body = self.reg_xml() if expires else ""       # unregister (Expires: 0) has no regXML
+        if auth:
+            p.set("Authorization", auth)
+        p.body = self.reg_xml() if expires else ""  # unregister (Expires: 0) has no regXML
         return p
 
     def register_loop(self):
@@ -68,14 +74,18 @@ class IntercomRegistration:
 
     def register_once(self):
         while True:  # drain stale responses
-            try: self.reg_queue.get_nowait()
-            except queue.Empty: break
+            try:
+                self.reg_queue.get_nowait()
+            except queue.Empty:
+                break
         p = self.build_register()
         self.st.send(p, self.st.server)
         deadline = time.time() + 10
         while time.time() < deadline:
-            try: resp = self.reg_queue.get(timeout=max(0.1, deadline - time.time()))
-            except queue.Empty: break
+            try:
+                resp = self.reg_queue.get(timeout=max(0.1, deadline - time.time()))
+            except queue.Empty:
+                break
             if resp.status_line.startswith(("SIP/2.0 401", "SIP/2.0 407")):
                 hdr = resp.get("WWW-Authenticate") or resp.get("Proxy-Authenticate")
                 self.reg_cseq += 1
@@ -83,8 +93,13 @@ class IntercomRegistration:
                 auth = digest_response(hdr, "REGISTER", uri, self.username, self.password)
                 self.st.send(self.build_register(auth=auth), self.st.server)
             elif resp.status_line.startswith("SIP/2.0 2"):
-                log.info("REGISTERED at %s:%d as %s (expires %ds)",
-                         self.st.server[0], self.st.server[1], self.username, self.o.expires)
+                log.info(
+                    "REGISTERED at %s:%d as %s (expires %ds)",
+                    self.st.server[0],
+                    self.st.server[1],
+                    self.username,
+                    self.o.expires,
+                )
                 return
             elif re.match(r"SIP/2\.0 [456]", resp.status_line):
                 raise RuntimeError(resp.status_line)
@@ -100,7 +115,7 @@ class RegistrationMixin:
 
     def init_registrations(self):
         self.regs = [IntercomRegistration(self, self.o)]
-        self.registered = self.regs[0].registered   # gates outbound calls
+        self.registered = self.regs[0].registered  # gates outbound calls
 
     def reg_xml(self):
         return self.regs[0].reg_xml()
@@ -119,10 +134,14 @@ class RegistrationMixin:
             p.set("CSeq", "1 MESSAGE")
             p.set("Content-Type", "text/xml")
             # firmware format: <header>{method,action,from-ip,to-ip}</header><body>{num}
-            p.body = ("<videoIntercomMsg>\r\n<header>\r\n<method>1</method>\r\n"
-                      "<action>1</action>\r\n"
-                      f"<from>{self.o.local_ip}</from>\r\n<to>{self.o.server}</to>\r\n"
-                      "</header>\r\n<body>\r\n<num>1</num>\r\n</body>\r\n</videoIntercomMsg>")
-            try: self.send(p, self.server)
-            except OSError: pass
+            p.body = (
+                "<videoIntercomMsg>\r\n<header>\r\n<method>1</method>\r\n"
+                "<action>1</action>\r\n"
+                f"<from>{self.o.local_ip}</from>\r\n<to>{self.o.server}</to>\r\n"
+                "</header>\r\n<body>\r\n<num>1</num>\r\n</body>\r\n</videoIntercomMsg>"
+            )
+            try:
+                self.send(p, self.server)
+            except OSError:
+                pass
             time.sleep(self.o.heartbeat_interval)

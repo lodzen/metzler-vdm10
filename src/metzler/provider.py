@@ -32,7 +32,7 @@ class SipProvider:
     The provider object sends on the station's UDP socket (shared source port)
     via the `st` back-reference; it owns no sockets of its own."""
 
-    FORK_TTL = 600   # s a forked-back Call-ID stays recognisable in own_ids
+    FORK_TTL = 600  # s a forked-back Call-ID stays recognisable in own_ids
 
     def __init__(self, st, o):
         self.st, self.o = st, o
@@ -42,17 +42,19 @@ class SipProvider:
         self.reg_cseq = 1
         self.reg_queue = queue.Queue()
         self.registered = threading.Event()
-        self.public_ip = None           # Via received= learned from the proxy
-        self.public_port = None         # Via rport= (our NAT'ed source port)
-        self.calls = {}                 # provider-leg Call-ID -> Call
-        self.own_ids = {}               # Call-ID we originated -> added-at (loop guard)
-        try: self.proxy_ip = socket.gethostbyname(o.sip_host)
-        except OSError: self.proxy_ip = None
+        self.public_ip = None  # Via received= learned from the proxy
+        self.public_port = None  # Via rport= (our NAT'ed source port)
+        self.calls = {}  # provider-leg Call-ID -> Call
+        self.own_ids = {}  # Call-ID we originated -> added-at (loop guard)
+        try:
+            self.proxy_ip = socket.gethostbyname(o.sip_host)
+        except OSError:
+            self.proxy_ip = None
         # SIP identity: the account name, or - for a credential-less PBX trunk
         # (e.g. Asterisk with IP auth) - the station's own extension number
         self.user = o.sip_user or o.username
         # station number -> display name (--sip-names) for _from_header {name}
-        self.names = dict(p.split("=", 1) for p in (o.sip_names or "").split(",") if "=" in p)
+        self.names = {s[0]: s[1] for s in (p.split("=", 1) for p in (o.sip_names or "").split(",")) if len(s) == 2}
 
     def needs_register(self):
         """hosted providers need REGISTER; an IP-authenticated PBX trunk does not"""
@@ -70,8 +72,7 @@ class SipProvider:
     def _base(self, method, uri, frm, br=None):
         p = Packet()
         p.status_line = f"{method} {uri} SIP/2.0"
-        p.set("Via", f"SIP/2.0/UDP {self.o.local_ip}:{self.st.bind_port};"
-                     f"rport;branch={br or branch()}")
+        p.set("Via", f"SIP/2.0/UDP {self.o.local_ip}:{self.st.bind_port};rport;branch={br or branch()}")
         p.set("Max-Forwards", "70")
         p.set("From", frm)
         p.set("User-Agent", UA)
@@ -97,14 +98,18 @@ class SipProvider:
     # -- REGISTER -------------------------------------------------------------
 
     def _register_pkt(self, auth=None):
-        p = self._base("REGISTER", f"sip:{self.o.sip_domain}",
-                       f"<sip:{self.o.sip_user}@{self.o.sip_domain}>;tag={self.st.local_tag}")
+        p = self._base(
+            "REGISTER",
+            f"sip:{self.o.sip_domain}",
+            f"<sip:{self.o.sip_user}@{self.o.sip_domain}>;tag={self.st.local_tag}",
+        )
         p.set("To", f"<sip:{self.o.sip_user}@{self.o.sip_domain}>")
         p.set("Contact", f"<sip:{self.o.sip_user}@{self.o.local_ip}:{self.st.bind_port}>")
         p.set("Call-ID", self.reg_call_id)
         p.set("CSeq", f"{self.reg_cseq} REGISTER")
         p.set("Expires", "600")
-        if auth: p.set("Authorization", auth)
+        if auth:
+            p.set("Authorization", auth)
         return p
 
     def register_loop(self):
@@ -120,9 +125,11 @@ class SipProvider:
 
     def _register_once(self):
         """one REGISTER round: unauthed -> <=2 digest retries -> 200."""
-        while True:                                     # drain stale replies
-            try: self.reg_queue.get_nowait()
-            except queue.Empty: break
+        while True:  # drain stale replies
+            try:
+                self.reg_queue.get_nowait()
+            except queue.Empty:
+                break
         self.st.send(self._register_pkt(), self.proxy)
         for attempt in range(3):
             resp = self._wait_reply(time.time() + 10)
@@ -140,35 +147,46 @@ class SipProvider:
                 return log.warning("%s register rejected: %s", self.label, resp.status_line)
 
     def _wait_reply(self, deadline):
-        try: return self.reg_queue.get(timeout=max(0.1, deadline - time.time()))
-        except queue.Empty: return None
+        try:
+            return self.reg_queue.get(timeout=max(0.1, deadline - time.time()))
+        except queue.Empty:
+            return None
 
     def _reg_auth(self, resp):
         hdr = resp.get("WWW-Authenticate") or resp.get("Proxy-Authenticate")
-        return digest_response(hdr, "REGISTER", f"sip:{self.o.sip_domain}",
-                               self.o.sip_user, self.o.sip_pass)
+        return digest_response(hdr, "REGISTER", f"sip:{self.o.sip_domain}", self.o.sip_user, self.o.sip_pass)
 
     def _mark_registered(self):
         if not self.registered.is_set():
-            log.info("%s REGISTERED at %s:%d as %s@%s (public %s:%s)", self.label,
-                     *self.proxy, self.o.sip_user, self.o.sip_domain,
-                     self.public_ip, self.public_port)
+            log.info(
+                "%s REGISTERED at %s:%d as %s@%s (public %s:%s)",
+                self.label,
+                *self.proxy,
+                self.o.sip_user,
+                self.o.sip_domain,
+                self.public_ip,
+                self.public_port,
+            )
         self.registered.set()
 
     def unregister(self):
         try:
-            p = self._register_pkt(); p.set("Expires", "0", replace=True)
+            p = self._register_pkt()
+            p.set("Expires", "0", replace=True)
             self.st.send(p, self.proxy)
-        except OSError: pass
+        except OSError:
+            pass
 
     def _learn_public(self, pkt):
         """NAT detection without STUN: the proxy echoes our Via back with
         received=<ip>/rport=<port> - that is our public identity for SDP."""
         via = pkt.get("Via") or ""
         m = re.search(r"received=([0-9.]+)", via)
-        if m: self.public_ip = m.group(1)
+        if m:
+            self.public_ip = m.group(1)
         m = re.search(r"rport=(\d+)", via)
-        if m: self.public_port = int(m.group(1))
+        if m:
+            self.public_port = int(m.group(1))
 
     # -- outbound INVITE leg --------------------------------------------------
 
@@ -178,7 +196,7 @@ class SipProvider:
         its own SDES key; the media objects keep the matching SrtpSession."""
         if call.kind == "intercom":
             streams = [("audio", call.media)]
-            if call.media.video:                 # door call: door's RTSP H264
+            if call.media.video:  # door call: door's RTSP H264
                 streams.append(("video", call.media.video))
         else:
             streams = [("audio", call.audio), ("video", call.video)]
@@ -201,8 +219,7 @@ class SipProvider:
                 body += self._media_block("audio", media)
                 answered = True
             else:
-                body += (f"m={m['type']} 0 {m.get('proto') or 'RTP/AVP'} "
-                         f"{' '.join(m['formats']) or '0'}\r\n")
+                body += f"m={m['type']} 0 {m.get('proto') or 'RTP/AVP'} {' '.join(m['formats']) or '0'}\r\n"
         return body
 
     @staticmethod
@@ -211,11 +228,15 @@ class SipProvider:
         proto = "RTP/SAVP" if media.srtp else "RTP/AVP"
         crypto = media.srtp.crypto_attr() if media.srtp else ""
         if kind == "audio":
-            return (f"m=audio {port} {proto} 0 101\r\n{crypto}"
-                    "a=rtpmap:0 PCMU/8000\r\na=rtpmap:101 telephone-event/8000\r\n"
-                    "a=fmtp:101 0-16\r\na=sendrecv\r\n")
-        return (f"m=video {port} {proto} 96\r\n{crypto}a=rtpmap:96 H264/90000\r\n"
-                "a=fmtp:96 packetization-mode=1;profile-level-id=4D001E\r\na=sendrecv\r\n")
+            return (
+                f"m=audio {port} {proto} 0 101\r\n{crypto}"
+                "a=rtpmap:0 PCMU/8000\r\na=rtpmap:101 telephone-event/8000\r\n"
+                "a=fmtp:101 0-16\r\na=sendrecv\r\n"
+            )
+        return (
+            f"m=video {port} {proto} 96\r\n{crypto}a=rtpmap:96 H264/90000\r\n"
+            "a=fmtp:96 packetization-mode=1;profile-level-id=4D001E\r\na=sendrecv\r\n"
+        )
 
     @staticmethod
     def bind_srtp(media, answer_media):
@@ -266,10 +287,12 @@ class SipProvider:
         p.set("Call-ID", call.prov_call_id)
         p.set("CSeq", f"{call.prov_cseq} INVITE")
         subj = self._caller_name(call)
-        if subj: p.set("Subject", subj)           # linphone renders the subject too
+        if subj:
+            p.set("Subject", subj)  # linphone renders the subject too
         p.set("Allow", "INVITE, ACK, CANCEL, BYE, REFER, INFO, OPTIONS, MESSAGE")
         p.set("Content-Type", "application/sdp")
-        if auth: p.set(auth_name, auth)
+        if auth:
+            p.set(auth_name, auth)
         p.body = self.offer_sdp(call)
         call.prov_from = p.get("From")
         call.prov_uri = uri
@@ -278,8 +301,7 @@ class SipProvider:
     def _ack_failure(self, call, resp):
         """a non-2xx final response to INVITE must be ACK'ed (same branch,
         same CSeq number) or the proxy retransmits it ~7 times"""
-        p = self._base("ACK", call.prov_uri or self.o.sip_target,
-                       resp.get("From"), call.prov_branch)
+        p = self._base("ACK", call.prov_uri or self.o.sip_target, resp.get("From"), call.prov_branch)
         p.set("To", resp.get("To"))
         p.set("Call-ID", call.prov_call_id)
         p.set("CSeq", f"{call.prov_cseq} ACK")
@@ -289,16 +311,15 @@ class SipProvider:
         """dispatch one response on the provider INVITE leg"""
         code = int(resp.status_line.split()[1])
         self._learn_public(resp)
-        if code in (401, 407):                          # digest challenge
-            self._ack_failure(call, resp)               # stop the retransmits
+        if code in (401, 407):  # digest challenge
+            self._ack_failure(call, resp)  # stop the retransmits
             call.prov_auths += 1
             if call.prov_auths > 2:
                 log.warning("provider INVITE auth failed - busy to indoor caller")
                 return "fail"
             # 407 needs Proxy-Authorization (header + challenge); 401 uses Authorization
             hdr = resp.get("Proxy-Authenticate" if code == 407 else "WWW-Authenticate")
-            auth = digest_response(hdr, "INVITE", call.prov_uri,
-                                   self.o.sip_user, self.o.sip_pass)
+            auth = digest_response(hdr, "INVITE", call.prov_uri, self.o.sip_user, self.o.sip_pass)
             name = "Proxy-Authorization" if code == 407 else "Authorization"
             self.st.send(self._invite_pkt(call, auth, name), self.proxy)
             return "auth"
@@ -306,8 +327,9 @@ class SipProvider:
             # 18x carrying SDP = early media: the callee's media address is
             # known, door video can start flowing before the answer
             return "early" if "m=" in resp.body else "ringing"
-        if 200 <= code < 300:  return "answered"
-        self._ack_failure(call, resp)                   # >=300 final: ACK to stop retransmits
+        if 200 <= code < 300:
+            return "answered"
+        self._ack_failure(call, resp)  # >=300 final: ACK to stop retransmits
         if code == 488 and self.o.sip_srtp and not call.prov_plain:
             # peer without SRTP support (e.g. a stock Asterisk) - re-offer plain RTP once
             log.info("provider refused the SRTP offer (488) - retrying with plain RTP")
@@ -344,17 +366,20 @@ class SipProvider:
         INVITE's Via branch and CSeq number (RFC 3261 9.1); a fresh branch is
         a new transaction the proxy doesn't know - 481, app keeps ringing"""
         try:
-            uri = self.o.sip_target                       # must equal the INVITE's RURI
+            uri = self.o.sip_target  # must equal the INVITE's RURI
             p = self._base("CANCEL", uri, call.prov_from, call.prov_branch)
             p.set("To", f"<{uri}>")
             p.set("Call-ID", call.prov_call_id)
             p.set("CSeq", f"{call.prov_cseq} CANCEL")
             self.st.send(p, self.proxy)
-        except OSError: pass
+        except OSError:
+            pass
 
     def bye(self, call):
-        try: self.st.send(self._leg_pkt(call, "BYE", "2 BYE"), self.proxy)
-        except OSError: pass
+        try:
+            self.st.send(self._leg_pkt(call, "BYE", "2 BYE"), self.proxy)
+        except OSError:
+            pass
 
 
 class FritzTrunk(SipProvider):
@@ -366,13 +391,14 @@ class FritzTrunk(SipProvider):
     The racing leg keeps its own state in call.fritz_leg - the call's
     prov_* fields belong to the provider leg while both race; the winner
     gets promoted into them."""
+
     def __init__(self, st, o):
         fo = SimpleNamespace(**vars(o))
         fo.sip_host, fo.sip_port = o.fritz_host, o.fritz_port
         fo.sip_domain = o.fritz_domain
         fo.sip_user, fo.sip_pass = o.fritz_user, o.fritz_pass
         fo.sip_target, fo.sip_from = "", ""
-        fo.sip_srtp = False            # Fritz!Box IP phones talk plain RTP
+        fo.sip_srtp = False  # Fritz!Box IP phones talk plain RTP
         super().__init__(st, fo)
         self.label = "fritz"
 
@@ -382,14 +408,20 @@ class FritzTrunk(SipProvider):
         """ring --fritz-call-button in parallel with the provider leg; the box
         forks this back at our registered contact, so the Call-ID goes into
         own_ids like a provider leg's"""
-        call.fritz_leg = {"cid": call_id(), "cseq": 0, "branch": None,
-                          "from": None, "uri": self.o.fritz_target, "auths": 0}
+        call.fritz_leg = {
+            "cid": call_id(),
+            "cseq": 0,
+            "branch": None,
+            "from": None,
+            "uri": self.o.fritz_target,
+            "auths": 0,
+        }
         leg = call.fritz_leg
         self.calls[leg["cid"]] = call
         self.own_ids[leg["cid"]] = time.time()
-        self.st.send(self._invite_pkt(call, leg), self.proxy)
+        self.st.send(self._fritz_invite_pkt(call, leg), self.proxy)
 
-    def _invite_pkt(self, call, leg, auth=None, auth_name="Authorization"):
+    def _fritz_invite_pkt(self, call, leg, auth=None, auth_name="Authorization"):
         """audio-only RTP/AVP offer for the fritzfon (no video, no SRTP);
         From user stays the account, display name + Subject carry the
         calling station like on the provider leg"""
@@ -397,23 +429,26 @@ class FritzTrunk(SipProvider):
         leg["branch"] = branch()
         num = userpart(call.invite.get("From") or "")
         name = self.names.get(num, num) or self.o.name
-        p = self._base("INVITE", leg["uri"],
-                       f'"{name}" <sip:{self.o.sip_user}@{self.o.sip_domain}>;tag={tag()}',
-                       leg["branch"])
+        p = self._base(
+            "INVITE", leg["uri"], f'"{name}" <sip:{self.o.sip_user}@{self.o.sip_domain}>;tag={tag()}', leg["branch"]
+        )
         p.set("Contact", f"<sip:{self.o.sip_user}@{self.sdp_ip()}:{self.sdp_port()}>")
         p.set("To", f"<{leg['uri']}>")
         p.set("Call-ID", leg["cid"])
         p.set("CSeq", f"{leg['cseq']} INVITE")
         p.set("Subject", name)
         p.set("Content-Type", "application/sdp")
-        if auth: p.set(auth_name, auth)
+        if auth:
+            p.set(auth_name, auth)
         media = call.media if call.kind == "intercom" else call.audio
         ip = self.sdp_ip()
-        p.body = (f"v=0\r\no=- 0 0 IN IP4 {ip}\r\ns=Talk session\r\n"
-                  f"c=IN IP4 {ip}\r\nt=0 0\r\n"
-                  f"m=audio {media.rtp_port} RTP/AVP 0 101\r\n"
-                  "a=rtpmap:0 PCMU/8000\r\na=rtpmap:101 telephone-event/8000\r\n"
-                  "a=fmtp:101 0-16\r\na=sendrecv\r\n")
+        p.body = (
+            f"v=0\r\no=- 0 0 IN IP4 {ip}\r\ns=Talk session\r\n"
+            f"c=IN IP4 {ip}\r\nt=0 0\r\n"
+            f"m=audio {media.rtp_port} RTP/AVP 0 101\r\n"
+            "a=rtpmap:0 PCMU/8000\r\na=rtpmap:101 telephone-event/8000\r\n"
+            "a=fmtp:101 0-16\r\na=sendrecv\r\n"
+        )
         leg["from"] = p.get("From")
         return p
 
@@ -437,13 +472,14 @@ class FritzTrunk(SipProvider):
                 log.warning("fritz INVITE auth failed")
                 return "fail"
             hdr = resp.get("Proxy-Authenticate" if code == 407 else "WWW-Authenticate")
-            auth = digest_response(hdr, "INVITE", leg["uri"],
-                                   self.o.sip_user, self.o.sip_pass)
+            auth = digest_response(hdr, "INVITE", leg["uri"], self.o.sip_user, self.o.sip_pass)
             name = "Proxy-Authorization" if code == 407 else "Authorization"
-            self.st.send(self._invite_pkt(call, leg, auth, name), self.proxy)
+            self.st.send(self._fritz_invite_pkt(call, leg, auth, name), self.proxy)
             return "auth"
-        if code < 200: return "ringing"
-        if 200 <= code < 300: return "answered"
+        if code < 200:
+            return "ringing"
+        if 200 <= code < 300:
+            return "answered"
         self._ack_leg_failure(leg, resp)
         return "fail"
 
@@ -451,12 +487,14 @@ class FritzTrunk(SipProvider):
         """CANCEL the still-racing fritz leg (echoes its branch/CSeq like the
         provider CANCEL) and drop it from the routing dict"""
         leg = call.fritz_leg
-        if not leg: return
+        if not leg:
+            return
         try:
             p = self._base("CANCEL", leg["uri"], leg["from"], leg["branch"])
             p.set("To", f"<{leg['uri']}>")
             p.set("Call-ID", leg["cid"])
             p.set("CSeq", f"{leg['cseq']} CANCEL")
             self.st.send(p, self.proxy)
-        except OSError: pass
+        except OSError:
+            pass
         self.calls.pop(leg["cid"], None)

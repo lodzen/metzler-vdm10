@@ -1,12 +1,13 @@
 """Configuration helpers: the minimal .env loader and INDOOR_* lookups."""
 
+from pathlib import Path
 
 
 def load_env(path):
     """minimal .env loader: KEY=VALUE lines, # comments, optional quotes"""
     vals = {}
     try:
-        with open(path) as f:
+        with Path(path).open() as f:
             for line in f:
                 line = line.strip()
                 if not line or line.startswith("#") or "=" not in line:
@@ -20,7 +21,8 @@ def load_env(path):
 
 def env_default(env, key, default=None, cast=None):
     v = env.get("INDOOR_" + key.upper(), default)
-    if v == "": v = default
+    if v == "":
+        v = default
     if cast and v is not None:
         return cast(v)
     return v
@@ -33,5 +35,6 @@ def env_bool(env, key):
 def answer_policy(value):
     """INDOOR_AUTO_ANSWER: off | all | extension (only calls the main indoor places to us)"""
     v = str(value or "").strip().lower()
-    if v in ("", "0", "false", "no", "off"): return "off"
+    if v in ("", "0", "false", "no", "off"):
+        return "off"
     return "extension" if v == "extension" else "all"

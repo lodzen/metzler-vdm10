@@ -18,6 +18,7 @@ def srtp_available():
     else in this script is stdlib, so it still runs standalone without it"""
     try:
         import cryptography.hazmat.primitives.ciphers  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -25,6 +26,7 @@ def srtp_available():
 
 def _aes_ctr(key, iv, data):
     from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
     return Cipher(algorithms.AES(key), modes.CTR(iv)).encryptor().update(data)
 
 
@@ -33,6 +35,7 @@ class Srtp:
     (the SDES default Linphone accepts). Key-derivation rate 0, no MKI.
     protect(): RTP -> SRTP for sending; unprotect(): SRTP -> RTP or None if
     the auth tag fails. RTCP is not protected (the bridge sends none)."""
+
     TAG = 10
 
     def __init__(self, master_key, master_salt):
@@ -54,8 +57,8 @@ class Srtp:
     @staticmethod
     def _hdr_len(pkt):
         n = 12 + 4 * (pkt[0] & 0x0F)
-        if pkt[0] & 0x10:                                   # header extension
-            n += 4 + 4 * struct.unpack(">H", pkt[n + 2:n + 4])[0]
+        if pkt[0] & 0x10:  # header extension
+            n += 4 + 4 * struct.unpack(">H", pkt[n + 2 : n + 4])[0]
         return n
 
     def _iv(self, ssrc, index):
@@ -63,12 +66,12 @@ class Srtp:
         return x.to_bytes(16, "big")
 
     def _tag(self, authed, roc):
-        return hmac.new(self.k_a, authed + struct.pack(">I", roc), hashlib.sha1).digest()[:self.TAG]
+        return hmac.new(self.k_a, authed + struct.pack(">I", roc), hashlib.sha1).digest()[: self.TAG]
 
     def protect(self, pkt):
         seq, ssrc = struct.unpack(">H", pkt[2:4])[0], struct.unpack(">I", pkt[8:12])[0]
         if self.last_seq is not None and seq < self.last_seq and self.last_seq - seq > 0x8000:
-            self.roc = (self.roc + 1) & 0xFFFFFFFF          # sequence wrapped
+            self.roc = (self.roc + 1) & 0xFFFFFFFF  # sequence wrapped
         self.last_seq = seq
         h = self._hdr_len(pkt)
         enc = pkt[:h] + _aes_ctr(self.k_e, self._iv(ssrc, (self.roc << 16) | seq), pkt[h:])
@@ -76,17 +79,20 @@ class Srtp:
 
     def _guess_roc(self, seq):
         """RFC 3711 appendix A index estimate"""
-        if self.last_seq is None: return self.roc
+        if self.last_seq is None:
+            return self.roc
         if self.last_seq < 0x8000:
             return self.roc - 1 if seq - self.last_seq > 0x8000 and self.roc else self.roc
         return self.roc + 1 if self.last_seq - 0x8000 > seq else self.roc
 
     def unprotect(self, pkt):
-        if len(pkt) < 12 + self.TAG: return None
+        if len(pkt) < 12 + self.TAG:
+            return None
         seq, ssrc = struct.unpack(">H", pkt[2:4])[0], struct.unpack(">I", pkt[8:12])[0]
-        body, tag = pkt[:-self.TAG], pkt[-self.TAG:]
+        body, tag = pkt[: -self.TAG], pkt[-self.TAG :]
         roc = self._guess_roc(seq)
-        if not hmac.compare_digest(self._tag(body, roc), tag): return None
+        if not hmac.compare_digest(self._tag(body, roc), tag):
+            return None
         if roc > self.roc or (roc == self.roc and (self.last_seq is None or seq > self.last_seq)):
             self.roc, self.last_seq = roc, seq
         h = self._hdr_len(body)
@@ -96,6 +102,7 @@ class Srtp:
 class SrtpSession:
     """both directions of one media stream: tx from our offered key, rx from
     the key in the peer's answer (a=crypto). `inline` is our SDP key."""
+
     def __init__(self):
         raw = os.urandom(30)
         self.inline = base64.b64encode(raw).decode()

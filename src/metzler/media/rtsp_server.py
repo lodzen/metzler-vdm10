@@ -18,11 +18,30 @@ def _spawn_test_video():
     """ffmpeg: black 320x240 H264 test stream on stdout (None without ffmpeg)"""
     try:
         return subprocess.Popen(
-            ["ffmpeg", "-loglevel", "error", "-re",
-             "-f", "lavfi", "-i", "color=c=black:s=320x240:r=12.5",
-             "-c:v", "libx264", "-profile:v", "main", "-level", "2.0",
-             "-x264-params", "keyint=25", "-f", "h264", "-"],
-            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            [
+                "ffmpeg",
+                "-loglevel",
+                "error",
+                "-re",
+                "-f",
+                "lavfi",
+                "-i",
+                "color=c=black:s=320x240:r=12.5",
+                "-c:v",
+                "libx264",
+                "-profile:v",
+                "main",
+                "-level",
+                "2.0",
+                "-x264-params",
+                "keyint=25",
+                "-f",
+                "h264",
+                "-",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
     except OSError:
         return None
 
@@ -30,27 +49,32 @@ def _spawn_test_video():
 def _annexb_nals(data):
     """split an annex-B byte stream at its 00 00 01 / 00 00 00 01 start codes"""
     for part in re.split(b"\x00\x00\x01|\x00\x00\x00\x01", data):
-        if part: yield part
+        if part:
+            yield part
 
 
 class RtspServer(threading.Thread):
     """hikvision-style RTSP server on :554 - the caller pulls our stream here.
     DESCRIBE always advertises video+audio (mandatory for their client); the
     data path sends only 320B/40ms PCMU, exactly like a real indoor unit."""
+
     def __init__(self, o):
         super().__init__(daemon=True)
         self.o = o
         self.sdp = RTSP_SDP_AV
-        self.mic = None                 # callable -> 160B ulaw, set while a call runs
+        self.mic = None  # callable -> 160B ulaw, set while a call runs
         self.ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.ls.bind((o.local_ip, o.rtsp_port)); self.ls.listen(4)
+        self.ls.bind((o.local_ip, o.rtsp_port))
+        self.ls.listen(4)
         self.running = True
 
     def run(self):
         while self.running:
-            try: conn, addr = self.ls.accept()
-            except OSError: return
+            try:
+                conn, addr = self.ls.accept()
+            except OSError:
+                return
             threading.Thread(target=self.handle, args=(conn, addr), daemon=True).start()
 
     def handle(self, conn, addr):
@@ -61,12 +85,15 @@ class RtspServer(threading.Thread):
         try:
             while True:
                 req, buf = read_rtsp_request(conn, buf)
-                if req is None or not sess.dispatch(req, addr): break
+                if req is None or not sess.dispatch(req, addr):
+                    break
         except (OSError, TimeoutError):
             pass
         sess.playing[0] = False
-        try: conn.close()
-        except OSError: pass
+        try:
+            conn.close()
+        except OSError:
+            pass
         log.info("RTSP client %s:%d disconnected", *addr)
 
     def _send(self, conn, wlock, chan, rtp):
@@ -79,7 +106,8 @@ class RtspServer(threading.Thread):
         out = []
         hdr = lambda m, s, t: struct.pack(">BBHII", 0x80, 96 | (m << 7), s, t, ssrc)
         if len(nal) <= 1300:
-            out.append(hdr(1, seq[0], ts) + nal); seq[0] += 1
+            out.append(hdr(1, seq[0], ts) + nal)
+            seq[0] += 1
         else:
             ind, nal_type = nal[0] & 0xE0 | 28, nal[0] & 0x1F
             body = nal[1:]
@@ -105,10 +133,11 @@ class RtspServer(threading.Thread):
         ch_a = chmap.get("audio")
         ch_v = chmap.get("video")
         if getattr(self.o, "rtsp_video", False) and ch_v is not None:
-            threading.Thread(target=self._video_feed, args=(conn, wlock, playing, ch_v,
-                                                            ssrcs.get("video",
-                                                                      random.getrandbits(32))),
-                             daemon=True).start()
+            threading.Thread(
+                target=self._video_feed,
+                args=(conn, wlock, playing, ch_v, ssrcs.get("video", random.getrandbits(32))),
+                daemon=True,
+            ).start()
         next_a = 0.0
         while playing[0]:
             try:
@@ -116,11 +145,12 @@ class RtspServer(threading.Thread):
                     if time.time() < next_a:
                         time.sleep(min(next_a - time.time(), 0.02))
                         continue
-                    payload = self.mic() + self.mic()      # 2 x 160B = 40 ms
-                    rtp = struct.pack(">BBHII", 0x80, 0, seq_a[0] & 0xFFFF,
-                                      ts_a[0] & 0xFFFFFFFF, ssrc) + payload
+                    payload = self.mic() + self.mic()  # 2 x 160B = 40 ms
+                    rtp = struct.pack(">BBHII", 0x80, 0, seq_a[0] & 0xFFFF, ts_a[0] & 0xFFFFFFFF, ssrc) + payload
                     self._send(conn, wlock, ch_a, rtp)
-                    seq_a[0] += 1; ts_a[0] += 320; next_a = time.time() + 0.04
+                    seq_a[0] += 1
+                    ts_a[0] += 320
+                    next_a = time.time() + 0.04
                 else:
                     time.sleep(0.01)
             except OSError:
@@ -130,21 +160,25 @@ class RtspServer(threading.Thread):
         """optional (--rtsp-video): ffmpeg-generated H264 like a door/camera unit
         would send. Main profile @2.0 320x240, annex-B, packetized via _nal_rtp."""
         proc = _spawn_test_video()
-        if not proc: return
-        seq = [random.getrandbits(15)]; ts = [random.getrandbits(32)]
+        if not proc:
+            return
+        seq = [random.getrandbits(15)]
+        ts = [random.getrandbits(32)]
         buf = b""
         try:
             while playing[0]:
                 chunk = proc.stdout.read(4096)
-                if not chunk: break
+                if not chunk:
+                    break
                 buf += chunk
                 i = buf.rfind(b"\x00\x00\x01")
-                if i < 4: continue
+                if i < 4:
+                    continue
                 ready, buf = buf[:i], buf[i:]
                 for nal in _annexb_nals(ready):
                     for rtp in self._nal_rtp(nal, seq, ts[0], ssrc):
                         self._send(conn, wlock, ch_v, rtp)
-                    ts[0] += 3600          # 40 ms @90kHz
+                    ts[0] += 3600  # 40 ms @90kHz
         except OSError:
             pass
         finally:
@@ -153,12 +187,13 @@ class RtspServer(threading.Thread):
 
 class _RtspSession:
     """state of one client connection to RtspServer: one method per RTSP verb"""
+
     def __init__(self, server, conn):
         self.server, self.conn = server, conn
         self.id = str(random.getrandbits(31))
         self.playing = [False]
-        self.chmap = {}                 # 'audio'/'video' -> interleaved base channel
-        self.ssrcs = {}                 # 'audio'/'video' -> ssrc declared in SETUP reply
+        self.chmap = {}  # 'audio'/'video' -> interleaved base channel
+        self.ssrcs = {}  # 'audio'/'video' -> ssrc declared in SETUP reply
         self.ssrc_base = random.getrandbits(32)
         self.wlock = threading.Lock()
 
@@ -179,8 +214,7 @@ class _RtspSession:
         rtsp_reply(self.conn, cseq, extra=f"Session: {self.id}\r\n{extra}", body=body)
 
     def on_options(self, cseq, url, lines):
-        rtsp_reply(self.conn, cseq, extra="Public: OPTIONS, DESCRIBE, SETUP, "
-                                           "TEARDOWN, PLAY, PAUSE\r\n")
+        rtsp_reply(self.conn, cseq, extra="Public: OPTIONS, DESCRIBE, SETUP, TEARDOWN, PLAY, PAUSE\r\n")
 
     def on_describe(self, cseq, url, lines):
         self._reply(cseq, body=self.server.sdp)
@@ -188,21 +222,28 @@ class _RtspSession:
     def on_setup(self, cseq, url, lines):
         il = re.search(r"interleaved=(\d+)-(\d+)", rtsp_header(lines, "transport"))
         ch = il.group(0).split("=", 1)[1] if il else "0-1"
-        track = ("video" if "trackID=1" in url else
-                 "audio" if "trackID=2" in url else
-                 "audio" if "video" not in self.chmap else "video")
+        track = (
+            "video"
+            if "trackID=1" in url
+            else "audio"
+            if "trackID=2" in url
+            else "audio"
+            if "video" not in self.chmap
+            else "video"
+        )
         self.chmap[track] = int(ch.split("-")[0])
         self.ssrcs.setdefault(track, (self.ssrc_base + (0 if track == "video" else 1)) & 0xFFFFFFFF)
-        self._reply(cseq, f"Transport: RTP/AVP/TCP;unicast;interleaved={ch}"
-                          f";ssrc={self.ssrcs[track]:08x}\r\n")
+        self._reply(cseq, f"Transport: RTP/AVP/TCP;unicast;interleaved={ch};ssrc={self.ssrcs[track]:08x}\r\n")
 
     def on_play(self, cseq, url, lines):
         self._reply(cseq)
         if not self.playing[0]:
             self.playing[0] = True
-            threading.Thread(target=self.server.stream,
-                             args=(self.conn, self.wlock, self.playing, self.chmap, self.ssrcs),
-                             daemon=True).start()
+            threading.Thread(
+                target=self.server.stream,
+                args=(self.conn, self.wlock, self.playing, self.chmap, self.ssrcs),
+                daemon=True,
+            ).start()
 
     def on_pause(self, cseq, url, lines):
         self.playing[0] = False

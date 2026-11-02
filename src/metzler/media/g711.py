@@ -35,13 +35,16 @@ ULAW_DEC = _ulaw_decode_table()
 
 
 def ulaw_encode_sample(s):
-    if s < 0: sign, s = 0x80, -s
-    else: sign = 0
+    if s < 0:
+        sign, s = 0x80, -s
+    else:
+        sign = 0
     s = min(s, 32635)
     s += 0x84
     exp, mask = 7, 0x4000
     while exp > 0 and not (s & mask):
-        mask >>= 1; exp -= 1
+        mask >>= 1
+        exp -= 1
     return ~(sign | (exp << 4) | ((s >> (exp + 3)) & 0x0F)) & 0xFF
 
 
@@ -53,4 +56,4 @@ def ulaw_to_pcm(ulaw):
 
 
 def pcm_to_ulaw(pcm):
-    return bytes(ULAW_ENC[w & 0xFFFF] for w, in struct.iter_unpack("<h", pcm))
+    return bytes(ULAW_ENC[w & 0xFFFF] for (w,) in struct.iter_unpack("<h", pcm))

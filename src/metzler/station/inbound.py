@@ -31,25 +31,21 @@ class InboundCallMixin:
         self.send(self.in_dialog_response(pkt, "100 Trying"), addr)
         call = Call(self, pkt, addr)
         call.inbound = True
-        call.trunk = trunk                    # the SIP leg this call came from
+        call.trunk = trunk  # the SIP leg this call came from
         call.kind = "intercom"
         self.calls[call.id] = call
-        self.reply(call, self.in_dialog_response(pkt, "180 Ringing",
-                                                 extra_to_tag=call.to_tag))
-        log.info("inbound %s call %s -> ringing intercom %s",
-                 trunk.label, pkt.get("From"), self.o.inbound_target)
+        self.reply(call, self.in_dialog_response(pkt, "180 Ringing", extra_to_tag=call.to_tag))
+        log.info("inbound %s call %s -> ringing intercom %s", trunk.label, pkt.get("From"), self.o.inbound_target)
         if self.registered.is_set():
             return self._place_inbound_call(call)
-        threading.Thread(target=self._place_inbound_call, args=(call,),
-                         daemon=True).start()
+        threading.Thread(target=self._place_inbound_call, args=(call,), daemon=True).start()
 
     def _place_inbound_call(self, call):
         """dial the intercom target; call_out blocks until REGISTERED, so it
         may run on a thread. Failing that, tell the app instead of leaving
         it ringing forever."""
         if not self.call_out(self.o.inbound_target, bridged=call):
-            self.reply(call, self.in_dialog_response(call.invite, "503 Service Unavailable",
-                                                     extra_to_tag=call.to_tag))
+            self.reply(call, self.in_dialog_response(call.invite, "503 Service Unavailable", extra_to_tag=call.to_tag))
             self._close_call(call, call.id)
         elif call.id not in self.calls:
             # the app hung up while we were still waiting for registration -
@@ -64,18 +60,21 @@ class InboundCallMixin:
         offer = parse_sdp(call.invite.body)
         media = SipIntercomMedia(self.o, self.rtsp, resp_sdp["ip"] or addr[0])
         offer_a = media_addr(offer, "audio")
-        if offer_a: media.set_provider(offer_a)
+        if offer_a:
+            media.set_provider(offer_a)
         media.srtp = self._inbound_srtp(call, offer)
         call.media = media
-        ok = self.in_dialog_response(call.invite, "200 OK", ctype="application/sdp",
-                                     extra_to_tag=call.to_tag)
+        ok = self.in_dialog_response(call.invite, "200 OK", ctype="application/sdp", extra_to_tag=call.to_tag)
         ok.body = call.trunk.answer_sdp(offer, media)
         self.reply(call, ok)
         call.state = "established"
         media.start()
-        log.info("inbound call established: SIP app <-> intercom %s "
-                 "(peer audio %s, protection %s)", out["num"], offer_a,
-                 "srtp" if media.srtp else "rtp")
+        log.info(
+            "inbound call established: SIP app <-> intercom %s (peer audio %s, protection %s)",
+            out["num"],
+            offer_a,
+            "srtp" if media.srtp else "rtp",
+        )
 
     def _inbound_srtp(self, call, offer):
         """SDES session for the inbound SIP leg when the caller's audio offer

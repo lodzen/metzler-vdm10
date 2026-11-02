@@ -1,5 +1,6 @@
 """SDES-SRTP AES_CM_128_HMAC_SHA1_80. Linphone Android refused every plain
 RTP offer with 488 and accepted RTP/SAVP + a=crypto (probe, 2026-11-01)."""
+
 import struct
 
 import pytest
@@ -27,8 +28,7 @@ def test_rfc3711_b3_key_derivation():
 def test_libsrtp_reference_packet():
     plain = bytes.fromhex("800f1234decafbadcafebabe" + "ab" * 16)
     enc = Srtp(MASTER_KEY, MASTER_SALT).protect(plain)
-    assert enc.hex() == ("800f1234decafbadcafebabe4e55dc4ce79978d88ca4d215"
-                         "949d2402b78d6acc99ea179b8dbb")
+    assert enc.hex() == ("800f1234decafbadcafebabe4e55dc4ce79978d88ca4d215949d2402b78d6acc99ea179b8dbb")
     assert Srtp(MASTER_KEY, MASTER_SALT).unprotect(enc) == plain
 
 
@@ -53,11 +53,10 @@ def test_session_crypto_line_and_answer_binding():
     answer = parse_sdp(f"v=0\r\nc=IN IP4 1.2.3.4\r\nm=audio 4000 RTP/SAVP 0\r\n{theirs.crypto_attr()}")
     assert ours.accept_answer(answer["media"][0])
     # what the peer protects with its key, we can read with the bound rx key
-    assert ours.rx.unprotect(theirs.tx.protect(rtp(5))) == rtp(5)
+    assert ours.rx and ours.rx.unprotect(theirs.tx.protect(rtp(5))) == rtp(5)
 
 
 def test_plain_answer_means_no_srtp():
     s = SrtpSession()
     plain = parse_sdp("v=0\r\nc=IN IP4 1.2.3.4\r\nm=audio 4000 RTP/AVP 0\r\na=rtpmap:0 PCMU/8000\r\n")
     assert not s.accept_answer(plain["media"][0])
-

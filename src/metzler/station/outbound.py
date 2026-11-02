@@ -28,20 +28,31 @@ class OutboundCallMixin:
             num, peer_ip = num.split("@", 1)
         host, port = (peer_ip, 5060) if peer_ip else (self.o.server, self.o.server_port)
         uri = f"sip:{num}@{host}:{port}"
-        p = self.base_request("INVITE", uri,
-                              to_uri=f"<sip:{num}@{host}:{port}>",
-                              frm_uri=f"<sip:{self.o.username}@{self.o.local_ip}>;tag={self.local_tag}")
-        p.set("Call-ID", call_id()); p.set("CSeq", "1 INVITE")
+        p = self.base_request(
+            "INVITE",
+            uri,
+            to_uri=f"<sip:{num}@{host}:{port}>",
+            frm_uri=f"<sip:{self.o.username}@{self.o.local_ip}>;tag={self.local_tag}",
+        )
+        p.set("Call-ID", call_id())
+        p.set("CSeq", "1 INVITE")
         p.set("Subject", "This is a call to extension.")
         p.set("Content-Type", "application/sdp")
         # indoor->indoor offer == the header-only answer template (no m= lines):
         # media flows via the symmetric rtsp://<peer>:554 pulls opened after ACK.
         p.body = sdp_answer_talkback(self.o.serial, self.o.local_ip, opts=self.o)
         cid = p.get("Call-ID")
-        self.out_calls[cid] = {"num": num, "invite": p, "local": None,
-                               "to_tag": None, "peer": self.server,
-                               "bridged": bridged, "ts": time.time()}
-        if bridged: bridged.out_cid = cid
+        self.out_calls[cid] = {
+            "num": num,
+            "invite": p,
+            "local": None,
+            "to_tag": None,
+            "peer": self.server,
+            "bridged": bridged,
+            "ts": time.time(),
+        }
+        if bridged:
+            bridged.out_cid = cid
         log.info("calling %s via %s:%d ...", num, host, port)
         self.out_calls[cid]["peer"] = (host, port)
         self.send(p, (host, port))
@@ -58,8 +69,7 @@ class OutboundCallMixin:
             out["local"].start()
         except OSError as e:
             log.warning("media start failed: %s", e)
-        log.info("outbound call to %s established (peer %s)",
-                 out["num"], resp_sdp["ip"] or addr[0])
+        log.info("outbound call to %s established (peer %s)", out["num"], resp_sdp["ip"] or addr[0])
 
     def _ack_outbound(self, out, resp):
         """ACK the callee's 200 OK at its Contact; remember the dialog for BYE"""
@@ -70,8 +80,10 @@ class OutboundCallMixin:
         ack.set("Via", f"SIP/2.0/UDP {self.o.local_ip}:{self.bind_port};rport;branch={branch()}")
         ack.set("Max-Forwards", "70")
         ack.set("Contact", self.contact())
-        ack.set("To", out["to_tag"]); ack.set("From", resp.get("From"))
-        ack.set("Call-ID", resp.get("Call-ID")); ack.set("CSeq", "1 ACK")
+        ack.set("To", out["to_tag"])
+        ack.set("From", resp.get("From"))
+        ack.set("Call-ID", resp.get("Call-ID"))
+        ack.set("CSeq", "1 ACK")
         ack.set("User-Agent", UA)
         self.send(ack, out["peer"])
 
@@ -85,9 +97,11 @@ class OutboundCallMixin:
 
     def bye_outbound(self, cid):
         out = self.out_calls.pop(cid, None)
-        if not out: return
-        if out.get("local"): out["local"].stop()
-        if not out.get("established"):      # early dialog -> CANCEL
+        if not out:
+            return
+        if out.get("local"):
+            out["local"].stop()
+        if not out.get("established"):  # early dialog -> CANCEL
             p = Packet()
             uri = out["invite"].status_line.split()[1]
             p.status_line = f"CANCEL {uri} SIP/2.0"
@@ -96,12 +110,15 @@ class OutboundCallMixin:
             # callee keeps ringing)
             p.set("Via", out["invite"].get("Via"))
             p.set("Max-Forwards", "70")
-            p.set("To", out["invite"].get("To")); p.set("From", out["invite"].get("From"))
+            p.set("To", out["invite"].get("To"))
+            p.set("From", out["invite"].get("From"))
             p.set("Call-ID", cid)
             p.set("CSeq", out["invite"].get("CSeq").replace("INVITE", "CANCEL"))
             p.set("User-Agent", UA)
-            try: self.send(p, out["peer"])
-            except OSError: pass
+            try:
+                self.send(p, out["peer"])
+            except OSError:
+                pass
             return
         p = Packet()
         uri = out.get("ack_uri") or out["invite"].status_line.split()[1]
@@ -109,7 +126,12 @@ class OutboundCallMixin:
         p.set("Via", f"SIP/2.0/UDP {self.o.local_ip}:{self.bind_port};rport;branch={branch()}")
         p.set("Max-Forwards", "70")
         p.set("Contact", self.contact())
-        p.set("To", out["to_tag"]); p.set("From", out["invite"].get("From"))
-        p.set("Call-ID", cid); p.set("CSeq", "2 BYE"); p.set("User-Agent", UA)
-        try: self.send(p, out["peer"])
-        except OSError: pass
+        p.set("To", out["to_tag"])
+        p.set("From", out["invite"].get("From"))
+        p.set("Call-ID", cid)
+        p.set("CSeq", "2 BYE")
+        p.set("User-Agent", UA)
+        try:
+            self.send(p, out["peer"])
+        except OSError:
+            pass
