@@ -1,5 +1,7 @@
 """State of one bridged call (intercom/door leg + provider leg)."""
 
+import time
+
 from metzler.sip.message import call_id, tag
 
 
@@ -9,6 +11,7 @@ class Call:
         self.invite = invite            # parsed incoming INVITE packet
         self.addr = addr                # door-side SIP addr
         self.id = invite.get("Call-ID")
+        self.created = time.time()      # for the janitor's ring timeout
         self.to_tag = tag()
         self.state = "early"            # early -> bridging -> established -> ended
         self.last_resp = None           # last response to invite (resent on retransmit)

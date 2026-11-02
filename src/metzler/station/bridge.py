@@ -199,7 +199,7 @@ class ProviderBridgeMixin:
             # SipIntercomMedia feeds provider audio to rtsp.mic; the caller
             # pulls :554 and hears the SIP peer
             if prov_a: call.media.set_provider(prov_a)
-            if prov_v and call.media.video: call.media.video.peer = prov_v
+            if call.media.video: call.media.video.peer = prov_v   # None kills the leg (fritz win)
             call.media.start()
             log.info("%s media streaming (rtsp :%d, peer audio %s video %s)",
                      "door" if call.door else "intercom",

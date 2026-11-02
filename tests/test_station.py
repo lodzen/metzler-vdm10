@@ -615,6 +615,26 @@ def test_provider_wins_the_door_race(station_factory):
     assert call.fritz_leg is None and call.trunk is st.provider
 
 
+def test_fritz_win_after_provider_early_media_rebinds_media_once(station_factory):
+    """provider 183 already started media (RTSP puller running); when the
+    fritz leg then wins, peers rebind to the fritz box - but start() must
+    not spawn a second puller (the old one used to keep pulling the camera
+    forever) and the stale provider video peer must die"""
+    from test_door_video import door_invite, provider_sdp
+    st = fritz_door_station(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    st.on_response(response(provider_invites(st)[0], "183 Session Progress",
+                            body=provider_sdp()), PROXY)
+    assert call.provider_media and call.media.puller
+    puller = call.media.puller
+    st.on_response(response(fritz_invites(st)[0], "200 OK", body=FRITZ_SDP), FRITZ)
+    assert call.trunk is st.fritz and call.state == "established"
+    assert call.media.puller is puller                    # not replaced/leaked
+    assert call.media.peer == ("10.0.0.30", 40000)   # audio rebound to fritz
+    assert call.media.video.peer is None                  # dead leg's video peer cleared
+
+
 def test_fritz_leg_bye_ends_the_intercom_call(station_factory):
     """fritzfon won the race and hangs up: its BYE arrives on the fritz
     Call-ID (which lives in fritz.calls, not provider.calls) and must
@@ -725,6 +745,46 @@ def test_outbound_leg_failure_is_acked(station_factory):
     st.on_response(response(inv, "603 Decline"), st.server)
     ack = next(p for p, a in st.sent if a == st.server and p.status_line.startswith("ACK"))
     assert ack.get("Call-ID") == inv.get("Call-ID") and ack.get("CSeq") == "1 ACK"
+
+
+def test_stale_call_is_reaped_with_a_408(station_factory):
+    """caller crashed/vanished mid-ring (no CANCEL, no final response on any
+    leg): the janitor ends the call - 408 clears the registrar's busy flag,
+    live legs get CANCELLed, media stops"""
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    call = st.calls["extcall1"]
+    call.created = time.time() - st.RING_TIMEOUT - 1
+    st._reap_once(time.time())
+    assert "extcall1" not in st.calls
+    assert any(p.status_line == "SIP/2.0 408 Request Timeout" and a == CALLER
+               for p, a in st.sent)
+    assert any(p.status_line.startswith("CANCEL") and a == PROXY for p, a in st.sent)
+    assert any(p.status_line.startswith("CANCEL") and a == FRITZ for p, a in st.sent)
+
+
+def test_established_and_fresh_calls_survive_the_reaper(station_factory):
+    st = fritz_door_station(station_factory)
+    st.on_invite(intercom_invite(), CALLER)
+    call = st.calls["extcall1"]
+    call.state = "established"
+    call.created = time.time() - 9999               # a 3-hour call is legal
+    st.on_invite(intercom_invite("extcall2"), CALLER)  # fresh, still ringing
+    st._reap_once(time.time())
+    assert "extcall1" in st.calls and "extcall2" in st.calls
+
+
+def test_stale_outbound_call_is_reaped(station_factory):
+    st = station_factory("--sip-host", "127.0.0.1", "--sip-port", "5099",
+                         "--sip-domain", "sip.linphone.org",
+                         "--sip-user", "alice", "--sip-pass", "secret")
+    st.registered.set()
+    st.call_out("10000000000")
+    cid = next(iter(st.out_calls))
+    st.out_calls[cid]["ts"] = time.time() - st.RING_TIMEOUT - 1
+    st._reap_once(time.time())
+    assert not st.out_calls
+    assert any(p.status_line.startswith("CANCEL") and a == st.server for p, a in st.sent)
 
 
 def test_intercom_call_also_rings_the_fritzfon(station_factory):

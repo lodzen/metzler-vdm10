@@ -115,6 +115,32 @@ class StationCore:
         ent = self.ended_invites.get(cid)
         return ent[0] if ent else None
 
+    RING_TIMEOUT: ClassVar[int] = 120   # s a call may ring before the janitor ends it
+
+    def _reaper_loop(self):
+        """safety net for callers that die without CANCEL/BYE (station crash,
+        network drop): a call still not established after RING_TIMEOUT is torn
+        down - 408 to the caller (clears the registrar's busy flag), CANCEL on
+        the live legs, media stopped. Established calls are never reaped."""
+        while self.running:
+            time.sleep(30)
+            self._reap_once(time.time())
+
+    def _reap_once(self, now):
+        for cid, call in list(self.calls.items()):
+            if call.state == "established" or now - call.created <= self.RING_TIMEOUT:
+                continue
+            log.warning("reaping stale call %s (state %s, age %ds)",
+                        cid, call.state, now - call.created)
+            self.reply(call, self.in_dialog_response(call.invite, "408 Request Timeout",
+                                                     extra_to_tag=call.to_tag))
+            self._end_provider_leg(call)
+            self._close_call(call, cid)
+        for cid, out in list(self.out_calls.items()):
+            if now - out.get("ts", now) > self.RING_TIMEOUT:
+                log.warning("reaping stale outbound call to %s", out["num"])
+                self.bye_outbound(cid)
+
     # request method -> handler name; ACK needs no action (our 200s are not retransmitted)
     REQUEST_HANDLERS: ClassVar[dict] = {"OPTIONS": "on_options", "MESSAGE": "on_message", "INVITE": "on_invite",
                                         "CANCEL": "on_cancel", "BYE": "on_bye", "INFO": "on_info", "ACK": None}
@@ -305,6 +331,7 @@ class StationCore:
         for r in self.regs:
             threading.Thread(target=r.register_loop, daemon=True).start()
         threading.Thread(target=self.heartbeat_loop, daemon=True).start()
+        threading.Thread(target=self._reaper_loop, daemon=True).start()
         if self.o.call:
             threading.Thread(target=self.call_out, args=(self.o.call,), daemon=True).start()
         if self.local_mode:

@@ -1,6 +1,7 @@
 """Outbound calls to other stations (--call, mimics _client_call)."""
 
 import logging
+import time
 
 from metzler.media.intercom import IntercomMedia
 from metzler.media.local import LocalMediaBridge
@@ -39,7 +40,7 @@ class OutboundCallMixin:
         cid = p.get("Call-ID")
         self.out_calls[cid] = {"num": num, "invite": p, "local": None,
                                "to_tag": None, "peer": self.server,
-                               "bridged": bridged}
+                               "bridged": bridged, "ts": time.time()}
         if bridged: bridged.out_cid = cid
         log.info("calling %s via %s:%d ...", num, host, port)
         self.out_calls[cid]["peer"] = (host, port)

@@ -153,6 +153,8 @@ class SipIntercomMedia:
 
     def start(self):
         self.server.mic = self.mic_frame
+        if self.puller:             # re-entry (a racing leg won after early
+            return                  # media already started): peers re-latched
         self.puller = RtspPuller(self.o, self.caller_ip, self.on_audio, self.on_video)
         self.puller.start()
         threading.Thread(target=self._recv_loop, daemon=True).start()
