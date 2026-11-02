@@ -970,6 +970,151 @@ def test_intercom_call_also_rings_the_fritzfon(station_factory):
     assert call.trunk is st.provider and call.fritz_leg is not None
 
 
+def _info_pkt(cid, cseq, digit, addr_ip="127.0.0.1", port=5099):
+    """SIP INFO dtmf-relay from a trunk peer"""
+    p = sip(
+        f"INFO sip:x@127.0.0.1 SIP/2.0\n"
+        f"Via: SIP/2.0/UDP {addr_ip}:{port};branch=b{cseq}\n"
+        f"From: <sip:a@b>;tag=1\nTo: <sip:x@y>;tag=t\n"
+        f"Call-ID: {cid}\nCSeq: {cseq} INFO\n"
+        f"Content-Type: application/dtmf-relay\n\n"
+    )
+    p.body = f"Signal={digit}\r\nDuration=160"
+    return p
+
+
+@pytest.fixture
+def unlocks(monkeypatch):
+    """records ISAPI unlock calls (host, user, password, door) - never a real door"""
+    calls = []
+    monkeypatch.setattr("metzler.station.core.isapi_open_door", lambda *a, **k: calls.append(a) or True)
+    return calls
+
+
+def _established_door_call(st):
+    """established door call with the unlock worker running inline"""
+    from test_door_video import door_invite, provider_sdp
+
+    st._spawn = lambda fn, *a: fn(*a)
+    st.o.password = "pw"
+    st.on_invite(door_invite(), CALLER)
+    st.on_response(response(provider_invites(st)[0], "200 OK", body=provider_sdp()), PROXY)
+    call = st.calls["doorcall1"]
+    assert call.state == "established"
+    return call
+
+
+def _press(st, call, keys):
+    for i, k in enumerate(keys):
+        st.on_info(_info_pkt(call.prov_call_id, 3 + i, k), PROXY)
+
+
+def test_dtmf_sequence_unlocks_door_1_via_isapi(station_factory, unlocks):
+    """app presses '#1' (SIP INFO dtmf-relay) -> ISAPI open on the door's SDP address"""
+    st = fritz_door_station(station_factory)
+    call = _established_door_call(st)
+    _press(st, call, "#")
+    assert unlocks == []
+    _press(st, call, "1")
+    assert unlocks == [("10.0.0.48", "admin", "pw", 1)]
+    assert not any(p.status_line.startswith("INFO") for p, a in st.sent)  # ISAPI only
+
+
+def test_dtmf_door_2_unlocks_door_2_only(station_factory, unlocks):
+    st = fritz_door_station(station_factory)
+    call = _established_door_call(st)
+    for d in "#2":
+        st._dtmf_digit(call, d)
+    assert [u[3] for u in unlocks] == [2]
+
+
+def test_dtmf_other_sequences_do_not_unlock(station_factory, unlocks):
+    st = fritz_door_station(station_factory)
+    call = _established_door_call(st)
+    for d in "5#9#31#":
+        st._dtmf_digit(call, d)
+    assert unlocks == []
+
+
+def test_dtmf_duplicate_transports_unlock_once(station_factory, unlocks):
+    """Linphone with RFC2833 + SIP INFO both on sends every key twice"""
+    st = fritz_door_station(station_factory)
+    call = _established_door_call(st)
+    for d in "#1#1":
+        st._dtmf_digit(call, d)
+    assert len(unlocks) == 1
+
+
+def test_dtmf_unlock_needs_a_password(station_factory, unlocks):
+    st = fritz_door_station(station_factory)
+    call = _established_door_call(st)
+    st.o.password = st.o.door_isapi_pass = ""
+    for d in "#1":
+        st._dtmf_digit(call, d)
+    assert unlocks == []
+
+
+def test_isapi_open_door_does_http_digest_put():
+    """isapi_open_door against the digest-protected fake outdoor station"""
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+    from simulate_call import ISAPI_PASS, ISAPI_USER, FakeOutdoorStation
+
+    from metzler.station.door_unlock import isapi_open_door
+
+    srv = FakeOutdoorStation()
+    try:
+        assert isapi_open_door("127.0.0.1", ISAPI_USER, ISAPI_PASS, 2, port=srv.port)
+        assert not isapi_open_door("127.0.0.1", ISAPI_USER, ISAPI_PASS, 2, port=1)  # nothing listens
+    finally:
+        srv.shutdown()
+    [(door, body, good)] = srv.unlocks
+    assert door == 2 and good and "<cmd>open</cmd>" in body
+
+
+def test_rfc4733_digit_reaches_unlock(station_factory, unlocks):
+    """telephone-event on the media socket feeds the same sequence detector -
+    the end-bit packet fires once, retransmits are deduped. The PT comes from
+    the answer's rtpmap (may differ from our offered 101)."""
+    import struct as st_
+
+    st = fritz_door_station(station_factory)
+    call = _established_door_call(st)
+    media = call.media
+    media.dtmf_pt = 96  # answer remapped it
+
+    def ev(digit, end=True, pt=96):
+        code = "0123456789*#".index(digit)
+        hdr = st_.pack(">BBHII", 0x80, pt, 1, 0, 0x1234)
+        return hdr + bytes([code, (0x80 if end else 0) | 10, 0, 200])  # E bit = 0x80
+
+    assert media._pcmu_payload(ev("#", pt=101)) is None  # wrong PT: ignored
+    assert call.dtmf == ""
+    assert media._pcmu_payload(ev("#", end=False)) is None  # mid-event: not yet a digit
+    assert call.dtmf == ""
+    assert media._pcmu_payload(ev("#")) is None  # tapped, not audio
+    assert call.dtmf == "#"
+    media._pcmu_payload(ev("#"))
+    media._pcmu_payload(ev("#"))  # end retransmits
+    assert call.dtmf == "#"  # deduped to one
+    media._pcmu_payload(ev("1"))
+    assert [u[3] for u in unlocks] == [1]
+
+
+def test_dtmf_ignored_before_established(station_factory, unlocks):
+    """digits while still ringing must not unlock"""
+    st = fritz_door_station(station_factory)
+    from test_door_video import door_invite
+
+    st._spawn = lambda fn, *a: fn(*a)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    _press(st, call, "#1")
+    assert unlocks == []
+
+
 def test_fritz_wins_an_intercom_call(station_factory):
     """fritzfon answers an extension call first: the provider leg is
     cancelled and the promoted fritz leg takes ACK/teardown"""

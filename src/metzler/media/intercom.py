@@ -8,6 +8,7 @@ import socket
 import struct
 import subprocess
 import threading
+import time
 
 from metzler.media.g711 import pcm_to_ulaw, ulaw_to_pcm
 from metzler.media.rtp import bind_rtp, is_rtp
@@ -178,6 +179,11 @@ class SipIntercomMedia:
         self.rx = {True: 0, False: 0}
         self.tx = 0
         self.door_a = self.door_v = None  # for log compatibility
+        self.on_dtmf = None  # set by the station: digit sink
+        self.dtmf_pt = None  # telephone-event PT from the answer
+        self._dropped = 0  # diagnostic: non-PT0 packets logged
+        self._last_dtmf = -1
+        self._last_dtmf_ts = 0.0
 
     def start(self):
         self.server.mic = self.mic_frame
@@ -229,15 +235,51 @@ class SipIntercomMedia:
                 self.rxq.popleft()
 
     def _pcmu_payload(self, data):
-        """peer packet -> PCMU payload, or None for RTCP, a bad SRTP tag, or
+        """peer packet -> PCMU payload; PT101 telephone-event digits are
+        tapped into on_dtmf first. None for RTCP, a bad SRTP tag, or
         any payload type other than PT0 (the only codec we offer)"""
         if not is_rtp(data):
             return None
+        raw = data
         if self.srtp and self.srtp.rx:
             data = self.srtp.rx.unprotect(data)
-        if data is None or len(data) < 13 or (data[1] & 0x7F) != 0:
+        if data is None or len(data) < 13:
+            if self._dropped < 20:
+                self._dropped += 1
+                log.info("peer RTP dropped: bad SRTP/short, %dB, PT %d", len(raw), raw[1] & 0x7F)
+            return None
+        pt = data[1] & 0x7F
+        if self.dtmf_pt is not None and pt == self.dtmf_pt:
+            d = self._dtmf_event(data)
+            if d and self.on_dtmf:
+                self.on_dtmf(d)
+            return None
+        if pt != 0:
+            if self._dropped < 20:
+                self._dropped += 1
+                log.info(
+                    "peer RTP dropped: PT %d, %dB, payload %s (dtmf_pt=%s)",
+                    pt,
+                    len(data),
+                    data[12:20].hex(),
+                    self.dtmf_pt,
+                )
             return None
         return data[12:]
+
+    DTMF_CHARS = "0123456789*#ABCD"
+
+    def _dtmf_event(self, pkt):
+        """RFC4733 telephone-event: emit the digit once on the end-bit
+        packet; the end packet's own retransmits (~400ms) are suppressed"""
+        ev, flags = pkt[12], pkt[13]
+        if not flags & 0x80 or ev >= len(self.DTMF_CHARS):  # E bit = top bit of byte 1
+            return None
+        now = time.monotonic()
+        if ev == self._last_dtmf and now - self._last_dtmf_ts < 0.4:
+            return None
+        self._last_dtmf, self._last_dtmf_ts = ev, now
+        return self.DTMF_CHARS[ev]
 
     def mic_frame(self):
         """called by RtspServer.stream - one 160B/20ms ulaw frame of PEER audio"""

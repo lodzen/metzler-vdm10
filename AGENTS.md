@@ -13,7 +13,7 @@
 - Must keep working standalone (stdlib only at module level; `cryptography` is optional and only enables
   SRTP) and with a PBX trunk such as Asterisk (`--sip-host <pbx> --sip-target 6000`, no credentials = no
   REGISTER). Don't remove local headset mode or the generic trunk path.
-- Tests: `uv run pytest` (109 tests, localhost only, ~5 s). Without cryptography:
+- Tests: `uv run pytest` (117 tests, localhost only, ~5 s). Without cryptography:
   `PYTHONPATH=src uv run --isolated --no-project --with "pytest>=9.1,<9.2" python -m pytest` (SRTP tests skip).
 - Complexity: `complexipy src tests`; keep new/changed functions under 15 (some legacy media loops still exceed it).
 - Lint + format: `uv run ruff check src tests` and `uv run ruff format src tests` (0.17.x, dev dep;

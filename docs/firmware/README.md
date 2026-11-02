@@ -11,6 +11,8 @@ decompile couldn't prove are marked **unverified**.
 | [doorbell-pairing.md](doorbell-pairing.md) | Indoor↔doorbell pairing, pre-registration, unlock credentials, visNet channel | `vdm10_1.0/sip/client/`, `vdm10_1.0/visnet/` |
 | [hikconnect.md](hikconnect.md) | EZVIZ/Hik-Connect bootstrap, registration, call-state pushes | `vdm10_1.0/ezviz/`, `vdm10_1.0/ezdevsdk/` |
 | [door-call-flow.md](door-call-flow.md) | Doorbell → indoor call incl. extension fan-out and the video feed | `vdm10_1.0/sip/`, `vdm10_1.0/net/`, `vdm10_1.0/gui/calls/` |
+| [door-unlock-api.md](door-unlock-api.md) | Remote door-unlock endpoint (XML parsed, devType gate, call chain) | `vdm10_1.0/isapi/`, `hicore` URI table |
+| [isapi-endpoints.md](isapi-endpoints.md) | Full ISAPI route catalog from the `hicore` URI table (146 endpoints) | `hicore` `.data`, `vdm10_1.0/isapi/`, `tools/dump_isapi_table.py` |
 
 The simulator's own wire-level description of the same protocols is in
 [../protocol.md](../protocol.md); this folder is the firmware's side of the

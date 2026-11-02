@@ -1,5 +1,6 @@
 """SDP parsing and the hicore answer templates (private a= attributes)."""
 
+import re
 from typing import cast
 
 
@@ -34,6 +35,20 @@ def media_addr(sdp, mtype):
     """-> (ip, port) of the first media line of `mtype`, or None"""
     m = next((m for m in sdp["media"] if m["type"] == mtype), None)
     return ((m["ip"] or sdp["ip"]), m["port"]) if m else None
+
+
+def telephone_event_pt(sdp):
+    """negotiated telephone-event PT from an answer's audio m-line, or None.
+    The answer may remap the offered 101 - and may drop the codec entirely
+    (peer then sends DTMF in-band or as SIP INFO)."""
+    m = next((m for m in sdp["media"] if m["type"] == "audio"), None)
+    if not m:
+        return None
+    for a in m.get("attrs", []):
+        mm = re.match(r"rtpmap:(\d+)\s+telephone-event", a)
+        if mm:
+            return int(mm.group(1))
+    return None
 
 
 def sdp_answer_firmware(num, ip, audio_port, video_port):

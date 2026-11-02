@@ -200,6 +200,15 @@ def build_parser(env):
         "0 = generic room station; the caller's GUI renders the "
         "in-call screen from it)",
     )
+    ap.add_argument("--door-isapi-user", default=d("door_isapi_user", "admin"), help="outdoor station ISAPI login")
+    ap.add_argument(
+        "--door-isapi-port", type=int, default=d("door_isapi_port", 80, int), help="outdoor station HTTP port"
+    )
+    ap.add_argument(
+        "--door-isapi-pass",
+        default=d("door_isapi_pass", ""),
+        help="outdoor station ISAPI password (default: the indoor password, as for the RTSP pull)",
+    )
     ap.add_argument(
         "--talkback-port",
         type=int,

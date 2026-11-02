@@ -13,6 +13,8 @@ from typing import ClassVar
 from metzler.media.rtsp_server import RtspServer
 from metzler.provider import FritzTrunk, SipProvider
 from metzler.sip.message import UA, Packet, branch, tag, uri_of
+from metzler.sip.sdp import parse_sdp
+from metzler.station.door_unlock import isapi_open_door
 
 log = logging.getLogger("indoor")
 
@@ -194,9 +196,62 @@ class StationCore:
         self.send(self.in_dialog_response(pkt, "200 OK"), addr)
 
     def on_info(self, pkt, addr):
-        # DTMF-relay / locknumXML — could forward to the provider as INFO; just ack
-        log.info("INFO body: %s", pkt.body[:200])
+        """SIP INFO: dtmf-relay bodies on a trunk leg feed the door-unlock
+        sequence detector (Signal=<d>); intercom-leg INFO is just acked"""
+        cid = pkt.get("Call-ID") or ""
+        call = self._trunk_call(cid)
+        m = re.search(r"Signal=([0-9A-Da-d#*])", pkt.body)
+        if call and m:
+            self._dtmf_digit(call, m.group(1))
+        else:
+            log.info("INFO body: %s", pkt.body[:200])
         self.send(self.in_dialog_response(pkt, "200 OK"), addr)
+
+    def _trunk_call(self, cid):
+        """bridge call owning a provider- or fritz-leg Call-ID"""
+        for trunk in (self.provider, self.fritz):
+            if trunk:
+                call = trunk.calls.get(cid)
+                if call:
+                    return call
+        return None
+
+    DTMF_SEQ_WINDOW = 3.0  # seconds between digits before the buffer resets
+    UNLOCK_COOLDOWN = 3.0  # seconds before the same call may unlock again
+
+    def _dtmf_digit(self, call, d):
+        """one decoded DTMF digit from the answered trunk leg (SIP INFO or
+        RFC4733): buffer the sequence; '#<n>' unlocks door n via ISAPI"""
+        log.info("DTMF digit %r on call %s (state %s, buf %r)", d, call.id, call.state, call.dtmf)
+        if call.state != "established" or call.inbound:
+            return
+        now = time.time()
+        if now - call.dtmf_ts > self.DTMF_SEQ_WINDOW:
+            call.dtmf = ""
+        call.dtmf, call.dtmf_ts = (call.dtmf + d)[-8:], now
+        m = re.search(r"#([12])$", call.dtmf)
+        if not m:
+            return
+        door = int(m.group(1))
+        call.dtmf = ""
+        if now - call.unlock_ts < self.UNLOCK_COOLDOWN:  # RFC2833 + INFO both sent by the phone
+            return log.info("DTMF unlock ignored (cooldown, duplicate transport)")
+        call.unlock_ts = now
+        log.info("DTMF unlock request: door %d (call %s)", door, call.id)
+        self._spawn(self.unlock_door, call, door)
+
+    @staticmethod
+    def _spawn(fn, *args):
+        threading.Thread(target=fn, args=args, daemon=True).start()
+
+    def unlock_door(self, call, door):
+        """open door n: ISAPI PUT on the outdoor station (the SDP address of
+        the door that is calling us)"""
+        host = parse_sdp(call.invite.body)["ip"]
+        pw = self.o.door_isapi_pass or self.o.password
+        if not (host and pw):
+            return log.error("door unlock: no outdoor station address/password configured")
+        isapi_open_door(host, self.o.door_isapi_user, pw, door, port=self.o.door_isapi_port)
 
     def _dispatch_reg_response(self, pkt):
         """a REGISTER reply: hand it to whichever registration loop is

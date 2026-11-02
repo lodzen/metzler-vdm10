@@ -13,6 +13,7 @@ from metzler.sip.sdp import (
     parse_sdp,
     sdp_answer_firmware,
     sdp_answer_talkback,
+    telephone_event_pt,
 )
 from metzler.station.call import Call
 
@@ -122,6 +123,7 @@ class ProviderBridgeMixin:
         else:
             call.kind = "intercom"
             call.media = SipIntercomMedia(self.o, self.rtsp, remote_sdp["ip"] or call.addr[0], video=call.door)
+            call.media.on_dtmf = lambda d, c=call: self._dtmf_digit(c, d)
 
     @staticmethod
     def _caller_class(pkt):
@@ -194,6 +196,10 @@ class ProviderBridgeMixin:
             for kind, media in streams
         }
         log.info("provider media protection: %s", ", ".join(f"{k}={v}" for k, v in modes.items()))
+        if call.kind == "intercom":
+            pt = telephone_event_pt(resp_sdp)
+            call.media.dtmf_pt = pt
+            log.info("provider telephone-event: %s", f"PT {pt}" if pt is not None else "not negotiated")
 
     def _indoor_answer(self, call, resp_sdp, prov_a):
         """the caller's 200 OK body in its own dialect: header-only with the

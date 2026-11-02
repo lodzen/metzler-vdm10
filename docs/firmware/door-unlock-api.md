@@ -24,6 +24,23 @@ outdoor, 4 wall, 5 villa}`); a room-type indoor station (`getDevType()
 generic Hikvision `PUT /ISAPI/AccessControl/RemoteControl/door/<n>` /
 `<RemoteControlDoor>` convention is **not** registered in this firmware.
 
+> **Live-verified on the outdoor station (2026-11-02)** — the outdoor
+> unit at `10.0.0.48` is itself a `VDM10-VM-POE`, **firmware V2.2.56**
+> (build 230608), a newer build than the indoor 2.0.24 analysed below, and
+> it *does* serve the generic route. HTTP Digest, user `admin`:
+>
+> | request | result |
+> |---|---|
+> | `GET /ISAPI/System/deviceInfo` | 200, model/serial/firmware |
+> | `GET /ISAPI/AccessControl/RemoteControl/door/capabilities` | 200: `doorNo min=1 max=2`, `cmd opt="open,alwaysOpen,resume"` |
+> | `GET /ISAPI/AccessControl/RemoteControl/door/1` | 400 `methodNotAllowed` (route exists, PUT only) |
+> | `GET /ISAPI/VideoIntercom/remoteOpenDoor/capabilities` | 404 `invalidOperation` (not in this build) |
+> | `PUT /ISAPI/AccessControl/RemoteControl/door/1` body `<RemoteControlDoor version="2.0" xmlns="http://www.isapi.org/ver20/XMLSchema"><cmd>open</cmd></RemoteControlDoor>` | **200 `statusCode 1 ok`, the door unlocked (audible)** |
+>
+> The bridge uses this for `#<n>` (n = 1 or 2) on the phone
+> (`station/door_unlock.py`). It is the only unlock mechanism the bridge
+> uses: it sends no SIP INFO unlock.
+
 ## 1. Registered URI
 
 Rows in the ISAPI URI table are `0x68`-byte records `{name*, handler*,
