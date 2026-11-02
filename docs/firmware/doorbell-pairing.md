@@ -5,11 +5,11 @@ with an outdoor **door station**: who registers where, the "Pre-Regist"
 number-assignment exchange, unlock credentials, keepalives, and the visNet
 TCP :8102 channel. Extension-facing registrar details:
 [`intercom-registration.md`](intercom-registration.md); wire dialect:
-[`../protocol.md`](../protocol.md). Sources: `readable/sip/{client/
-registration.c,xml_proc.c}`, `readable/misc/net_sipClient_{sip_client,
-visNetServer}.c.c`, `readable/visnet/visnet_server.c`,
-`readable/misc/dataManagement_database_db_api.c.c`,
-`readable/isapi/videointercom{,_do}.c`.
+[`../protocol.md`](../protocol.md). Sources: `vdm10_1.0/sip/{client/
+registration.c,xml_proc.c}`, `vdm10_1.0/misc/net_sipClient_{sip_client,
+visNetServer}.c.c`, `vdm10_1.0/visnet/visnet_server.c`,
+`vdm10_1.0/misc/dataManagement_database_db_api.c.c`,
+`vdm10_1.0/isapi/videointercom{,_do}.c`.
 
 ## 1. Pairing model — who registers with whom
 
@@ -170,7 +170,7 @@ out-of-call falls back to visNet `0x2001`.
 ## 8. visNet channel — TCP :8102
 
 Optional proprietary channel, separate from SIP
-(`readable/visnet/visnet_server.c`). **Direction:** whichever side needs
+(`vdm10_1.0/visnet/visnet_server.c`). **Direction:** whichever side needs
 something connects to the peer's `:8102` — indoor→door for
 unlock/subdoor/passwd, door/main→extension for table push/relay. Server
 `taskVisNetServ` @0x000f4d80 → per-conn `taskVisClientReq` @0x000f2a28.

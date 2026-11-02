@@ -9,7 +9,7 @@
   Hik-Connect cloud side effects.
 - **[firmware/](firmware/)** — what the `hicore` firmware itself does:
   intercom registration, doorbell pairing, the Hik-Connect cloud channel, and
-  the door→indoor call flow — documented from `readable/` pseudocode with
+  the door→indoor call flow — documented from `vdm10_1.0/` pseudocode with
   function/address citations.
 - **[diagrams/](diagrams/)** — every chart as a standalone `.mmd` file for the
   Mermaid Chart extension preview (open file → *Mermaid Chart: Preview
@@ -19,7 +19,7 @@ Related material outside this folder:
 
 - `ANALYSIS.md` — firmware extraction/decryption and `hicore` internals.
 - `HIKCONNECT.md` — the EZVIZ/Hik-Connect cloud protocol itself.
-- `readable/` — annotated decompiled pseudocode by subsystem.
+- `vdm10_1.0/` — annotated decompiled pseudocode by subsystem.
 - `tests/` — behaviors pinned by unit tests (incl. wire-captured byte shapes).
 
 ## Editing the diagrams

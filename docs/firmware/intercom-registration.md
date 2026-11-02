@@ -6,9 +6,9 @@ i.e. the device side of the "private SIP" layer. The wire-level description of
 the same dialect is in [`../protocol.md`](../protocol.md); this doc is what the
 firmware actually executes.
 
-Sources: `readable/sip/{README.md,xml_proc.c}`, `readable/sip/client/*`,
-`readable/sip/server/*`, `readable/visnet/visnet_server.c`,
-`readable/misc/{net_sipClient_sip_client.c.c,net_sipServer_registrar.c.c,
+Sources: `vdm10_1.0/sip/{README.md,xml_proc.c}`, `vdm10_1.0/sip/client/*`,
+`vdm10_1.0/sip/server/*`, `vdm10_1.0/visnet/visnet_server.c`,
+`vdm10_1.0/misc/{net_sipClient_sip_client.c.c,net_sipServer_registrar.c.c,
 dataManagement_database_db_api.c.c,util_common_visUtil.c.c,grouped.c}`,
 plus `ANALYSIS.md` §3/4/5/8/9 (verified-live facts).
 
@@ -20,16 +20,16 @@ plus `ANALYSIS.md` §3/4/5/8/9 (verified-live facts).
 | Local registrar/forwarder | `net/sipServer/*` — `task_sipServer` @0x000db51c | UDP **5065** | own kamailio-style parser (`srv_parseMsg` @0x000cd3f4), stateless replies |
 | visNet sync channel | `net/sipClient/visNetServer.c` | TCP **8102** | proprietary framed protocol, nonce+signature |
 
-Client worker tasks spawned by `sip_taskUas` init (`readable/sip/client/ack_tail.c`):
+Client worker tasks spawned by `sip_taskUas` init (`vdm10_1.0/sip/client/ack_tail.c`):
 `RegistCtrl` (0xe0dc4) or `voip_regist_task` (0xe1a04) depending on
 `cfgTalkbackFlag`, `SipSessionCtrl` (0xe56e4), `HeartBeat` (0xe28dc, only when
 `cfgTalkbackFlag()==0 && !netDualNic()`), `NewCall01/02`, `AlarmProc`,
 `PasswdProc`, `ringBack`. `task_sipServer` runs on every device, but
 `sip_udpProcRule` is only applied when `FUN_000f86b0()==1` (main-room box),
 and `sip_insertCenterRecord` seeds the `ManageCenter` row only when
-`FUN_000f86b0()!=0` (`readable/sip/server/sipServer.c`).
+`FUN_000f86b0()!=0` (`vdm10_1.0/sip/server/sipServer.c`).
 
-## 2. REGISTER — packet shape (`readable/sip/client/registration.c`)
+## 2. REGISTER — packet shape (`vdm10_1.0/sip/client/registration.c`)
 
 `_client_handle_register` (`FUN_000e05e0`, a.k.a. `sipcli_register`) builds the
 REGISTER per `kind`:
@@ -45,7 +45,7 @@ To/proxy among `sip:%s@%s`, `sip:1000000000%1d@%s`, `%s<sip:%s@%s>`,
 `sip:%s@%s:%d`, `sip:username@%s:%d`; `Content-Type: text/xml`;
 `User-Agent: eXosip/3.6.0`. Body always comes from
 `_sip_xml_get_reg_info_xml` (`xml_getRegInfoXml` @0x000eb2e4,
-`readable/sip/xml_proc.c`) — the `kind` is passed straight through as the
+`vdm10_1.0/sip/xml_proc.c`) — the `kind` is passed straight through as the
 builder's mode selector:
 
 ```xml
@@ -73,7 +73,7 @@ decompiled `net/sipServer` code** — the challenge origin is unverified
 was not located — possibly in the undecompiled `srv_parseMsg`/`srv_forwardRequest`
 path or the vendored eXosip).
 
-## 3. Registrar pipeline — `sip_registerMode` @0x000d8dcc (`readable/sip/server/registrar.c`)
+## 3. Registrar pipeline — `sip_registerMode` @0x000d8dcc (`vdm10_1.0/sip/server/registrar.c`)
 
 `sip_receiveMsg` (0x000db23c) → `sip_parseMsg` → `sip_udpProcRule` → REGISTER:
 
@@ -127,7 +127,7 @@ Search `where call_num='<new>'`:
 `db_acspwd_gc` (same file) also sweeps `where reg_time<'<now>'` and deletes the
 room's ACS pwd rows — expired registrations self-clean.
 
-## 4. Numbering — `T FFF UU RRR II` (`readable/sip/server/registrar.c` header + `misc/util_common_visUtil.c.c`)
+## 4. Numbering — `T FFF UU RRR II` (`vdm10_1.0/sip/server/registrar.c` header + `misc/util_common_visUtil.c.c`)
 
 The 11-digit `devLongNum` is `sscanf("%01d%03d%02d%03d%02d")` →
 `type digit, floor, unit, room, index`. `srv_splitDevNum` (registrar side) and
@@ -169,7 +169,7 @@ The 11-digit `devLongNum` is `sscanf("%01d%03d%02d%03d%02d")` →
 <body><num>10000000001</num></body></videoIntercomMsg>
 ```
 
-Registrar side (`lookUp` @0x000d9658, `readable/sip/server/reply.c`): AOR
+Registrar side (`lookUp` @0x000d9658, `vdm10_1.0/sip/server/reply.c`): AOR
 `"sipCmd"` is a virtual name — it `strstr`s the body for
 `<method>1</method><action>1</action>`, scrapes `<num>` (truncating at 11
 chars — the closing tag is cut by `num_buf[0xb]=0`), searches
@@ -198,14 +198,14 @@ extension→registrar liveness we know of is the heartbeat MESSAGE + reg_time).
 called at the end of `sip_registerMode` on success): enumerates the dev_reg
 table and, for each `1000000000`-prefixed record, TCP-connects to that
 device's **:8102** and pushes `cmd 0x2033` — a 0x420 packet carrying up to six
-0xb0 dev_reg rows. The receiver (`readable/visnet/visnet_server.c`) stores them
+0xb0 dev_reg rows. The receiver (`vdm10_1.0/visnet/visnet_server.c`) stores them
 into `g_extRoom` and re-registers each locally. Net effect: after every
 successful REGISTER, the registrar **mesh-syncs the extension table to all
 extensions** — this is the `:8102` connection observed right after REGISTER
 (not merely a liveness probe; the table push is verified, a separate liveness
 role is not).
 
-## 9. MESSAGE/INFO vocabulary (`readable/sip/xml_proc.c`, `client/call_out.c`)
+## 9. MESSAGE/INFO vocabulary (`vdm10_1.0/sip/xml_proc.c`, `client/call_out.c`)
 
 | Carrier | Body | Purpose |
 |---|---|---|
@@ -215,7 +215,7 @@ role is not).
 | MESSAGE | `<ringXML><noRingBack>1</noRingBack></ringXML>` | attached to `180 Ringing` when auto-answer (`call_autoanswer_gate`), builder @0x000eb508 |
 | INFO | `Signal=<d>\r\nDuration=160` (`application/dtmf-relay`) | in-call DTMF / unlock; `sip_send_dtmf` @0x000df6c0 |
 
-## 10. Busy flag, extension routing (`readable/sip/server/sipServer.c`, `client/uas_calls.c`)
+## 10. Busy flag, extension routing (`vdm10_1.0/sip/server/sipServer.c`, `client/uas_calls.c`)
 
 Global busy flag `g_callBusy` @0x00819828 (`srv_getCallBusy` 0xda608 /
 `srv_setCallBusy` 0xda63c) — **only writer is `sip_udpProcRule`** (0x000dabb8):
@@ -326,6 +326,6 @@ sequenceDiagram
   OKs — acceptance looser than `lookUp` predicts.
 - Per-door `kind==9` Pre-Regist addressing block (cfg+0x34fac/0x34fcc/0x34fec/
   0x35040/0x350ce) — fields inferred from offset comments, not verified live.
-- `heartbeat.c` readable rewrite carries a stray "method 8" comment — the raw
+- `heartbeat.c` vdm10_1.0 rewrite carries a stray "method 8" comment — the raw
   decompile of `sipcli_hb_task` sets method=1/action=1 directly; treat the
   comment as stale.

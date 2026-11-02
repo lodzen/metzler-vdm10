@@ -9,10 +9,10 @@ teardown. Pairing and registration:
 [`intercom-registration.md`](intercom-registration.md); wire dialect:
 [`../protocol.md`](../protocol.md).
 
-Sources: `readable/sip/client/{uas.c,uas_calls.c,call_out.c,session_sdp.c}`,
-`readable/sip/talkback_tables.c`, `readable/sip/server/*`,
-`readable/net/{ipcamera.c,vis_stream.c,rtp_talkback.c}`,
-`readable/gui/calls/{accept.c,videocall.c,monitor.c}`, `ANALYSIS.md`
+Sources: `vdm10_1.0/sip/client/{uas.c,uas_calls.c,call_out.c,session_sdp.c}`,
+`vdm10_1.0/sip/talkback_tables.c`, `vdm10_1.0/sip/server/*`,
+`vdm10_1.0/net/{ipcamera.c,vis_stream.c,rtp_talkback.c}`,
+`vdm10_1.0/gui/calls/{accept.c,videocall.c,monitor.c}`, `ANALYSIS.md`
 §5/§8/§9. Each claim is marked **verified** (decompile-cited or captured
 on the wire) or **inferred**; door-side internals live in the door's own
 `hicore` build and are marked where they cannot be confirmed here.

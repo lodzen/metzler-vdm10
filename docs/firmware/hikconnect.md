@@ -1,9 +1,9 @@
 # Hik-Connect / EZVIZ cloud channel — registration and call-state pushes
 
 How `hicore` (Metzler VTH 2.0.24, a rebranded Hikvision indoor station) talks to
-the Hik-Connect / EZVIZ cloud. Evidence: `readable/ezviz/*.c` (app layer,
-`protocol/ezviz_*.cpp`), `readable/ezdevsdk/*.c` (SDK subcore), and
-`readable/misc/dclog.c` (SDK transport internals). The SDK kernel itself is
+the Hik-Connect / EZVIZ cloud. Evidence: `vdm10_1.0/ezviz/*.c` (app layer,
+`protocol/ezviz_*.cpp`), `vdm10_1.0/ezdevsdk/*.c` (SDK subcore), and
+`vdm10_1.0/misc/dclog.c` (SDK transport internals). The SDK kernel itself is
 largely external (`/* ext */` markers) — internals cited here are recovered
 from call sites, log strings and the few decompiled subcore files.
 
@@ -132,7 +132,7 @@ Service codes observed: `0x3038`→3700, `0x305e`→3999 (keepalive),
 | `alarm.ys7.com` | paramLib default `cfg+0x3284c` | alarm-domain TLS server |
 | `www.hik-connect.com` | `gui_civilset_QRstr_Get` | QR/binding URL host (displayed, not dialed) |
 | `www.hik-online.com` | paramLib default (+0x586c) | alternate web host, selected by `FUN_00075040` (region check /* unverified */) |
-| `devlog.ys7.com` | string table (HIKCONNECT.md) | telemetry host — unverified in `readable/`; dclog uploads go out as `multipart/form-data` HTTP (`dclog_upload_ezdev` @0x004257fc) |
+| `devlog.ys7.com` | string table (HIKCONNECT.md) | telemetry host — unverified in `vdm10_1.0/`; dclog uploads go out as `multipart/form-data` HTTP (`dclog_upload_ezdev` @0x004257fc) |
 
 ## 7. Call-state pushes — what produces the Hik-Connect cards
 
