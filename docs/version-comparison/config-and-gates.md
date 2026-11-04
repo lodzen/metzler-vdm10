@@ -48,10 +48,10 @@ vocabulary verified by literals:
 
 | Gate | Where | Effect |
 |---|---|---|
-| `sip_config_is_digest_auth_enabled` @`0x00230a8c` (config+0x20==1) | `sip_server_register_device` @`0x002291b8` | `==0` → body is TinyXML-parsed (normal app path: init byte 0). *Naming caveat*: the reading-view name says "digest auth enabled" while `VDM10_2.0/analysis/registration.md` calls it the body-skip getter — treat the offset/behavior as proven, the name as tentative |
-| `sipsvr_device_state_read` @`0x00230a30` | same | `==0` → compat mode: classification + site-prefix **410 gate**; `==1` + Expires>0 → 401→Digest flow |
+| `sip_config_is_reg_body_skip_enabled` @`0x00230a8c` (config+0x20==1) | `sip_server_register_device` @`0x002291b8` | `==0` → body is TinyXML-parsed (normal app path: init byte 0); `==1` also suppresses the `rp_track_device_change`→`sip_notify_device_registration_change` notify. Renamed pass23 (was `sip_config_is_digest_auth_enabled` — a mislabel; the digest gate uses +0x24) |
+| `sip_config_get_auth_mode` @`0x00230a30` | same | `==0` → compat mode: classification + site-prefix **410 gate**; `==1` + Expires>0 → 401→Digest flow. Renamed pass23 (was `sipsvr_device_state_read`; reads config+0x24 on the registrar config object, not a device record) |
 | `sip_config_is_device_mode_one` @`0x0021ef80` (config+0x30) | same | registrar is device-type 1 → activates the peer-class site compare |
-| `sip_config_get_numbering_scheme` @`0x00230ac8` (config+0x30 of numbering ctx) | `sip_classify_and_split_device_number` @`0x0023b194` | selects prefix branch (10/0xb vs other); **not** a digit-count selector |
+| `sip_config_get_local_devtype` @`0x00230ac8` (config+0x30, init from `sipDevSDK_get_local_devtype()`) | `sip_classify_and_split_device_number` @`0x0023b194` | local device type 10/0xb → site-prefix branch vs other; **not** a numbering-scheme/digit-count selector. Renamed pass23 (was `sip_config_get_numbering_scheme`) |
 | `sip_config_get_ipv6_mode` @`0x00230b2c` | response path | AF_INET vs AF_INET6 source-address decode |
 | `vis_aux_f_q` @`0x00161fd0` (`cfg+0x35e8d==1`) | `sip_start_server_control_thread` | feeds the server-control init byte (local_2b) — the SIP1.0/2.0 personality switch; **factory default unknown** |
 | `vis_pred_a/b/c_q`, `vis_dev_chk_*`, `cfg_dev_get` | client tasks | device-class predicates choosing primary/secondary NIC (`srv_primaryIpText`/`srv_secondaryIpText`), dual-NIC registration targets |

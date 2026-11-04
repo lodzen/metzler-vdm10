@@ -94,7 +94,6 @@ flowchart LR
 | `station/local_answer.py` | answer on the local headset (`auto_answer` policy) |
 | `station/outbound.py` | `--call` via registrar or `num@ip` direct `:5060` |
 | `station/teardown.py` | CANCEL/BYE from either leg, cross-leg teardown, `487` on cancelled invites |
-| `station/mjpeg.py` | `MjpegRelay`: serves the door's JPEG snapshots (`/ISAPI/Streaming/channels/102/picture`, Digest) as MJPEG (`/mjpeg`) or single frame (`/snapshot.jpg`); polls at `--mjpeg-fps` (4) only while a door call is active and a viewer is connected, otherwise 503; frames are shrunk with Pillow to fit `--mjpeg-size` (480x640, FRITZ!Fon range); on by default, `--no-mjpeg` / `INDOOR_MJPEG=0` disables |
 | `station/door_unlock.py` | `#<n>` on the phone → ISAPI `PUT .../RemoteControl/door/<n>` on the outdoor station (HTTP Digest, stdlib) |
 | `station/call.py` | `Call` state object (id, to_tag, media handles, provider leg ids) |
 | `station/station.py` | `IndoorStation` = `StationCore` + the mixins |

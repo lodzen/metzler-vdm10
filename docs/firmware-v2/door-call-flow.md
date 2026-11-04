@@ -21,10 +21,15 @@ Gates, in order (all verified in decompile):
   visNet/CVBS fast path (extension-pickup `cvbs_extension_pickup(1)` +
   direct 200 with `sess_make_sdp`).
 - `eXosip_get_remote_sdp` fails → `488` (0x1e8).
-- **SIP2.0 version gate**: `sdp_message_attribute_get(sdp,-1,3)` is
-  `strncmp`'d against a 13-char prefix (the `a=version:V2.` form); when the
-  offer is *not* V2 and `vis_pred_d_q()==0` (SIP2.0-only device) → `403`
-  (0x193). **unverified**: exact prefix text beyond the 0xd length.
+- **SIP2.0 private-SDP gate**: the 4th session-level SDP attribute
+  (`sdp_message_attribute_get(sdp,-1,3)` — its *name*) is `strncmp`'d 13
+  bytes against the literal `isSpecialType` (`DAT_00142b84`, resolved
+  pass23 — the earlier "`a=version:` 13-char prefix" wording was wrong).
+  A missing/different attribute at slot 3 sets the non-conforming flag,
+  and when `vis_pred_d_q()==0` (SIP2.0-only device) → `403` (0x193). The
+  `a=version:` value is parsed separately (`sess_sdp_attr_set` literal
+  `version` → `xml_version_id_q`), so this is a private-SDP
+  layout/conformance check, not a version-prefix check.
 - Call classification: `FUN_00163210(from_num,bVar)` → `sess+0x90`
   (door/room/… classes; `==2` promoted to 7 when the caller is an 11-char
   number; local-origin check `sip_client_check_request_origin_is_local`
@@ -54,9 +59,9 @@ a=doorFloor:%d  a=responseType:%d  a=doorType:%d
 a=isSpecialType:%d  a=isConfirm:%d  a=version:%s
 ```
 
-`a=version:` selects `V2.0.0` (literal at 0x128ff4) by default, an alternate
-compat string (`DAT_00128ff0`, unresolved) in v1-mode paths — the peer
-version feeds the §1 gate and `sip_check_peer_version_at_least_two`
+`a=version:` selects `V2.0.0` (literal at 0x128ff4) by default, or
+`V1.0.0` (`DAT_00128ff0`, resolved pass23) in the compat/legacy-peer path;
+the parsed peer version feeds `sip_check_peer_version_at_least_two`
 @0x0022b6b4 (`V≥2` sscanf on server side).
 
 Class `0xb` (fixed talkback) emits real media SDP:
@@ -189,8 +194,6 @@ sequenceDiagram
 
 - Whether doors dial :5060 direct vs :5065 (both paths exist; selection
   is a door-side choice, not visible in this binary).
-- The 0xd `a=version:` prefix text (V2.0.0 form inferred from the 13-char
-  strncmp + the `V2.0.0` literal in `sess_make_sdp`).
 - Door-side pull of the answering unit's :554 (mechanism parity with v1
   assumed; door code not in this image).
 - Exact response code the eXosip layer emits for a local user-reject.

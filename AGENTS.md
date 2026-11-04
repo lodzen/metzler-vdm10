@@ -13,10 +13,9 @@
 - Must keep working standalone (stdlib only at module level; `cryptography` is optional and only enables
   SRTP) and with a PBX trunk such as Asterisk (`--sip-host <pbx> --sip-target 6000`, no credentials = no
   REGISTER). Don't remove local headset mode or the generic trunk path.
-- Tests: `uv run pytest` (131 tests, localhost only, ~5 s). Without cryptography:
+- Tests: `uv run pytest` (118 tests, localhost only, ~5 s). Without cryptography:
   `PYTHONPATH=src uv run --isolated --no-project --with "pytest>=9.1,<9.2" python -m pytest` (SRTP tests skip).
-- MJPEG relay of the door camera (FRITZ!Fon live picture) is on by default on TCP 8000 (never 8102: that is the units' visNet port, the main indoor connects there) (`--no-mjpeg` / `INDOOR_MJPEG=0` = off;
-  tests pass `--no-mjpeg`); frames shrunk to 480x640 box via Pillow (optional at runtime: unscaled fallback).
+- Never bind services to TCP 8102: it is the units' visNet push port, the main indoor connects to it.
   Offline end-to-end check without a doorbell: `uv run python tools/simulate_call.py`.
 - Complexity: `complexipy src tests`; keep new/changed functions under 15 (some legacy media loops still exceed it).
 - Lint + format: `uv run ruff check src tests` and `uv run ruff format src tests` (0.17.x, dev dep;

@@ -1028,16 +1028,6 @@ def test_dtmf_door_2_unlocks_door_2_only(station_factory, unlocks):
     assert [u[3] for u in unlocks] == [2]
 
 
-def test_active_door_host_only_during_a_door_call(station_factory):
-    """the MJPEG relay polls the door only while it has a call with us"""
-    st = fritz_door_station(station_factory)
-    assert st.active_door_host() is None
-    call = _established_door_call(st)
-    assert st.active_door_host() == "10.0.0.48"
-    call.stop()  # call ended
-    assert st.active_door_host() is None
-
-
 def test_dtmf_other_sequences_do_not_unlock(station_factory, unlocks):
     st = fritz_door_station(station_factory)
     call = _established_door_call(st)
@@ -1111,6 +1101,30 @@ def test_rfc4733_digit_reaches_unlock(station_factory, unlocks):
     assert call.dtmf == "#"  # deduped to one
     media._pcmu_payload(ev("1"))
     assert [u[3] for u in unlocks] == [1]
+
+
+def test_pre_key_plain_rtp_accepted_until_first_srtp_packet():
+    """Linphone streams ~400ms of early media before its SRTP engine arms;
+    those packets fail unprotect - accept them as plain until the first
+    authenticated packet, then strict SRTP only (no audio gap, no log spam)"""
+    import struct as st_
+    from types import SimpleNamespace
+
+    from metzler.media.intercom import SipIntercomMedia
+
+    media = SipIntercomMedia.__new__(SipIntercomMedia)
+    media.srtp = SimpleNamespace(
+        rx=SimpleNamespace(unprotect=lambda p: p[:-4] if p.endswith(b"TAG!") else None)
+    )  # SRTP keeps the RTP header and appends an auth tag
+    media.dtmf_pt = media.on_dtmf = None
+    media._dropped = media._plain = 0
+    media._srtp_ok = False
+
+    rtp = lambda: st_.pack(">BBHII", 0x80, 0, 1, 0, 0x1234) + b"\x2a" * 160
+    assert media._pcmu_payload(rtp()) == b"\x2a" * 160  # pre-key plain: accepted
+    assert media._pcmu_payload(rtp() + b"TAG!") == b"\x2a" * 160  # auth ok
+    assert media._srtp_ok and media._plain == 1
+    assert media._pcmu_payload(rtp()) is None  # post-auth plain: dropped
 
 
 def test_dtmf_ignored_before_established(station_factory, unlocks):

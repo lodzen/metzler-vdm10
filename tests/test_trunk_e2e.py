@@ -55,7 +55,7 @@ def sim(tmp_path):
         f"INDOOR_PASSWORD=x\nINDOOR_NAME=TrunkTest\nINDOOR_LOCAL_IP=127.0.0.1\n"
         f"INDOOR_LISTEN_PORT={ports['sim']}\nINDOOR_RTSP_PORT={rtsp_port}\n"
         f"INDOOR_SIP_HOST=127.0.0.1\nINDOOR_SIP_PORT={ports['pbx']}\nINDOOR_SIP_TARGET=6000\n"
-        f"INDOOR_HEARTBEAT_INTERVAL=600\nINDOOR_DEBUG=1\nINDOOR_MJPEG=0\n"
+        f"INDOOR_HEARTBEAT_INTERVAL=600\nINDOOR_DEBUG=1\n"
     )
     pbx = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     pbx.bind(("127.0.0.1", ports["pbx"]))

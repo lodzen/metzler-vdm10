@@ -182,6 +182,8 @@ class SipIntercomMedia:
         self.on_dtmf = None  # set by the station: digit sink
         self.dtmf_pt = None  # telephone-event PT from the answer
         self._dropped = 0  # diagnostic: non-PT0 packets logged
+        self._srtp_ok = False  # first authenticated peer packet seen
+        self._plain = 0  # pre-auth plain-RTP packets accepted
         self._last_dtmf = -1
         self._last_dtmf_ts = 0.0
 
@@ -236,13 +238,14 @@ class SipIntercomMedia:
 
     def _pcmu_payload(self, data):
         """peer packet -> PCMU payload; PT101 telephone-event digits are
-        tapped into on_dtmf first. None for RTCP, a bad SRTP tag, or
-        any payload type other than PT0 (the only codec we offer)"""
+        tapped into on_dtmf first. None for RTCP, a bad SRTP tag (after the
+        first authenticated packet), or any PT other than PT0 (the only codec
+        we offer). Pre-key early media arrives unencrypted and is accepted as
+        plain RTP until the first SRTP packet authenticates."""
         if not is_rtp(data):
             return None
         raw = data
-        if self.srtp and self.srtp.rx:
-            data = self.srtp.rx.unprotect(data)
+        data = self._unwrap(data)
         if data is None or len(data) < 13:
             if self._dropped < 20:
                 self._dropped += 1
@@ -266,6 +269,24 @@ class SipIntercomMedia:
                 )
             return None
         return data[12:]
+
+    def _unwrap(self, data):
+        """SRTP-unprotect. Early media sent before the peer's SRTP engine
+        armed arrives unencrypted: pass it through until the first packet
+        authenticates, then strict (None on auth failure)"""
+        if not (self.srtp and self.srtp.rx):
+            return data
+        out = self.srtp.rx.unprotect(data)
+        if out is not None:
+            self._srtp_ok = True
+            return out
+        if self._srtp_ok:
+            return None
+        self._plain += 1
+        log.debug("peer RTP: plain %dB PT %d accepted pre-SRTP-auth", len(data), data[1] & 0x7F)
+        if self._plain == 50:
+            log.info("peer keeps sending unencrypted RTP on an SRTP-negotiated leg")
+        return data
 
     DTMF_CHARS = "0123456789*#ABCD"
 

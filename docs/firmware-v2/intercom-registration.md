@@ -102,10 +102,12 @@ request needs method or a status 100–699; `osip_message_fix_last_via_header`
 stamps `received=<src ip>` + `rport=<src port>`) →
 `sip_server_dispatch_method` @0x00228d68 → REGISTER → the handler:
 
-1. **Body parse** — when config `+0x20` getter `sip_config_is_digest_auth_enabled`
+1. **Body parse** — when config `+0x20` getter `sip_config_is_reg_body_skip_enabled`
    @0x00230a8c returns 0 (the application always writes 0 —
-   `sip_start_server_control_thread` @0x0011c0c4; the name is a reading-view
-   label, `analysis/registration.md` calls it the *body-skip* getter) →
+   `sip_start_server_control_thread` @0x0011c0c4; renamed pass23: the old
+   `sip_config_is_digest_auth_enabled` label was wrong — when the flag is 1,
+   body parsing is skipped *and* `rp_track_device_change` suppresses
+   `sip_notify_device_registration_change`) →
    `sip_parse_registration_xml_identity` @0x002300e8
    (`sip/server/registration_xml.c`): first body → TinyXML parse → root →
    requires `<regDevSerial>` and `<regDevMacAddr>` with non-null text;
@@ -118,8 +120,10 @@ stamps `received=<src ip>` + `rport=<src port>`) →
    (`analysis/registration.md` correction).
 2. **Identity** — the registering number is `From` URI username
    (`request+0x7c→+4→+4`), *not* the v1 To/AOR. Null → `0x194` early exit.
-3. **Number gate** — `sipsvr_device_state_read` @0x00230a30 (config `+0x24`,
-   the *authentication-mode* byte) == 0 (SIP1.0-compat): classify via
+3. **Number gate** — `sip_config_get_auth_mode` @0x00230a30 (config `+0x24`
+   word, the *authentication mode*; renamed pass23 from
+   `sipsvr_device_state_read` — the +0x24 device-online field lives on
+   device records, a different object) == 0 (SIP1.0-compat): classify via
    `sip_classify_and_split_device_number` @0x0023b194; when the registrar is
    device type 1 (`sip_config_is_device_mode_one` @0x0021ef80, config `+0x30`)
    and the peer is not type 1, compare site fields — type byte, floor
@@ -197,17 +201,32 @@ always false, dead code; **do not claim md5-sess support** (literal-verified,
 Provisioning model: the GUI **Registration Password** (`cfg+0x35a14`)
 authenticates only registrations of the station's own number; each
 extension/peer SIP number needs its own DB row (`sip_num` → password at
-`+0x98`). The writer side (GUI/ISAPI provisioning) was not traced —
-`analysis/registration.md`.
+`+0x98`). Writers now verified (pass23): the ISAPI IOT-channel JSON handler
+`isapi_iot_channel_parse_json` @0x0030f9b8 maps `regNumber`→`+0x78`,
+`regPassword`→`+0x98`, `userName`→`+0xe8`, `password`→`+0x108` and inserts
+via `dpi_register_roomextension_information` @0x0004183c / updates via
+`dpi_update_roomextension_information` @0x000416bc (gated by
+`gui_devicepairing_get_flag`, channel allocated by
+`db_find_free_extension_channel` @0x000415f8); the GUI pairing flow
+(`gui/devicepairing.c` → `database_insert_room_extension_net_information`
+@0x000415ec) writes `+0x98` from the station's own regPassword
+`cfg+0x35a14`; the `0x2033` visNet push receiver
+(`synchronize_visnet_extension_room_information` @0x0001b7f4) updates
+call-record rows via `dpi_update_call_record_for_name` @0x000456c0. The
+indoor side also pushes its regPassword to the door inside the
+`vis_set_iot_param` ISAPI IOT-channel record (see doorbell-pairing.md §2).
 
 ## 5. Numbering — `T FFF UU RRR II` (`sip/server/numbering.c`)
 
 `sip_classify_and_split_device_number` @0x0023b194 zeroes a 10-byte
-descriptor then branches on `sip_config_get_numbering_scheme` @0x00230ac8
-(config `+0x1c`, application default **10**). Schemes 10/11 share one branch;
-all other values another. Both branches `sscanf` the same literal
-`%01d%03d%02d%03d%02d` — the scheme selector is **not** a 10-vs-11-digit
-length distinction (literal-verified).
+descriptor then branches on `sip_config_get_local_devtype` @0x00230ac8
+(config `+0x30` — the *local device type*, initialized from
+`sipDevSDK_get_local_devtype()`; renamed pass23: the old
+`sip_config_get_numbering_scheme` name and the `+0x1c` offset note were
+wrong). Local types 10/0xb share one branch; all other values another.
+Both branches `sscanf` the same literal `%01d%03d%02d%03d%02d` — the
+selector is a device-class check, **not** a numbering-scheme or
+digit-count distinction (literal-verified).
 
 - `unit != 0 && room == 0` → device type **1** (door).
 - `unit != 0 && room != 0` → type **3** (room); with cfg flag `+0x28` set, a
@@ -285,12 +304,18 @@ There is **no** `g_callBusy` flag in the new registrar — the old
   `mode==2` gates).
 - `uas_handle_invite` @0x00141e14: GUI-not-ready → `0x1e6` (486), DND/time
   window → `0x1e0` (480), no/unparseable SDP → `0x1e8` (488), session
-  alloc failure → 400, and **SIP2.0 peer-version gate** — the 4th SDP
-  attribute (`sdp_message_attribute_get(…,−1,3)`) is `strncmp`'d against a
-  13-char prefix (`a=version:V2.` shape); a non-V2 offer from a SIP2.0-only
-  device → `0x193` (**403**). `sess_make_sdp` emits `a=version:V2.0.0` by
-  default (`sip/client/session_ctrl.c` @0x00127fa4; the alternate
-  compat-version string is **unverified**).
+  alloc failure → 400, and **SIP2.0 private-SDP gate** — the 4th
+  session-level SDP attribute (`sdp_message_attribute_get(…,−1,3)`, its
+  *name*) is `strncmp`'d 13 bytes against the literal `isSpecialType`
+  (`DAT_00142b84`, resolved pass23 — earlier "13-char `a=version:` prefix"
+  wording was wrong). A missing/different attribute at slot 3 sets the
+  non-conforming flag → `0x193` (**403**) when `vis_pred_d_q()==0`
+  (SIP2.0-only device). The `a=version:` value is parsed separately
+  (`sess_sdp_attr_set` literal `version` @`DAT_00132e08` →
+  `xml_version_id_q` value check). `sess_make_sdp` emits
+  `a=version:V2.0.0` (`DAT_00128ff4`) by default, `V1.0.0`
+  (`DAT_00128ff0` — resolved) in the compat/legacy-peer path
+  (`sip/client/session_ctrl.c` @0x00127fa4).
 - Proxy INVITEs through :5065 get the same digest treatment:
   `sip_server_route_invite` extracts `a=version:…` from the body
   (`strstr`), `sip_check_peer_version_at_least_two` @0x0022b6b4 requires
@@ -366,7 +391,7 @@ sequenceDiagram
 | `sip_dispatch_sdk_server_event` | 0x0011bb7c | `sip/server/server_control.c` | sipDevSDK cb dispatch: DB ops / digest verify / status |
 | `sip_server_control_queue_loop` | 0x0011b070 | `sip/server/server_control.c` | reg-event mq → DB insert + ext-info push |
 | `sip_server_route_invite` / `route_ack` / `route_bye_or_cancel` / `route_message` / `route_response` | 0x0022b780 / 0x0022cfb4 / 0x0022f20c / 0x0022dc6c / 0x0022d598 | `sip/server/proxy.c` | proxy forward + header rewrite (+INVITE digest) |
-| `sipsvr_config_is_digest_auth_enabled` (body-skip) / `sipsvr_device_state_read` (auth mode) / `sip_config_is_device_mode_one` | 0x00230a8c / 0x00230a30 / 0x0021ef80 | `sip/server/{dispatch,configuration}.c` | config +0x20/+0x24/+0x30 getters |
+| `sip_config_is_reg_body_skip_enabled` (body-skip) / `sip_config_get_auth_mode` (auth mode) / `sip_config_is_device_mode_one` | 0x00230a8c / 0x00230a30 / 0x0021ef80 | `sip/server/configuration.c` | config +0x20/+0x24/+0x30 getters |
 
 ## 11. Marked unverified
 
@@ -380,8 +405,6 @@ sequenceDiagram
 - **`Expires: 0` unregister in auth mode** — the digest gate only runs for
   `Expires>0`, but the XML body parse runs first; whether an unauthenticated
   unregister with a valid body is honored is unverified.
-- **`<version>` alternates in `sess_make_sdp`** — `V2.0.0` literal verified
-  at 0x128ff4; the `DAT_00128ff0` compat string unresolved.
 - **regXML `<version>` in requests** — parser doesn't require it; the
   request builder emits serial/MAC(+name/floor) only.
 - **Numbering special strings** — the 6/9-char prefixes and exact-match

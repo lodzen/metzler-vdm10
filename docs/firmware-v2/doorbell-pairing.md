@@ -56,9 +56,19 @@ machinery (`sip/client/registration.c`):
   `cfg+0x2d354` + `write_device_parameters()` when the slot is empty or
   stale.
 
-Whether the door assigns the number via the `vis_set_iot_param` exchange or
-the indoor derives it locally is **unverified** (both sides of the mq
-exist; the wire carrier of `vis_set_iot_param` was not traced here).
+`vis_set_iot_param`'s wire carrier is now verified (pass23): it calls
+`sdk_client_set_iot_channel`/`sdk_client_set_iot_subdoor_param`/
+`sdk_client_modify_iot_channel`/`sdk_client_set_confirm_device_id` over
+the door-SDK login session (handles at cfg `+0x88f0`/`+0x8910`), which send
+ISAPI JSON **`POST /ISAPI/System/IOT/channels?format=json`** (add) and
+**`PUT /ISAPI/System/IOT/channels/%d?format=json`** (modify) — the
+`GetIOT_channelStatus`/`SearchIOT_channel`/`DeleteIOT_channel` siblings use
+`GET`/`POST …/status`/`DELETE` URLs on the same channel. The pushed record
+carries the device-info block **and** a copy of the station regPassword
+from `cfg+0x35a14` — the mechanism by which the door learns the indoor's
+digest credential. The `devLongNum` itself is **derived locally** by
+`fast_regist_proc_q`; no door-assigned-number path was found (door
+assignment remains unproven).
 
 `cli_get_door_reg_key` @0x0012e1cc sends a method-7 message
 (`local_1374=7`, port `0x13c4`) to the door block at `cfg+0x5fe8` (or
@@ -110,10 +120,17 @@ Post-registration table sync survives the SIP rewrite:
 `sip_server_control_queue_loop` @0x0011b070 on each registration event —
 walks dev_reg rows (0x174-stride records) and for every
 `"100000000"`-prefixed `call_num` (`strncmp(row+4, "100000000", 9)`)
-invokes `register_extension_device_by_ip(row+0x28)` — the extension table
-push to extensions (v1 used the 0x420 `0x2033` packet; the v2 wire packet
-format is **unverified** — the sync trigger and filter are verified, the
-push transport is via the `register_extension_device_by_ip` helper).
+invokes `register_extension_device_by_ip(row+0x28)` @0x00146904 — the
+extension table push to extensions, now wire-verified (pass23): it
+connects to the extension's visNet `:8102` and sends a fixed
+**0x14f0-byte** signed frame with cmd `0x2033` — 0xac header
+(len/cmd/proto/devnum/mac + nonce `+0x2c` + signature `+0x6c`), be32
+record count `@+0xac`, up to `dev_tbl_count_q()` records of 0x144 bytes
+`@+0xb0`, payload XOR-folded with the nonce key. V1 used a 0x420 packet;
+v2 grew the frame to 0x14f0. The receiver (`visnet/server.c` command loop
+→ `synchronize_visnet_extension_room_information`, self-ID
+`visNetServExRoomInfoSync`, @0x0001b7f4) imports the records and calls
+`dpi_update_call_record_for_name` @0x000456c0 per row.
 
 ## 5. Credentials — unlockPwd / hijackPasswd / regPassword / unlock token
 
@@ -135,6 +152,14 @@ The SIP2.0 credential model has three layers (`intercom-registration.md` §4):
 1. `cfg+0x35a14` — the station's own Registration Password (GUI-mandatory):
    used for own-number registrations **and** as half of the `<random>` key.
 2. Per-peer DB passwords — `where sip_num = '<num>'` → row `+0x98`.
+   Writers verified (pass23): ISAPI `isapi_iot_channel_parse_json`
+   @0x0030f9b8 (`regPassword`→`+0x98`, `regNumber`→`+0x78`,
+   `userName`→`+0xe8`, `password`→`+0x108`) →
+   `dpi_register_roomextension_information` / `dpi_update_roomextension_information`;
+   GUI pairing (`gui/devicepairing.c` →
+   `database_insert_room_extension_net_information`) writes `+0x98` from
+   the station regPassword `cfg+0x35a14`; `vis_set_iot_param` pushes
+   `cfg+0x35a14` to the door inside the ISAPI IOT-channel record (§2).
 3. Response `<random>` = `base64(AES-128-CBC(zeroIV,
    PBKDF2-HMAC("<user>_<pwd>", 5000), 16-byte random))`
    (`sip_generate_registration_key_base64` @0x00119d74,
@@ -161,10 +186,15 @@ these — **unverified** which v2 messages are encrypted with the key.
   registrar's dev_reg is queried `where dev_type = 3 order by reg_time desc`
   (`sipsvr_db_dev_regs_query` @0x000859d0) into 0x178-stride records —
   the `sipDevSDK_get_register_list` callback @0x00225490
-  (`sip/server/sdk_callbacks.c`) serves this to app code. The v1 hard cap of
-  5 call legs does not map cleanly onto the new code; the configured
-  extension list (1–16 per product docs) is bounded by DB table size —
-  **unverified**.
+  (`sip/server/sdk_callbacks.c`) serves this to app code. The bound is now
+  verified (pass23): `db_channel_limit` @0x000a1d94 returns **5** when
+  `vis_num_layout_q()==0`, else **16** (`0x10`); `dev_tbl_count_q`
+  @0x000a1e14 encodes the same 5/16 bound for the `0x2033` push
+  (≤16×0x144 records), and `db_find_free_extension_channel` @0x000415f8
+  allocates the smallest free channel `1..limit` (−1 when full) for
+  `database_insert_room_extension_net_information` (GUI pairing + ISAPI
+  IOT-channel inserts). The `0x10`/`0x11` constants in `call_out.c`
+  @0x0013e774 are a *different* table (session/msg slots 0–16).
 - `cli_send_exroom_info_v2` @0x0012e900 / `cli_push_exroom_info_v2`
   @0x00136198 / `push_exindoor_info` (`sip/client/messages.c`,
   `sip/server/server_control.c`) — extension-info pushes on registration
@@ -219,18 +249,30 @@ sequenceDiagram
 | `xml_getSipInfoXml_v2` / `xml_pares_sip_info` / `xml_parse_resp_v2` | 0x00120138 / 0x0011d5f0 / 0x00121b68 | `sip/xml_proc.c` | v2 videoIntercomMsg vocabulary |
 | `cli_send_exroom_info_v2` / `cli_push_exroom_info_v2` | 0x0012e900 / 0x00136198 | `sip/client/messages.c` | extension info push |
 
-## 10. Marked unverified
+## 10. Resolved in pass23 / still unverified
 
-- Wire carrier and message format of `vis_set_iot_param` (whether the
-  number is assigned by the door or self-derived) — both directions exist
-  in code.
+Resolved in pass23:
+
+- `vis_set_iot_param` wire carrier — ISAPI JSON `POST/PUT
+  /ISAPI/System/IOT/channels[/%d]?format=json` to the door over the
+  door-SDK session (`sdk_client_set_iot_*`); `devLongNum` is locally
+  derived by `fast_regist_proc_q` — no door-assignment path found
+  (unproven, not confirmed).
+- `0x2033` wire form — fixed 0x14f0-byte signed visNet TCP frame (v1 was
+  0x420): be32 record count `@+0xac` + ≤`dev_tbl_count_q()` records
+  ×0x144 `@+0xb0`.
+- Extension bound — `db_channel_limit` @0x000a1d94 / `dev_tbl_count_q`
+  @0x000a1e14 return 5 (`vis_num_layout_q()==0`) or 16 (`0x10`);
+  enforced by `db_find_free_extension_channel` @0x000415f8.
+- Per-peer provisioning writers — ISAPI `isapi_iot_channel_parse_json`
+  (`regPassword`→row `+0x98`), GUI `devicepairing.c` pairing flow, and the
+  `0x2033` sync receiver (see §6/`intercom-registration.md` §4).
+
+Still unverified:
+
 - Which v2 MESSAGE payloads are encrypted with the `<random>`-derived key;
   the decrypt path exists client-side but the consumers were not traced.
-- Whether the visNet ext-table push keeps the v1 `0x2033`/0x420 packet
-  shape — trigger+filter verified, packet unverified.
 - Sender sites for m2a1 password and m5a7 subdoor payloads (vocabulary
   verified in the builder; directions inferred).
-- Extension count bound (1–16 product limit vs the v1 five-leg cap — the
-  dev_reg table is the limit now; exact cap unverified).
 - `cli_flag`/predicate semantics (`vis_pred_*`, `vis_aux_*`,
   `vis_num_layout_q`) — used liberally; cfg meanings unresolved as in v1.

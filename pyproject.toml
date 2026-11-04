@@ -9,7 +9,6 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "cryptography>=44",
-    "pillow>=12.3,<13",
 ]
 
 [project.scripts]

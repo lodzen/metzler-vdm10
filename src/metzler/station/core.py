@@ -15,7 +15,6 @@ from metzler.provider import FritzTrunk, SipProvider
 from metzler.sip.message import UA, Packet, branch, tag, uri_of
 from metzler.sip.sdp import parse_sdp
 from metzler.station.door_unlock import isapi_open_door
-from metzler.station.mjpeg import MjpegRelay
 
 log = logging.getLogger("indoor")
 
@@ -53,14 +52,6 @@ class StationCore:
             log.info("intercom RTSP server listening on %s:%d", o.local_ip, o.rtsp_port)
         except OSError as e:
             log.warning("cannot bind RTSP :%d (%s) - caller can't pull our stream", o.rtsp_port, e)
-        self.mjpeg = None
-        if o.mjpeg and o.mjpeg_port:
-            try:
-                self.mjpeg = MjpegRelay(o, self.active_door_host)
-                self.mjpeg.start()
-            except OSError as e:
-                self.mjpeg = None
-                log.warning("cannot bind MJPEG relay :%d (%s)", o.mjpeg_port, e)
 
     def send(self, pkt, addr):
         pkt.set("Content-Length", str(len(pkt.body)), True)
@@ -252,15 +243,6 @@ class StationCore:
     @staticmethod
     def _spawn(fn, *args):
         threading.Thread(target=fn, args=args, daemon=True).start()
-
-    def active_door_host(self):
-        """IP of an outdoor station that currently has a call with us, else None"""
-        for call in list(self.calls.values()):
-            if call.door and call.state != "ended":
-                host = parse_sdp(call.invite.body)["ip"]
-                if host:
-                    return host
-        return None
 
     def unlock_door(self, call, door):
         """open door n: ISAPI PUT on the outdoor station (the SDP address of
@@ -516,8 +498,6 @@ class StationCore:
             time.sleep(0.3)
         except OSError:
             pass
-        if self.mjpeg:
-            self.mjpeg.stop()
         self.sip.close()
 
     def _end_call_on_shutdown(self, call):

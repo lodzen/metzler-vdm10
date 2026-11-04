@@ -210,36 +210,6 @@ def build_parser(env):
         help="outdoor station ISAPI password (default: the indoor password, as for the RTSP pull)",
     )
     ap.add_argument(
-        "--mjpeg",
-        action=argparse.BooleanOptionalAction,
-        default=env_bool(env, "mjpeg", True),
-        help="serve the door camera as MJPEG during door calls (default on; --no-mjpeg or INDOOR_MJPEG=0 "
-        "turns it off): /mjpeg stream, /snapshot.jpg single frame",
-    )
-    ap.add_argument(
-        "--mjpeg-port",
-        type=int,
-        default=d("mjpeg_port", 8000, int),
-        help="TCP port of the MJPEG relay (not 8102: that is the units' visNet port; 8000 is already open in the Hyper-V firewall rules)",
-    )
-    ap.add_argument(
-        "--mjpeg-size",
-        default=d("mjpeg_size", "480x640"),
-        help="shrink frames to fit WxH, aspect kept, never enlarged (FRITZ!Fon wants 240x320 up to "
-        "about 480x640); 'off' sends the door's frames as they are. Needs Pillow",
-    )
-    ap.add_argument("--mjpeg-fps", type=int, default=d("mjpeg_fps", 4, int), help="door snapshot poll rate")
-    ap.add_argument(
-        "--mjpeg-channel",
-        type=int,
-        default=d("mjpeg_channel", 102, int),
-        help="door streaming channel for the snapshots (102 = 704x576 sub-stream, 101 = 1280x720)",
-    )
-    ap.add_argument("--mjpeg-user", default=d("mjpeg_user", "door"), help="Basic-auth user (with --mjpeg-pass)")
-    ap.add_argument(
-        "--mjpeg-pass", default=d("mjpeg_pass", ""), help="require this Basic-auth password (default: open)"
-    )
-    ap.add_argument(
         "--talkback-port",
         type=int,
         default=d("talkback_port", 9654, int),

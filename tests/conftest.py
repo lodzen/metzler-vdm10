@@ -40,7 +40,6 @@ def make_opts(*argv, env=None):
         "0",
         "--rtsp-port",
         "0",
-        "--no-mjpeg",
     ]
     ap = build_parser(env or {})
     o = ap.parse_args(base + list(argv))
