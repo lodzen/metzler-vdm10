@@ -118,3 +118,17 @@ def test_package_imports_only_the_stdlib_at_module_level():
             n.module.split(".")[0] for n in top if isinstance(n, ast.ImportFrom) and n.module
         }
         assert names <= allowed, (f.name, names - allowed)
+
+
+def test_mjpeg_relay_is_on_by_default_and_switchable():
+    def parse(env, *argv):
+        return build_parser(env).parse_args(["--sip-host", "pbx", *argv])
+
+    o = parse({})
+    assert o.mjpeg is True and o.mjpeg_port == 8000 and o.mjpeg_size == "480x640" and o.mjpeg_fps == 4
+    assert parse({}, "--no-mjpeg").mjpeg is False
+    assert parse({"INDOOR_MJPEG": "0"}).mjpeg is False
+    assert parse({"INDOOR_MJPEG": "0"}, "--mjpeg").mjpeg is True
+    assert (
+        make_opts("--sip-host", "pbx", "--sip-target", "6000").mjpeg is False
+    )  # the shared test options opt out (no port binding in tests)

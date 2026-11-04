@@ -1028,6 +1028,16 @@ def test_dtmf_door_2_unlocks_door_2_only(station_factory, unlocks):
     assert [u[3] for u in unlocks] == [2]
 
 
+def test_active_door_host_only_during_a_door_call(station_factory):
+    """the MJPEG relay polls the door only while it has a call with us"""
+    st = fritz_door_station(station_factory)
+    assert st.active_door_host() is None
+    call = _established_door_call(st)
+    assert st.active_door_host() == "10.0.0.48"
+    call.stop()  # call ended
+    assert st.active_door_host() is None
+
+
 def test_dtmf_other_sequences_do_not_unlock(station_factory, unlocks):
     st = fritz_door_station(station_factory)
     call = _established_door_call(st)

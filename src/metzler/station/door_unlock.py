@@ -19,12 +19,17 @@ BODY = (
 )
 
 
+def digest_opener(url, user, password):
+    """urllib opener answering the outdoor station's HTTP Digest challenge"""
+    mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+    mgr.add_password(None, url, user, password)
+    return urllib.request.build_opener(urllib.request.HTTPDigestAuthHandler(mgr))
+
+
 def isapi_open_door(host, user, password, door, port=80, timeout=5.0):
     """momentary unlock of `door` -> True when the station answered statusCode 1"""
     url = f"http://{host}:{port}/ISAPI/AccessControl/RemoteControl/door/{door}"
-    mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
-    mgr.add_password(None, url, user, password)
-    opener = urllib.request.build_opener(urllib.request.HTTPDigestAuthHandler(mgr))
+    opener = digest_opener(url, user, password)
     req = urllib.request.Request(url, BODY.encode(), {"Content-Type": "application/xml"}, method="PUT")
     try:
         with opener.open(req, timeout=timeout) as r:

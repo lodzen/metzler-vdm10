@@ -28,8 +28,10 @@ def env_default(env, key, default=None, cast=None):
     return v
 
 
-def env_bool(env, key):
-    return str(env.get("INDOOR_" + key.upper(), "")).lower() in ("1", "true", "yes", "on")
+def env_bool(env, key, default=False):
+    """INDOOR_<KEY> as a flag; unset -> `default`"""
+    v = str(env.get("INDOOR_" + key.upper(), "")).lower()
+    return default if v == "" else v in ("1", "true", "yes", "on")
 
 
 def answer_policy(value):
