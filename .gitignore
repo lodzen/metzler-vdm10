@@ -9,10 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-/decompiled*
-/fw_extracted*
-/fw2_extracted*
-/ghidra_*
 /tools/*
 !/tools/check_mermaid.py
 !/tools/mermaid
@@ -21,3 +17,4 @@ node_modules/
 /scripts*
 *.dav
 .env*
+/ghidra_proj*/

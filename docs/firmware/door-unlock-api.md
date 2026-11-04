@@ -109,7 +109,7 @@ shape: `gateWayIndex min="1" max="1"`, `command opt="unlock"`,
 ## 3. Execution — `isapiExecuteRemoteOpenDoor` @ `0x001d2538`
 
 (`vdm10_1.0/isapi/videointercom_do.c:199`; raw decompile
-`FUN_001d2538`, `decompiled/isapi_videointercom_isapi_videointercom_do.c.c`)
+`FUN_001d2538`, `vdm10_1.0/decompiled/isapi_videointercom_isapi_videointercom_do.c.c`)
 
 ```
 switch (byLockType):

@@ -2,7 +2,8 @@
 
 Complete catalog of the HTTP-XML (ISAPI) routes compiled into this unit's
 `hicore` binary — recovered by walking the URI routing table in `.data`
-(`fw_extracted/trees/vistalk/hicore`), not from generic Hikvision
+(the `hicore` ELF from the unpacked rootfs — re-derivable from the `.dav`,
+see `ANALYSIS.md`), not from generic Hikvision
 documentation. Reproduce with `tools/dump_isapi_table.py`.
 
 Table format (verified): each route is a `0x68`-byte record

@@ -20,6 +20,19 @@
   config incl. isort rules in `pyproject.toml`; VSCode formats + sorts imports on save).
 - Types: `uv run ty check` (src + tests; `unresolved-attribute` ignored in `station/` — mixin `self`).
   Standalone stays stdlib-only: `typing`/`pathlib` ok, third-party types stay test-only or TYPE_CHECKING.
+- Firmware V2.0.24 (`INDOOR_V2.0.24_build230608.dav`) artifacts — consolidated into `vdm10_1.0/`:
+  renamed pseudocode tree + `names/*.tsv` maps + per-dir READMEs, `vdm10_1.0/decompiled/` raw Ghidra
+  dumps (incl. `recovered/`, `recovered2/`, `inferred/`, `FUNC_MAP.txt`), `vdm10_1.0/ghidra_out/`
+  (`func_list.txt`, `sip_funcs.txt`, pipeline logs + `check-names.log`), `vdm10_1.0/ghidra_scripts/`
+  (headless dump/recover scripts + ApplyNames + ListNames). `ghidra_proj/hicore_proj` (program
+  `/hicore`, names applied) is kept; `fw_extracted/` was removed — re-derive via the cramfs carve at
+  `.dav` offset 0x6c + the 3DES key recovery documented in ANALYSIS.md.
+- Firmware V2.2.100 (new `INDOOR_V2.2.100build251203.dav`) artifacts — separate from the V2.0.24 set:
+  `ghidra_proj_v2/hicore_v2` (Ghidra project, ARM v8, ~6.4k named funcs), `VDM10_2.0/` (canonical readable
+  output: `human_readable/` renamed pseudocode, `decompiled/` raw dumps, `analysis/registration.md` =
+  registration regression answer, `names/`, `function_index.tsv`, `scripts/` incl. headless scripts),
+  `ghidra_out_v2/` (pipeline logs + func_list). `fw2_extracted/` and `decompiled_v2/` were folded in /
+  cleaned up; re-extract via cramfs at .dav offset 0x6c + old 3DES key.
 - Docs diagrams: `python3 tools/check_mermaid.py` extracts the ```mermaid blocks from docs/*.md into
   docs/diagrams/*.mmd and validates them (one-time: `cd tools/mermaid && npm install`; `--check` = stale check).
 - Linphone account API: `curl -6 -H "x-api-key: $LINPHONE_API_KEY" https://subscribe.linphone.org/api/accounts/me/devices`
