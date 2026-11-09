@@ -69,10 +69,14 @@ class Sent(list):
 def station_factory():
     made = []
 
-    def build(*argv):
+    def build(*argv, **attrs):
         # no provider given -> local headset mode with a test tone (no ALSA/ffmpeg
-        # is touched until a call is answered)
-        st = IndoorStation(make_opts(*(argv or ("--local-tone", "440"))))
+        # is touched until a call is answered); **attrs are set on the parsed
+        # options namespace before the station is constructed (e.g. ha_mode=True)
+        o = make_opts(*(argv or ("--local-tone", "440")))
+        for k, v in attrs.items():
+            setattr(o, k, v)
+        st = IndoorStation(o)
         sent = st.sent = Sent()  # ty: ignore[unresolved-attribute]
         st.send = lambda pkt, addr: (pkt.set("Content-Length", str(len(pkt.body)), True), sent.append((pkt, addr)))  # ty: ignore[invalid-assignment]
         made.append(st)

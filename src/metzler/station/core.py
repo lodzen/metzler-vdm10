@@ -34,6 +34,10 @@ class StationCore:
         self.calls = {}  # intercom/door-side Call-ID -> Call
         self.ended_invites = {}  # ended Call-ID -> (final resp, ts); retransmit answers
         self.out_calls = {}  # our outbound Call-ID -> dict
+        # vdm10-ha hook: callable(str, Call) | None - ring/answered/ended events
+        self.call_events = getattr(o, "call_events", None)
+        self._stop = threading.Event()  # set by shutdown() to wake the daemon loops
+        self._threads = []  # spawned by start_threads(), joined by shutdown()
         self.running = True
         self.local_tag = tag()
         self.local_mode = bool(o.local_audio or o.local_mic or o.local_tone or o.video_player)
@@ -108,10 +112,19 @@ class StationCore:
         call.last_resp = pkt
         self.send(pkt, call.addr)
 
+    def _fire_event(self, name, call):
+        """call_events hook (vdm10-ha): a listener bug must never kill call handling"""
+        if self.call_events:
+            try:
+                self.call_events(name, call)
+            except Exception:
+                log.exception("call_events %s hook failed", name)
+
     def _close_call(self, call, cid):
         """stop the call and drop it from self.calls; its final response is
         kept ~64s (INVITE client transaction lifetime) so a late retransmit
         still gets answered instead of spawning a ghost call"""
+        self._fire_event("ended", call)  # before stop(): listeners see the pre-end state
         if call.last_resp is not None:
             self.ended_invites[cid] = (call.last_resp, time.time())
         call.stop()
@@ -133,7 +146,8 @@ class StationCore:
         down - 408 to the caller (clears the registrar's busy flag), CANCEL on
         the live legs, media stopped. Established calls are never reaped."""
         while self.running:
-            time.sleep(30)
+            if self._stop.wait(30):
+                break
             self._reap_once(time.time())
 
     def _reap_once(self, now):
@@ -143,6 +157,7 @@ class StationCore:
             log.warning("reaping stale call %s (state %s, age %ds)", cid, call.state, now - call.created)
             self.reply(call, self.in_dialog_response(call.invite, "408 Request Timeout", extra_to_tag=call.to_tag))
             self._end_provider_leg(call)
+            call.end_reason = "timeout"
             self._close_call(call, cid)
         for cid, out in list(self.out_calls.items()):
             if now - out.get("ts", now) > self.RING_TIMEOUT:
@@ -165,6 +180,8 @@ class StationCore:
             try:
                 data, addr = self.sip.recvfrom(65535)
             except OSError:
+                return
+            if not data or addr is None:  # shutdown(SHUT_RDWR) wakes recvfrom empty
                 return
             self.handle_datagram(data, addr)
 
@@ -342,6 +359,7 @@ class StationCore:
         # every other outcome (auth challenges, 488, 5xx) becomes a 486
         status = pkt.status_line[8:] if code in (408, 486, 603) else "486 Busy Here"
         self.reply(call, self.in_dialog_response(call.invite, status, extra_to_tag=call.to_tag))
+        call.end_reason = "error"
         self._close_call(call, call.id)
 
     def _provider_invite_response(self, call, pkt):
@@ -405,14 +423,23 @@ class StationCore:
         call.fritz_leg = None
         self.provider_answered(call, resp)
 
-    def run(self):
-        threading.Thread(target=self.listener, daemon=True).start()
-        for r in self.regs:
-            threading.Thread(target=r.register_loop, daemon=True).start()
-        threading.Thread(target=self.heartbeat_loop, daemon=True).start()
-        threading.Thread(target=self._reaper_loop, daemon=True).start()
+    def start_threads(self):
+        """spawn the daemon threads run() manages, WITHOUT installing the
+        SIGTERM handler or blocking on the main loop - for embedded/library
+        use (vdm10-ha drives the station from a non-main thread)"""
+        self._threads = [
+            threading.Thread(target=self.listener, daemon=True),
+            *(threading.Thread(target=r.register_loop, daemon=True) for r in self.regs),
+            threading.Thread(target=self.heartbeat_loop, daemon=True),
+            threading.Thread(target=self._reaper_loop, daemon=True),
+        ]
         if self.o.call:
-            threading.Thread(target=self.call_out, args=(self.o.call,), daemon=True).start()
+            self._threads.append(threading.Thread(target=self.call_out, args=(self.o.call,), daemon=True))
+        for t in self._threads:
+            t.start()
+
+    def run(self):
+        self.start_threads()
         if self.local_mode:
             missing = [
                 t
@@ -485,6 +512,7 @@ class StationCore:
                 self.bye_outbound(cid)
             except OSError:
                 pass
+        self._stop.set()  # wake the daemon loops (reaper/heartbeat/register sleeps)
         for call in list(self.calls.values()):
             self._end_call_on_shutdown(call)
         self.calls.clear()
@@ -498,7 +526,30 @@ class StationCore:
             time.sleep(0.3)
         except OSError:
             pass
+        self._stop_threads()
+
+    def _stop_threads(self):
+        """wake + join every daemon thread shutdown owns. close() alone does NOT
+        wake a blocked recvfrom/accept on Linux - shutdown(SHUT_RDWR) is what
+        interrupts the listener/accept threads; the register poll gets a None
+        sentinel because a Queue.get can't be interrupted."""
+        try:
+            self.sip.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
         self.sip.close()
+        if self.rtsp is not None:  # own accept thread started in __init__
+            self.rtsp.running = False
+            try:
+                self.rtsp.ls.shutdown(socket.SHUT_RDWR)
+                self.rtsp.ls.close()
+            except OSError:
+                pass
+            self.rtsp.join(timeout=2)
+        for r in self.regs:
+            r.reg_queue.put(None)  # sentinel: abort a register_once still blocked on get()
+        for t in self._threads:
+            t.join(timeout=2)
 
     def _end_call_on_shutdown(self, call):
         """established -> BYE the caller; still ringing -> a final response that
@@ -513,4 +564,5 @@ class StationCore:
             self._end_provider_leg(call)
         except OSError:
             pass
+        call.end_reason = "shutdown"
         call.stop()

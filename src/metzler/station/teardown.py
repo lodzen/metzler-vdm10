@@ -32,6 +32,7 @@ class TeardownMixin:
         if call:
             self.reply(call, self.in_dialog_response(call.invite, "487 Request Terminated", extra_to_tag=call.to_tag))
             self._end_provider_leg(call)
+            call.end_reason = "cancel"
             self._close_call(call, cid)
 
     def on_bye(self, pkt, addr):
@@ -40,6 +41,7 @@ class TeardownMixin:
         if cid in self.calls:  # intercom/door caller hung up
             call = self.calls[cid]
             self._end_provider_leg(call)
+            call.end_reason = "bye"
             self._close_call(call, cid)
             return
         for trunk in (self.provider, self.fritz):

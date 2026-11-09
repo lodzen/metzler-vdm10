@@ -49,6 +49,7 @@ class LocalAnswerMixin:
         ok.body = self._local_answer_sdp(call, talkback)
         self.reply(call, ok)
         call.state = "established"
+        self._fire_event("answered", call)
         self._log_local_answer(call, talkback, intercom)
 
     def _should_answer(self, call):

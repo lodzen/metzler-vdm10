@@ -70,7 +70,8 @@ class IntercomRegistration:
             except (RuntimeError, OSError) as e:
                 log.warning("register failed: %s", e)
                 self.registered.clear()
-            time.sleep(max(30, self.o.expires // 2))
+            if self.st._stop.wait(max(30, self.o.expires // 2)):
+                break
 
     def register_once(self):
         while True:  # drain stale responses
@@ -86,6 +87,8 @@ class IntercomRegistration:
                 resp = self.reg_queue.get(timeout=max(0.1, deadline - time.time()))
             except queue.Empty:
                 break
+            if resp is None:  # shutdown sentinel
+                raise RuntimeError("stopping")
             if resp.status_line.startswith(("SIP/2.0 401", "SIP/2.0 407")):
                 hdr = resp.get("WWW-Authenticate") or resp.get("Proxy-Authenticate")
                 self.reg_cseq += 1
@@ -124,8 +127,8 @@ class RegistrationMixin:
         return self.regs[0].build_register(expires, auth)
 
     def heartbeat_loop(self):
-        while not self.registered.is_set() and self.running:
-            time.sleep(2)
+        while not self.registered.is_set() and self.running and not self._stop.wait(2):
+            pass
         while self.running:
             target = self.o.heartbeat_target or self.o.username
             uri = f"sip:{target}@{self.o.server}:{self.o.server_port}"
@@ -144,4 +147,5 @@ class RegistrationMixin:
                 self.send(p, self.server)
             except OSError:
                 pass
-            time.sleep(self.o.heartbeat_interval)
+            if self._stop.wait(self.o.heartbeat_interval):
+                break

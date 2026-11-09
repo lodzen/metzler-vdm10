@@ -2,6 +2,7 @@
 
 from metzler.station.bridge import ProviderBridgeMixin
 from metzler.station.core import StationCore
+from metzler.station.ha_answer import HaAnswerMixin
 from metzler.station.inbound import InboundCallMixin
 from metzler.station.local_answer import LocalAnswerMixin
 from metzler.station.outbound import OutboundCallMixin
@@ -12,6 +13,7 @@ from metzler.station.teardown import TeardownMixin
 class IndoorStation(
     RegistrationMixin,
     ProviderBridgeMixin,
+    HaAnswerMixin,
     LocalAnswerMixin,
     OutboundCallMixin,
     InboundCallMixin,
@@ -23,6 +25,7 @@ class IndoorStation(
     StationCore           socket, RTSP server, receive loop, request routing, run/shutdown
     RegistrationMixin     REGISTER + <regXML> at the registrar, MESSAGE heartbeat
     ProviderBridgeMixin   incoming intercom/door INVITE -> SIP provider leg
+    HaAnswerMixin         ha_mode: parked calls answered/ended programmatically (vdm10-ha)
     LocalAnswerMixin      local headset mode (answer on this machine)
     OutboundCallMixin     --call: dial another station (direct or via registrar)
     InboundCallMixin      inbound SIP app call -> --inbound-target on the intercom

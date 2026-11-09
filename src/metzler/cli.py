@@ -242,18 +242,19 @@ def finalize_options(o, ap):
     """derive provider defaults, check required options, degrade SRTP when
     the optional crypto package is missing (stdlib-only standalone run)"""
     local_mode = bool(o.local_audio or o.local_mic or o.local_tone or o.video_player)
+    embedded = local_mode or getattr(o, "ha_mode", False)  # ha_mode: parked calls, no provider leg needed
     o.sip_domain = o.sip_domain or o.sip_host
     if not o.sip_target and o.sip_user and o.sip_domain:
         o.sip_target = f"sip:{o.sip_user}@{o.sip_domain}"
     o.sip_target = sip_uri(o.sip_target, o.sip_domain)
     if o.fritz_target:
         o.fritz_target = sip_uri(o.fritz_target, o.fritz_domain)
-    for f in ("server", "username", "local_ip") + (() if local_mode else ("sip_host", "sip_target")):
+    for f in ("server", "username", "local_ip") + (() if embedded else ("sip_host", "sip_target")):
         if getattr(o, f) in (None, ""):
             ap.error(f"--{f.replace('_', '-')} required (or set INDOOR_{f.upper()} in .env)")
     if o.fritz and not (o.fritz_user and o.fritz_pass):
         ap.error("--fritz needs credentials (--fritz-user/--fritz-pass, or FRITZ_BOX_USER/FRITZ_BOX_PASSWORD in .env)")
-    if o.sip_srtp and not local_mode and not srtp_available():
+    if o.sip_srtp and not embedded and not srtp_available():
         log.warning(
             "SRTP requested but the 'cryptography' package is missing - "
             "offering plain RTP (install it: uv add cryptography / pip install cryptography)"

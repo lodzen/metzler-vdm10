@@ -37,12 +37,7 @@ class ProviderBridgeMixin:
             return
         if self._provider_loop_guard(pkt, addr):
             return
-        if self.local_mode:
-            log.info("incoming call (headset mode, auto-answer=%s)", self.o.auto_answer)
-        else:
-            log.info(
-                "incoming call INVITE from %s — bridging via %s:%d to %s", addr, *self.provider.proxy, self.o.sip_target
-            )
+        self._log_incoming(pkt, addr)
         self.send(self.in_dialog_response(pkt, "100 Trying"), addr)
 
         call = Call(self, pkt, addr)
@@ -55,8 +50,7 @@ class ProviderBridgeMixin:
         remote_sdp = parse_sdp(pkt.body)
         door_a = next((m for m in remote_sdp["media"] if m["type"] == "audio"), None)
         door_v = next((m for m in remote_sdp["media"] if m["type"] == "video"), None)
-        if self.local_mode:
-            threading.Thread(target=self.answer_locally, args=(call, door_a, door_v, remote_sdp), daemon=True).start()
+        if self._park_call(call, pkt, door_a, door_v, remote_sdp):
             return
         self._attach_bridge_media(call, remote_sdp, door_a, door_v)
         log.info("call classified: %s", "door (video to provider)" if call.door else "intercom (audio only)")
@@ -64,6 +58,39 @@ class ProviderBridgeMixin:
         self.provider.invite(call)
         if self.fritz and self.o.fritz_target:
             self.fritz.invite(call)  # --fritz: the fritzfon races every bridged call
+
+    def _log_incoming(self, pkt, addr):
+        """mode banner for an accepted INVITE: headset / ha_mode / provider bridging"""
+        if self.local_mode:
+            log.info("incoming call (headset mode, auto-answer=%s)", self.o.auto_answer)
+        elif getattr(self.o, "ha_mode", False):
+            log.info("incoming call (ha_mode - parking for explicit HA answer)")
+        else:
+            log.info(
+                "incoming call INVITE from %s — bridging via %s:%d to %s", addr, *self.provider.proxy, self.o.sip_target
+            )
+
+    def _park_call(self, call, pkt, door_a, door_v, remote_sdp):
+        """non-trunk paths: ha_mode parks the call ringing for an explicit
+        answer_call/hangup_call (no provider leg, no local answer - note that
+        auto_answer="off" alone only gates answer_locally inside local_mode,
+        so without this branch the no-provider path would hit provider.invite);
+        local_mode hands the call to answer_locally on a thread.
+        Returns True when the call was handled and must NOT be bridged."""
+        if getattr(self.o, "ha_mode", False):
+            call.door = bool(door_a) or self._is_door_call(pkt)
+            call.kind = "door" if door_a else "intercom"
+            log.info(
+                "call %s parked ringing (ha_mode, %s) - awaiting explicit answer",
+                call.id,
+                "door" if call.door else "intercom",
+            )
+            self._fire_event("ring", call)
+            return True
+        if self.local_mode:
+            threading.Thread(target=self.answer_locally, args=(call, door_a, door_v, remote_sdp), daemon=True).start()
+            return True
+        return False
 
     def _provider_loop_guard(self, pkt, addr):
         """True if this INVITE must not be bridged to the provider (handled here)"""
@@ -165,6 +192,7 @@ class ProviderBridgeMixin:
         self.reply(call, ok)
         (call.trunk or self.provider).ack(call, resp)  # the winning leg's trunk
         call.state = "established"
+        self._fire_event("answered", call)
         if not call.provider_media:
             self._bind_srtp(call, resp_sdp)
             self._connect_media(call, prov_a, media_addr(resp_sdp, "video"))

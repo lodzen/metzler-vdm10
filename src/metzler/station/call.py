@@ -37,6 +37,7 @@ class Call:
         self.dtmf = ""  # recent trunk-leg digits (Signal=/RFC4733)
         self.dtmf_ts = 0.0  # last digit time - sequences expire
         self.unlock_ts = 0.0  # last unlock send (duplicate-transport guard)
+        self.end_reason = None  # set before _close_call: cancel|bye|timeout|declined|error|shutdown
 
     def stop(self):
         self.state = "ended"
