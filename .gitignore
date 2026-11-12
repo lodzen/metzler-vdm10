@@ -11,6 +11,8 @@ wheels/
 
 /tools/*
 !/tools/check_mermaid.py
+!/tools/simulate_call.py
+!/tools/dump_isapi_table.py
 !/tools/mermaid
 /tools/mermaid/node_modules/
 node_modules/
