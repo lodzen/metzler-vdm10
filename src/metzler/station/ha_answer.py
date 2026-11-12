@@ -18,7 +18,8 @@ class HaAnswerMixin:
         """answer the parked call `cid`. Returns False when there is no ringing
         call with that Call-ID (e.g. the caller already cancelled)."""
         call = self.calls.get(cid)
-        if call is None or call.state != "early" or not self.running:
+        # "early" = parked only; "bridging" = parked + a trunk leg is racing
+        if call is None or call.state not in ("early", "bridging") or not self.running:
             return False
         remote_sdp = parse_sdp(call.invite.body)
         talkback = not remote_sdp["media"]  # hicore intercom offers carry no m= lines
@@ -34,13 +35,14 @@ class HaAnswerMixin:
             call.state = "closed"
             return False
         call.local.start()
-        if call.state != "early":  # a CANCEL/BYE raced the answer
+        if call.state not in ("early", "bridging"):  # a CANCEL/BYE raced the answer
             call.local.stop()
             return False
         ok = self.in_dialog_response(call.invite, "200 OK", ctype="application/sdp", extra_to_tag=call.to_tag)
         ok.body = self._ha_answer_sdp(call, talkback)
         self.reply(call, ok)
         call.state = "established"
+        self._end_provider_leg(call)  # ha_mode + trunk: CANCEL the racing legs
         self._fire_event("answered", call)
         log.info("ha call answered (%s, %s)", "intercom-rtsp" if intercom else "rtp", call.id)
         return True

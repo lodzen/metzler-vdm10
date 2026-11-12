@@ -3,9 +3,10 @@ Outgoing packets are recorded (conftest.station_factory), never sent."""
 
 from metzler.station.ha_media import SILENCE, HaCallMedia, HaIntercomMedia
 from test_door_video import door_invite
-from test_station import intercom_invite
+from test_station import intercom_invite, provider_invites, response
 
 CALLER = ("127.0.0.1", 5097)
+PROXY = ("127.0.0.1", 5099)
 
 
 def build_ha(station_factory, **attrs):
@@ -122,3 +123,90 @@ def test_start_threads_spawns_without_main_loop(station_factory):
     st = build_ha(station_factory)
     st.start_threads()
     assert st.listener.__name__ == "listener"  # sane callable spawned
+
+
+# ------------------------------------------------- ha_mode + trunk (the race)
+#
+# with a provider or fritz trunk configured under ha_mode the call is parked
+# for HA *and* INVITEd to the trunk: whichever side 200-OKs first wins, the
+# loser gets CANCELed.
+
+
+def build_ha_trunk(station_factory, **attrs):
+    return station_factory(
+        "--sip-host",
+        "127.0.0.1",
+        "--sip-port",
+        "5099",
+        "--sip-target",
+        "6000",
+        ha_mode=True,
+        **attrs,
+    )
+
+
+def test_ha_mode_with_provider_parks_and_rings_the_trunk(station_factory):
+    events = []
+    st = build_ha_trunk(station_factory, call_events=lambda n, c: events.append(n))
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    # "bridging" = parked for HA + the trunk leg is ringing (the race is on)
+    assert call.state == "bridging" and events == ["ring"]
+    assert provider_invites(st), "provider leg must ring alongside the parked HA call"
+    assert call.trunk is st.provider
+
+
+def test_ha_answer_cancels_the_racing_trunk_leg(station_factory):
+    st = build_ha_trunk(station_factory)
+    st.on_invite(door_invite(), CALLER)
+    pcid = provider_invites(st)[0].get("Call-ID")
+    assert st.answer_call("doorcall1")
+    cancels = [p for p, a in st.sent if a == PROXY and p.status_line.startswith("CANCEL")]
+    assert cancels and cancels[0].get("Call-ID") == pcid
+
+
+def test_provider_answer_wins_the_race_and_reports_other(station_factory):
+    events = []
+    st = build_ha_trunk(station_factory, call_events=lambda n, c: events.append((n, c.state)))
+    st.on_invite(door_invite(), CALLER)
+    inv = provider_invites(st)[0]
+    st.on_response(
+        response(
+            inv,
+            "200 OK",
+            "Content-Type: application/sdp",
+            "v=0\r\no=- 1 1 IN IP4 10.9.9.9\r\ns=-\r\nc=IN IP4 10.9.9.9\r\n"
+            "t=0 0\r\nm=audio 41002 RTP/AVP 0\r\na=rtpmap:0 PCMU/8000\r\n",
+        ),
+        PROXY,
+    )
+    call = st.calls["doorcall1"]
+    assert call.state == "established" and events[-1] == ("answered", "established")
+    # HA lost the race: answering now must not double-200 the door
+    assert st.answer_call("doorcall1") is False
+    # and the door side got exactly one 200 OK (from provider_answered)
+    assert [p.status_line for p, a in st.sent if a == CALLER].count("SIP/2.0 200 OK") == 1
+
+
+def test_ha_mode_fritz_only_does_not_crash(station_factory):
+    """fritz trunk without a provider: the guarded provider invite must skip"""
+    st = station_factory(
+        "--fritz",
+        "--fritz-host",
+        "127.0.0.1",
+        "--fritz-port",
+        "5077",
+        "--fritz-user",
+        "620",
+        "--fritz-pass",
+        "pw",
+        "--fritz-call-button",
+        "1",
+        ha_mode=True,
+    )
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    # fritz legs live in call.fritz_leg and don't flip the door-leg state
+    assert call.state == "early" and call.fritz_leg is not None
+    fritz_invites = [p for p, a in st.sent if a == ("127.0.0.1", 5077) and p.status_line.startswith("INVITE")]
+    assert fritz_invites, "the fritz leg must ring alongside the parked HA call"

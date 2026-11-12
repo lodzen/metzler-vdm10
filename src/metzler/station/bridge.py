@@ -54,8 +54,9 @@ class ProviderBridgeMixin:
             return
         self._attach_bridge_media(call, remote_sdp, door_a, door_v)
         log.info("call classified: %s", "door (video to provider)" if call.door else "intercom (audio only)")
-        call.trunk = self.provider  # prov_* describes the provider leg until the fritz leg wins
-        self.provider.invite(call)
+        if self.provider:
+            call.trunk = self.provider  # prov_* describes the provider leg until the fritz leg wins
+            self.provider.invite(call)
         if self.fritz and self.o.fritz_target:
             self.fritz.invite(call)  # --fritz: the fritzfon races every bridged call
 
@@ -63,8 +64,10 @@ class ProviderBridgeMixin:
         """mode banner for an accepted INVITE: headset / ha_mode / provider bridging"""
         if self.local_mode:
             log.info("incoming call (headset mode, auto-answer=%s)", self.o.auto_answer)
-        elif getattr(self.o, "ha_mode", False):
+        elif getattr(self.o, "ha_mode", False) and not (self.provider or self.fritz):
             log.info("incoming call (ha_mode - parking for explicit HA answer)")
+        elif getattr(self.o, "ha_mode", False):
+            log.info("incoming call (ha_mode + trunk race - first answer wins)")
         else:
             log.info(
                 "incoming call INVITE from %s — bridging via %s:%d to %s", addr, *self.provider.proxy, self.o.sip_target
@@ -80,13 +83,24 @@ class ProviderBridgeMixin:
         if getattr(self.o, "ha_mode", False):
             call.door = bool(door_a) or self._is_door_call(pkt)
             call.kind = "door" if door_a else "intercom"
+            self._fire_event("ring", call)
+            if not (self.provider or (self.fritz and self.o.fritz_target)):
+                log.info(
+                    "call %s parked ringing (ha_mode, %s) - awaiting explicit answer",
+                    call.id,
+                    "door" if call.door else "intercom",
+                )
+                return True
+            # ha_mode + trunk(s): park for HA *and* ring the provider/fritz
+            # legs - whichever side 200-OKs first wins, the loser is CANCELed
+            # (provider win -> provider_answered; HA win -> answer_call +
+            # _end_provider_leg). Fall through to the bridge path.
             log.info(
-                "call %s parked ringing (ha_mode, %s) - awaiting explicit answer",
+                "call %s parked ringing + racing trunk legs (ha_mode, %s)",
                 call.id,
                 "door" if call.door else "intercom",
             )
-            self._fire_event("ring", call)
-            return True
+            return False
         if self.local_mode:
             threading.Thread(target=self.answer_locally, args=(call, door_a, door_v, remote_sdp), daemon=True).start()
             return True
@@ -191,6 +205,7 @@ class ProviderBridgeMixin:
         ok.body = self._indoor_answer(call, resp_sdp, prov_a)
         self.reply(call, ok)
         (call.trunk or self.provider).ack(call, resp)  # the winning leg's trunk
+        call.prov_established = True
         call.state = "established"
         self._fire_event("answered", call)
         if not call.provider_media:

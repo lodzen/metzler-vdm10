@@ -19,7 +19,9 @@ class TeardownMixin:
             call.fritz_leg = None
         trunk = call.trunk or self.provider  # the live/winning SIP leg
         if trunk and call.prov_call_id in trunk.calls:
-            if call.state == "established":
+            # BYE/CANCEL follows the trunk leg's own state, not call.state
+            # (in ha_mode the door leg is established while the trunk still rings)
+            if call.prov_established:
                 trunk.bye(call)
             else:
                 trunk.cancel(call)

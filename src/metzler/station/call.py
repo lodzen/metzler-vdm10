@@ -34,6 +34,7 @@ class Call:
         self.prov_branch = None  # Via branch of the current INVITE txn
         self.prov_cseq = 0  # CSeq of the current INVITE (for ACKs)
         self.prov_plain = False  # True after a 488 -> re-offered without SRTP
+        self.prov_established = False  # trunk leg got 200 OK (BYE it, not CANCEL)
         self.dtmf = ""  # recent trunk-leg digits (Signal=/RFC4733)
         self.dtmf_ts = 0.0  # last digit time - sequences expire
         self.unlock_ts = 0.0  # last unlock send (duplicate-transport guard)

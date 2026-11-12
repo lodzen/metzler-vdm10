@@ -19,7 +19,7 @@ def free_udp_port():
     return port
 
 
-def make_opts(*argv, env=None):
+def make_opts(*argv, env=None, **pre):
     """parse argv through the script's own parser + finalize_options"""
     base = [
         "--server",
@@ -43,6 +43,8 @@ def make_opts(*argv, env=None):
     ]
     ap = build_parser(env or {})
     o = ap.parse_args(base + list(argv))
+    for k, v in pre.items():  # pre-finalize attrs (e.g. ha_mode, like vdm10-ha does)
+        setattr(o, k, v)
     finalize_options(o, ap)
     return o
 
@@ -73,7 +75,7 @@ def station_factory():
         # no provider given -> local headset mode with a test tone (no ALSA/ffmpeg
         # is touched until a call is answered); **attrs are set on the parsed
         # options namespace before the station is constructed (e.g. ha_mode=True)
-        o = make_opts(*(argv or ("--local-tone", "440")))
+        o = make_opts(*(argv or ("--local-tone", "440")), ha_mode=attrs.pop("ha_mode", False))
         for k, v in attrs.items():
             setattr(o, k, v)
         st = IndoorStation(o)

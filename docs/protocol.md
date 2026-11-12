@@ -346,3 +346,47 @@ firmware**, not by the sim:
   station's `call_num`.
 - `OPTIONS` probes must get `200 OK` — the registrar liveness check depends
   on it.
+
+## 9. LAN discovery (verified live on the 10.0.0.0/24 net)
+
+`metzler/discovery.py` implements both probes; evidence below is from probing
+the real devices.
+
+### SADP — outdoor stations
+
+`<?xml?><Probe><Uuid>..</Uuid><Types>inquiry</Types></Probe>` to
+`239.255.255.250:37020` (multicast **or unicast per host** — the door answers
+both). Reply is `<ProbeMatch>` XML: `DeviceType 57619`,
+`DeviceDescription VDM10-VM-POE`, `DeviceSN`, `MAC`, `IPv4Address`,
+`SoftwareVersion`, `HttpPort`, `CommandPort`, door fields
+(`Door1UnlockDuration`, `Door2Enable`, `DisableRing`, `Activated`).
+VDM10 OUI: `bc:9b:5e:*`.
+
+The indoor units carry SADP **client** code (`sadpc_*`,
+`sadpc_confrelatedev_check_doorDev` — the indoor finds doors, not the other
+way round) and `ProbeMatch` builders, but **do not answer inquiries** in this
+deployment (multicast and full unicast sweep both silent; also no periodic
+announcements on 37020 — `sadp_timer_sendto_UI` targets the local UI).
+
+### Registrar fingerprint — the main indoor
+
+A kind-1 REGISTER to `host:5065` is the only reliable main-indoor probe:
+
+- **the registrar replies to source-IP port 5060** — `htons(5060)` hard-coded
+  in `send_reply` (`sip/server/registrar.c`), NOT the Via port. The probing
+  socket must bind :5060 or the replies are lost (all probes to 55555/
+  ephemeral ports appeared "silent").
+- Any SIP reply = registrar present = **main indoor**. Extension indoors run
+  no registrar and stay silent on :5065.
+- Status maps slot state: `410 Sip Gone` = `sipNum` taken by a device,
+  `200 OK` = free — but a `200` **inserts a dev_reg row**; always follow with
+  an `Expires: 0` unregister (verified: `200 OK`, row deleted via
+  `serial_no=`/`dev_ip=` match).
+- `User-Agent: eXosip/3.6.0` + `Content-Type: text/xml` headers as the
+  firmware sends them.
+
+TCP signature shared by all VDM10 units (doors + indoors): `{554, 8000,
+8102}`; doors additionally have HTTP `{80, 443}`. 8000 is the SDK port
+(binary protocol, no HTTP), 8102 sends a `000000c8 00000001 <32-hex ASCII>`
+session hello on connect. Port scans alone cannot tell main from extension —
+only the :5065 REGISTER fingerprint does.
