@@ -210,6 +210,18 @@ def is_vdm10_host(ip: str) -> bool:
     return True  # outside Linux / no arp entry -> don't filter it out
 
 
+def docker_detected() -> bool:
+    """running inside a container -> derived IPs are the NAT'd bridge address,
+    useless for SIP: callers must ask the user for the host's real LAN IP."""
+    if Path("/.dockerenv").exists():
+        return True
+    try:
+        cgroup = Path("/proc/1/cgroup").read_text(errors="replace")
+    except OSError:
+        return False
+    return any(marker in cgroup for marker in ("docker", "containerd", "kubepods", "podman"))
+
+
 def local_ip_for(host, port=REGISTRAR_PORT) -> str:
     """the local IP used to reach ``host`` (UDP connect, no traffic sent)."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -4,6 +4,7 @@ import socket
 import threading
 
 from metzler.discovery import (
+    docker_detected,
     free_extension,
     is_vdm10_outdoor,
     local_ip_for,
@@ -199,3 +200,25 @@ def test_local_ip_and_subnet():
     assert local_ip_for("127.0.0.1", 5065) == "127.0.0.1"
     s = subnet_of("10.0.0.123")
     assert s[0] == "10.0.0.1" and s[-1] == "10.0.0.254" and len(s) == 254
+
+
+def test_docker_detected(monkeypatch, tmp_path):
+    from pathlib import Path
+    from unittest.mock import patch
+
+    real_exists, real_read = Path.exists, Path.read_text
+
+    def fake_exists(self):
+        return str(self) == "/.dockerenv" or real_exists(self)
+
+    def fake_read(self, **kw):
+        if str(self) == "/proc/1/cgroup":
+            return "0::/"
+        return real_read(self, **kw)
+
+    with patch.object(Path, "exists", fake_exists):
+        assert docker_detected() is True
+    with patch.object(Path, "read_text", fake_read):
+        assert docker_detected() is False
+        with patch.object(Path, "read_text", lambda s, **k: "0::/docker/abc" if str(s) == "/proc/1/cgroup" else ""):
+            assert docker_detected() is True
