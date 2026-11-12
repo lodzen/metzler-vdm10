@@ -63,7 +63,7 @@ known-first-party = ["metzler"]
 include = ["src", "tests"]
 
 [tool.ty.environment]
-root = ["./src", "./tests"]
+root = ["./src", "./tests", "./tools"]
 
 # IndoorStation is assembled from mixins that share `self`; each mixin
 # references attributes defined by its siblings, which is uncheckable.
