@@ -247,6 +247,11 @@ Target a door-type unit for a real unlock; on a room-type VDM10 expect
 `statusCode 4 / subStatusCode notSupport` (§5/§6). `curl -v` shows a
 `401` + `WWW-Authenticate: Digest` challenge → resend.
 
+> **Verified live (2026-11-19):** `GET /ISAPI/Streaming/channels/101/picture`
+> on the outdoor station rejects HTTP Basic with `401`; with the Digest
+> challenge answered it returns `200` + the JPEG frame (`admin` creds) —
+> confirms the digest-only path on a second route family.
+
 ## 8. Unknowns / not established
 
 - **Final actuation.** The ISAPI→`vns_opendoor_up` chain ends in (a) an

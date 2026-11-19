@@ -1,8 +1,12 @@
 """tests for metzler.discovery - localhost fakes, nothing leaves 127.0.0.1."""
 
+import re
 import socket
 import threading
 
+import pytest
+
+from metzler import discovery
 from metzler.discovery import (
     docker_detected,
     free_extension,
@@ -159,7 +163,7 @@ def test_free_extension_picks_lowest_free():
     t.join(timeout=2)
 
 
-def test_discover_localhost_registrar():
+def test_discover_localhost_registrar(_sip_ua_port_free):
     """end-to-end: fake :8000 TCP candidate + :5065 registrar -> found."""
     from metzler.discovery import discover
 
@@ -222,3 +226,177 @@ def test_docker_detected(monkeypatch, tmp_path):
         assert docker_detected() is False
         with patch.object(Path, "read_text", lambda s, **k: "0::/docker/abc" if str(s) == "/proc/1/cgroup" else ""):
             assert docker_detected() is True
+
+
+# --- config-flow status probes (register_status / provider_status) ---------
+
+
+class _ToParsingRegistrar:
+    """answers REGISTERs per `statuses` {call_num: code}; unlisted slots get
+    200, Expires:0 always 200. Parses `To:` - the probe packet carries the
+    number there (register_status/_slot_status dialect)."""
+
+    def __init__(self, statuses: dict):
+        self.statuses = statuses
+        self.received: list[bytes] = []
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind(("127.0.0.1", 0))
+        self.port = self.sock.getsockname()[1]
+        self.sock.settimeout(0.1)
+        self.running = True
+        self.thread = threading.Thread(target=self._serve, daemon=True)
+        self.thread.start()
+
+    def _serve(self):
+        while self.running:
+            try:
+                data, addr = self.sock.recvfrom(65535)
+            except (TimeoutError, OSError):
+                continue
+            if not data.startswith(b"REGISTER"):
+                continue
+            self.received.append(data)
+            head = data.decode("utf-8", "replace")
+            m = re.search(r"To: <sip:(\d+)@", head)
+            call_num = m.group(1) if m else ""
+            code = 200 if "Expires: 0" in head else self.statuses.get(call_num, 200)
+            reason = {200: "OK", 410: "Sip Gone", 400: "Bad Request"}[code]
+            reply = f"SIP/2.0 {code} {reason}\r\nTo: <sip:{call_num}@127.0.0.1:{self.port}>;tag=x\r\n\r\n"
+            self.sock.sendto(reply.encode(), addr)
+
+    def close(self):
+        self.running = False
+        self.thread.join(timeout=1)
+        self.sock.close()
+
+
+@pytest.fixture
+def _sip_ua_port_free():
+    """register_status binds :5060 for the reply - skip when it's taken"""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.bind(("127.0.0.1", discovery.SIP_UA_PORT))
+    except OSError:
+        pytest.skip("port 5060 busy")
+    finally:
+        s.close()
+
+
+def test_probe_numbers_stay_11_chars():
+    for slot in discovery.EXT_SLOTS:
+        assert len(f"{discovery.EXT_BASE}{slot}") == 11
+
+
+def test_build_register_keeps_regxml_on_unregister():
+    pkt = discovery._build_register("127.0.0.1", "10000000001", "127.0.0.1", 0, "HAPROBE000001", "bc:9b:5e:00:00:01")
+    assert b"Expires: 0" in pkt
+    assert b"<regDevSerial>HAPROBE000001</regDevSerial>" in pkt
+
+
+def test_probe_reply_expect_filters_stray_datagrams():
+    """a late unregister-200 for a previous slot must not count as the answer
+    to the next slot's probe - the reply To carries the probed number."""
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind(("127.0.0.1", 0))
+    sender = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        addr = ("127.0.0.1", sock.getsockname()[1])
+        sender.sendto(b"SIP/2.0 200 OK\r\nTo: <sip:10000000001@x>\r\n\r\n", addr)
+        sender.sendto(b"SIP/2.0 410 Sip Gone\r\nTo: <sip:10000000002@x>\r\n\r\n", addr)
+        line = discovery._probe_reply(sock, 1.0, expect="10000000002")
+        assert line == "SIP/2.0 410 Sip Gone"
+    finally:
+        sock.close()
+        sender.close()
+
+
+def test_register_status_reports_held_slot(_sip_ua_port_free):
+    reg = _ToParsingRegistrar({"10000000001": 410})
+    try:
+        assert discovery.register_status("127.0.0.1", "10000000001", "HAPROBE001", "127.0.0.1", port=reg.port) == 410
+    finally:
+        reg.close()
+
+
+def test_register_status_200_cleans_the_probe_row(_sip_ua_port_free):
+    reg = _ToParsingRegistrar({})
+    try:
+        assert discovery.register_status("127.0.0.1", "10000000002", "HAPROBE001", "127.0.0.1", port=reg.port) == 200
+        assert any(b"Expires: 0" in p and b"10000000002" in p for p in reg.received)
+    finally:
+        reg.close()
+
+
+def test_register_status_none_on_silence(_sip_ua_port_free):
+    free = _bind()
+    dead = free.getsockname()[1]
+    free.close()
+    assert discovery.register_status("127.0.0.1", "10000000001", "HAPROBE001", "127.0.0.1", port=dead, wait=0.2) is None
+
+
+class _FakeProvider:
+    """Standard-SIP registrar: challenges REGISTER with a digest 401, then
+    accepts (or keeps rejecting when ``accept`` is False)."""
+
+    def __init__(self, accept=True):
+        self.accept = accept
+        self.received: list[bytes] = []
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock.bind(("127.0.0.1", 0))
+        self.port = self.sock.getsockname()[1]
+        self.sock.settimeout(0.1)
+        self.running = True
+        self.thread = threading.Thread(target=self._serve, daemon=True)
+        self.thread.start()
+
+    def _serve(self):
+        while self.running:
+            try:
+                data, addr = self.sock.recvfrom(65535)
+            except (TimeoutError, OSError):
+                continue
+            if not data.startswith(b"REGISTER"):
+                continue
+            self.received.append(data)
+            head = data.decode("utf-8", "replace")
+            m = re.search(r"Call-ID: (\S+)", head)
+            cid = m.group(1) if m else ""
+            if "Expires: 0" in head or (self.accept and "Authorization: Digest" in head):
+                self.sock.sendto(f"SIP/2.0 200 OK\r\nCall-ID: {cid}\r\n\r\n".encode(), addr)
+            else:
+                self.sock.sendto(
+                    (
+                        f"SIP/2.0 401 Unauthorized\r\nCall-ID: {cid}\r\n"
+                        f'WWW-Authenticate: Digest realm="test",nonce="abc123",qop=auth\r\n\r\n'
+                    ).encode(),
+                    addr,
+                )
+
+    def close(self):
+        self.running = False
+        self.thread.join(timeout=1)
+        self.sock.close()
+
+
+def test_provider_status_digest_then_unregister():
+    srv = _FakeProvider()
+    try:
+        code = discovery.provider_status("127.0.0.1", srv.port, "u", "p", "test.local", "127.0.0.1", timeout=3.0)
+        assert code == 200
+        assert any(b"Authorization: Digest" in p for p in srv.received), "must answer the 401 challenge"
+        assert any(b"Expires: 0" in p for p in srv.received), "200 must be cleaned up again"
+    finally:
+        srv.close()
+
+
+def test_provider_status_auth_rejected():
+    srv = _FakeProvider(accept=False)
+    try:
+        code = discovery.provider_status("127.0.0.1", srv.port, "u", "bad", "test.local", "127.0.0.1", timeout=3.0)
+        assert code == 401
+    finally:
+        srv.close()
+
+
+def test_provider_status_none_on_timeout():
+    assert discovery.provider_status("127.0.0.1", 5998, "u", "p", "test.local", "127.0.0.1", timeout=0.5) is None

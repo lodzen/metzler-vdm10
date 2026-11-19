@@ -69,7 +69,10 @@ def test_register_and_unregister(station_factory):
     assert p.get("Content-Type") == "text/xml" and "<regXML>" in p.body
     assert p.get("User-Agent") == "eXosip/3.6.0"
     off = st.build_register(expires=0)
-    assert off.get("Expires") == "0" and off.body == ""
+    assert off.get("Expires") == "0"
+    # regXML stays on the unregister: the registrar's delete clause is
+    # `serial_no='<s>' or dev_ip='<src>'` - the serial only matches via the body
+    assert "<regDevSerial>Q12345678</regDevSerial>" in off.body
 
 
 def test_in_dialog_response_echoes_vias_and_adds_to_tag(station_factory):

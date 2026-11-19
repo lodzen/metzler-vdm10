@@ -1,6 +1,9 @@
 """ha_mode (vdm10-ha): parked ringing calls, explicit answer/hangup, event hook.
 Outgoing packets are recorded (conftest.station_factory), never sent."""
 
+import time
+
+from conftest import sip
 from metzler.station.ha_media import SILENCE, HaCallMedia, HaIntercomMedia
 from test_door_video import door_invite
 from test_station import intercom_invite, provider_invites, response
@@ -210,3 +213,126 @@ def test_ha_mode_fritz_only_does_not_crash(station_factory):
     assert call.state == "early" and call.fritz_leg is not None
     fritz_invites = [p for p, a in st.sent if a == ("127.0.0.1", 5077) and p.status_line.startswith("INVITE")]
     assert fritz_invites, "the fritz leg must ring alongside the parked HA call"
+
+
+def test_start_threads_starts_the_provider_register_loop(linphone_station):
+    """the HA embedding path must bring the provider trunk up too - before
+    _start_trunks moved into start_threads, an embedded station never
+    REGISTERed at the provider ('linphone not registered' bug)"""
+    st = linphone_station
+    try:
+        st.start_threads()
+        deadline = time.time() + 5
+        reg = None
+        while time.time() < deadline and reg is None:
+            reg = next(
+                (p for p, _ in st.sent if p.status_line.startswith("REGISTER sip:sip.linphone.org")),
+                None,
+            )
+            time.sleep(0.05)
+        assert reg is not None, "provider REGISTER was never sent"
+        assert reg.get("Expires") == "600"  # real register, not an unregister
+        # registrar answers 200 -> the loop marks the trunk registered
+        st.provider.reg_queue.put(sip("SIP/2.0 200 OK\nVia: SIP/2.0/UDP 127.0.0.1;rport=5060\n"))
+        deadline = time.time() + 5
+        while time.time() < deadline and not st.provider.registered.is_set():
+            time.sleep(0.05)
+        assert st.provider.registered.is_set()
+    finally:
+        st.shutdown()
+    unreg = next(
+        (p for p, _ in reversed(st.sent) if p.status_line.startswith("REGISTER sip:sip.linphone.org")),
+        None,
+    )
+    assert unreg is not None and unreg.get("Expires") == "0"  # shutdown unregistered the trunk
+
+
+def test_start_threads_skips_register_on_a_credential_less_trunk(trunk_station):
+    """IP-authenticated PBX trunk: no REGISTER loop, nothing to the proxy"""
+    st = trunk_station
+    try:
+        st.start_threads()
+        time.sleep(0.3)
+        assert not any(addr == ("127.0.0.1", 5099) for _, addr in st.sent)
+        assert not st.provider.registered.is_set()
+    finally:
+        st.shutdown()
+        # and without needs_register() shutdown must not unregister either
+        assert not any(addr == ("127.0.0.1", 5099) for _, addr in st.sent)
+
+
+# ------------------------------------------------------- ha_mode + trunk race
+
+
+def test_ha_mode_trunk_rings_the_provider_in_parallel(trunk_station):
+    """pressing the HA extension must ring the provider too - before the race,
+    ha_mode parked the call and provider.invite was never reached"""
+    st = trunk_station
+    st.o.ha_mode = True
+    events = []
+    st.call_events = lambda n, c: events.append(n)
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    assert events == ["ring"] and call.state == "bridging"  # parked for HA + trunk ringing
+    invite = next(p for p, _ in st.sent if p.status_line.startswith("INVITE"))
+    assert invite.get("Call-ID") == call.prov_call_id
+    assert call.prov_call_id in st.provider.calls
+
+
+def test_ha_answer_cancels_the_racing_provider_leg(trunk_station):
+    st = trunk_station
+    st.o.ha_mode = True
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    assert st.answer_call("doorcall1")
+    assert call.state == "established"
+    assert st.sent.first("CANCEL").get("Call-ID") == call.prov_call_id
+    assert call.prov_call_id not in st.provider.calls
+
+
+def test_ha_hangup_cancels_the_racing_provider_leg(trunk_station):
+    st = trunk_station
+    st.o.ha_mode = True
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    assert st.hangup_call("doorcall1")
+    assert st.sent.first("CANCEL").get("Call-ID") == call.prov_call_id
+    assert call.prov_call_id not in st.provider.calls
+
+
+def test_provider_win_answers_the_indoor_leg(trunk_station):
+    st = trunk_station
+    st.o.ha_mode = True
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    st.provider_answered(
+        call,
+        sip(
+            "SIP/2.0 200 OK\nFrom: <sip:a@b>;tag=1\nTo: <sip:t@x>;tag=9\n"
+            "Contact: <sip:t@127.0.0.1:5060>\nContent-Type: application/sdp\n\n"
+            "v=0\nc=IN IP4 127.0.0.1\nm=audio 5000 RTP/AVP 0\n"
+        ),
+    )
+    assert call.state == "established"
+    assert st.sent.first("SIP/2.0 200")  # the indoor caller got answered
+    assert not st.answer_call("doorcall1")  # too late - the provider won
+
+
+def test_provider_200_losing_the_ha_race_is_ignored(trunk_station):
+    """a provider 200 that crosses the CANCEL finds no live leg - the call
+    must not be answered to the indoor a second time"""
+    st = trunk_station
+    st.o.ha_mode = True
+    st.on_invite(door_invite(), CALLER)
+    call = st.calls["doorcall1"]
+    st.answer_call("doorcall1")
+    pcid = call.prov_call_id
+    oks_before = [p.status_line for p, a in st.sent if a == CALLER].count("SIP/2.0 200 OK")
+    st.on_response(
+        sip(
+            f"SIP/2.0 200 OK\nFrom: <sip:a@b>;tag=1\nTo: <sip:t@x>;tag=9\nCall-ID: {pcid}\nContact: <sip:t@127.0.0.1:5060>\n"
+        ),
+        PROXY,
+    )
+    assert pcid not in st.provider.calls
+    assert [p.status_line for p, a in st.sent if a == CALLER].count("SIP/2.0 200 OK") == oks_before

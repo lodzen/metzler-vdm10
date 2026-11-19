@@ -41,6 +41,9 @@ class HaAnswerMixin:
         ok = self.in_dialog_response(call.invite, "200 OK", ctype="application/sdp", extra_to_tag=call.to_tag)
         ok.body = self._ha_answer_sdp(call, talkback)
         self.reply(call, ok)
+        # HA won the race against the trunk legs - CANCEL them before marking
+        # the call established (teardown keys BYE vs CANCEL off call.state)
+        self._end_provider_leg(call)
         call.state = "established"
         self._end_provider_leg(call)  # ha_mode + trunk: CANCEL the racing legs
         self._fire_event("answered", call)
@@ -84,5 +87,6 @@ class HaAnswerMixin:
             code = "486 Busy Here" if ":5065" in (call.invite.get("Via") or "") else "487 Request Terminated"
             self.reply(call, self.in_dialog_response(call.invite, code, extra_to_tag=call.to_tag))
             call.end_reason = "declined"
+        self._end_provider_leg(call)  # stop any trunk legs still ringing
         self._close_call(call, cid)
         return True

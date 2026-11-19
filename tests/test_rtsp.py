@@ -76,6 +76,17 @@ def test_sip_intercom_media_splits_peer_audio_into_160_byte_frames():
     assert media.mic_frame() == b"\xff" * 160  # underrun -> silence
 
 
+def test_sip_intercom_media_sheds_stale_peer_audio_to_bound_latency():
+    """early media fills rxq before the caller's pull runs; oldest-first
+    serving would pin that backlog as a constant delay - mic_frame() sheds
+    down to ~8 frames so served audio stays near real-time."""
+    media = SipIntercomMedia.__new__(SipIntercomMedia)
+    media.rxq = collections.deque(bytes([i]) * 160 for i in range(50))
+    media.tx = 0
+    assert media.mic_frame() == bytes([42]) * 160  # queue shed 50 -> 8, oldest served next
+    assert len(media.rxq) == 7
+
+
 def test_puller_pulls_our_own_server_like_two_stations_do(station_factory):
     """symmetric intercom media: the callee's RtspPuller against a :554 server"""
     import threading

@@ -59,7 +59,13 @@ class IntercomRegistration:
         p.set("Content-Type", "text/xml")
         if auth:
             p.set("Authorization", auth)
-        p.body = self.reg_xml() if expires else ""  # unregister (Expires: 0) has no regXML
+        # regXML on the unregister too (docs/firmware/intercom-registration.md §3
+        # verified): the delete clause is `serial_no='<s>' or dev_ip='<src>'` -
+        # the body lets the serial match (stale rows of our serial on OTHER IPs),
+        # and the registrar only strstr()s the raw text, never parses the XML.
+        # The firmware's own units send an empty body; both forms were verified
+        # live to get 200 + delete.
+        p.body = self.reg_xml()
         return p
 
     def register_loop(self):
@@ -109,7 +115,17 @@ class IntercomRegistration:
         raise RuntimeError("register timeout")
 
     def unregister(self):
-        self.st.send(self.build_register(expires=0), self.st.server)
+        """fire-and-forget Expires:0 (no reply is awaited - shutdown is
+        tearing the station down anyway). Repeated three times: the
+        registrar's post-insert sync stall drops REGISTERs for ~5-10s, and a
+        dropped unregister leaves our dev_reg row alive until expiry."""
+        for attempt in range(3):
+            try:
+                self.st.send(self.build_register(expires=0), self.st.server)
+            except OSError:
+                return  # socket already gone
+            if attempt < 2:
+                time.sleep(0.4)
 
 
 class RegistrationMixin:

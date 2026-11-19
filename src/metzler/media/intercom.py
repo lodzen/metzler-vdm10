@@ -303,7 +303,13 @@ class SipIntercomMedia:
         return self.DTMF_CHARS[ev]
 
     def mic_frame(self):
-        """called by RtspServer.stream - one 160B/20ms ulaw frame of PEER audio"""
+        """called by RtspServer.stream - one 160B/20ms ulaw frame of PEER audio.
+        Shed to ~8 frames (160ms) first: the queue fills while early media
+        arrives before the caller's pull runs, and serving oldest-first would
+        lock that backlog in as a constant delay for the whole call (the
+        fill and drain rates match once the call is up)."""
+        while len(self.rxq) > 8:
+            self.rxq.popleft()
         if not self.rxq:
             return b"\xff" * 160
         p = self.rxq.popleft()

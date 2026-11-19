@@ -22,6 +22,8 @@ Two mechanisms, both verified against live firmware V2.0.24:
 
 from __future__ import annotations
 
+import random
+import select
 import socket
 import time
 import uuid
@@ -299,3 +301,225 @@ def _default_local_ip():
         except OSError:
             continue
     return None
+
+
+# --- config-flow status probes (vdm10-ha) ----------------------------------
+
+
+def _reg_xml(serial: str, mac: str, name: str, floor: int = 1) -> str:
+    # exact firmware field order (_sip_xml_get_reg_info_xml): serial, mac, name, floorNum
+    return (
+        f"<regXML>\r\n<regDevSerial>{serial}</regDevSerial>\r\n"
+        f"<regDevMacAddr>{mac}</regDevMacAddr>\r\n"
+        f"<regDevName>{name}</regDevName>\r\n"
+        f"<floorNum>{floor}</floorNum>\r\n</regXML>"
+    )
+
+
+def _build_register(
+    host: str, sipnum: str, local_ip: str, expires: int, serial: str, mac: str, port: int = REGISTRAR_PORT
+) -> bytes:
+    """Kind-1 indoor REGISTER per the VDM10 dialect (regXML body, replies are
+    routed to the sender's port 5060 by the registrar — see module docstring).
+
+    The body is sent even for ``Expires: 0``: the registrar's unregister
+    delete is ``where serial_no='<s>' or dev_ip='<src ip>'`` and the serial
+    is only scraped from regXML — an empty body matches nothing by serial.
+    """
+    body = _reg_xml(serial, mac, "vdm10-probe")
+    return (
+        f"REGISTER sip:{host}:{port} SIP/2.0\r\n"
+        f"Via: SIP/2.0/UDP {local_ip}:{SIP_UA_PORT};rport;branch=z9hG4bK{random.randrange(1 << 31)}\r\n"
+        f"Max-Forwards: 70\r\n"
+        f"Contact: <sip:{sipnum}@{local_ip}:{SIP_UA_PORT}>\r\n"
+        f"To: <sip:{sipnum}@{host}:{port}>\r\n"
+        f'From: "vdm10-probe"<sip:{sipnum}@{local_ip}>;tag={random.randrange(1 << 31)}\r\n'
+        f"Call-ID: {uuid.uuid4().hex}\r\n"
+        f"CSeq: 1 REGISTER\r\n"
+        f"User-Agent: eXosip/3.6.0\r\n"
+        f"Allow: INVITE, ACK, CANCEL, BYE, REFER, INFO, OPTIONS, MESSAGE\r\n"
+        f"Expires: {expires}\r\n"
+        f"Content-Type: text/xml\r\n"
+        f"Content-Length: {len(body.encode())}\r\n\r\n{body}"
+    ).encode()
+
+
+def _probe_datagram(sock: socket.socket, timeout: float, expect: str | None = None) -> bytes | None:
+    """Wait for one SIP reply datagram; returns the raw packet or None.
+
+    ``expect`` filters stray datagrams (e.g. a late unregister 200 for the
+    previous slot) — the reply's To carries ``sip:<sipnum>@``, so only a
+    datagram containing the probed number counts as its answer.
+    """
+    deadline = time.monotonic() + timeout
+    while (remaining := deadline - time.monotonic()) > 0:
+        ready, _, _ = select.select([sock], [], [], remaining)
+        if not ready:
+            return None
+        try:
+            data, _ = sock.recvfrom(65535)
+        except OSError:
+            continue
+        if expect is not None and expect.encode() not in data:
+            continue
+        return data
+    return None
+
+
+def _probe_reply(sock: socket.socket, timeout: float, expect: str | None = None) -> str | None:
+    """Like ``_probe_datagram`` but returns just the SIP status line."""
+    data = _probe_datagram(sock, timeout, expect)
+    if data is None:
+        return None
+    return data.split(b"\r\n", 1)[0].decode("utf-8", errors="replace")
+
+
+def _auth_challenge(data: bytes) -> str | None:
+    """The WWW-/Proxy-Authenticate value from a raw reply, for digest retry."""
+    for raw in data.decode("utf-8", errors="replace").split("\r\n"):
+        name, _, value = raw.partition(":")
+        if name.lower() in ("www-authenticate", "proxy-authenticate"):
+            return value.strip()
+    return None
+
+
+def _slot_status(
+    sock: socket.socket,
+    host: str,
+    sipnum: str,
+    local_ip: str,
+    serial: str,
+    mac: str,
+    wait: float,
+    port: int = REGISTRAR_PORT,
+) -> int | None:
+    """REGISTER ``sipnum`` at ``host:5065``; returns the reply status code.
+
+    ``send_reply`` answers every outcome (200/410/400/500), so silence means
+    the packet or its reply was lost — one retry before giving up. A 200
+    inserts a dev_reg row; it is removed again with an ``Expires: 0``
+    unregister carrying regXML (see ``_build_register``).
+    """
+    probe = _build_register(host, sipnum, local_ip, 600, serial, mac, port)
+    line = None
+    for attempt in range(2):
+        sock.sendto(probe, (host, port))
+        if line := _probe_reply(sock, wait if attempt == 0 else min(wait, 0.4), sipnum):
+            break
+    if not line or not line.startswith("SIP/2.0 "):
+        return None
+    code = int(line.split()[1])
+    if code == 200:
+        # every insert fires vns_registrarSyncHook — blocking :8102 connects
+        # to each extension stall the registrar's SIP loop for seconds and
+        # it drops datagrams meanwhile, so retry the unregister past that
+        # window (bounded: an unanswered row still expires with its TTL and
+        # the next same-IP REGISTER replaces it via the dev_ip dedup match).
+        unregister = _build_register(host, sipnum, local_ip, 0, serial, mac, port)
+        for _ in range(3):
+            sock.sendto(unregister, (host, port))
+            if _probe_reply(sock, 1.5, sipnum):
+                break
+    return code
+
+
+def register_status(
+    registrar: str,
+    sipnum: str,
+    serial: str,
+    local_ip: str,
+    port: int = REGISTRAR_PORT,
+    wait: float = 0.8,
+) -> int | None:
+    """Probe-REGISTER ``sipnum`` on ``registrar`` and return the reply code.
+
+    For the config flow's registration check: ``200`` = the extension can be
+    claimed (the probe row is removed again via ``Expires: 0`` inside
+    ``_slot_status``), ``410`` = held by a different device, ``401``/``403`` =
+    the registrar challenged auth, ``None`` = unreachable or :5060 busy.
+    ``serial`` should be the entry's own so the dedup verdict matches what
+    the real registration will see.
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.bind(("0.0.0.0", SIP_UA_PORT))
+    except OSError:
+        return None
+    sock.setblocking(False)
+    try:
+        mac = f"bc:9b:5e:{random.randrange(1 << 24):06x}"
+        return _slot_status(sock, registrar, sipnum, local_ip, serial, mac, wait, port)
+    finally:
+        sock.close()
+
+
+def provider_status(
+    host: str,
+    port: int,
+    user: str,
+    password: str,
+    domain: str,
+    local_ip: str,
+    timeout: float = 6.0,
+) -> int | None:
+    """REGISTER ``user`` at a standard SIP server; returns the reply code.
+
+    For the config flow's provider/trunk check: REGISTER -> one digest retry
+    on 401/407 -> status. A ``2xx`` is followed by ``Expires: 0`` cleanup.
+    ``None`` = unreachable/timeout. Unlike the intercom registrar, providers
+    answer on the Via's source port — an ephemeral bind suffices.
+    """
+    from metzler.sip.digest import digest_response  # lazy: module stays stdlib-only
+
+    call_id, cseq = uuid.uuid4().hex, 1
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setblocking(False)
+    try:
+        sock.bind(("0.0.0.0", 0))
+        bind_port = sock.getsockname()[1]
+
+        def build(expires: int, auth: str | None = None) -> bytes:
+            headers = (
+                f"REGISTER sip:{domain} SIP/2.0\r\n"
+                f"Via: SIP/2.0/UDP {local_ip}:{bind_port};rport;branch=z9hG4bK{random.randrange(1 << 31)}\r\n"
+                f"Max-Forwards: 70\r\n"
+                f"From: <sip:{user}@{domain}>;tag={random.randrange(1 << 31)}\r\n"
+                f"To: <sip:{user}@{domain}>\r\n"
+                f"Contact: <sip:{user}@{local_ip}:{bind_port}>\r\n"
+                f"Call-ID: {call_id}\r\n"
+                f"CSeq: {cseq} REGISTER\r\n"
+                f"User-Agent: eXosip/3.6.0\r\n"
+                f"Expires: {expires}\r\n"
+                f"Content-Length: 0\r\n"
+            )
+            if auth:
+                headers += f"Authorization: {auth}\r\n"
+            return f"{headers}\r\n".encode()
+
+        deadline = time.monotonic() + timeout
+        sock.sendto(build(600), (host, port))
+        code = None
+        for attempt in range(3):
+            data = _probe_datagram(sock, max(0.1, deadline - time.monotonic()), expect=call_id)
+            if data is None:
+                return None
+            line = data.split(b"\r\n", 1)[0].decode("utf-8", errors="replace")
+            if not line.startswith("SIP/2.0 "):
+                return None
+            code = int(line.split()[1])
+            if code not in (401, 407) or attempt == 2:
+                break
+            hdr = _auth_challenge(data)
+            if hdr is None:
+                break
+            cseq += 1
+            auth = digest_response(hdr, "REGISTER", f"sip:{domain}", user, password)
+            sock.sendto(build(600, auth), (host, port))
+        if code is not None and 200 <= code < 300:
+            cseq += 1
+            sock.sendto(build(0), (host, port))
+            _probe_datagram(sock, 1.0, expect=call_id)
+        return code
+    finally:
+        sock.close()

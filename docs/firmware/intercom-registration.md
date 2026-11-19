@@ -127,6 +127,40 @@ Search `where call_num='<new>'`:
 `db_acspwd_gc` (same file) also sweeps `where reg_time<'<now>'` and deletes the
 room's ACS pwd rows — expired registrations self-clean.
 
+#### Verified live (2025-11-19, LAN 10.0.0.0/24, registrar `…:5065`)
+
+- **11-char AOR**: 12-char call_nums (e.g. `100000000010`) all return `410`
+  before dedup — the length check is first and nothing is inserted.
+- **dedup table confirmed**: `10000000001` → `410` (held by the real indoor
+  `@10.0.0.47`, dev_type 3); `…02`, `…04`, `…09` → `200` (inserted).
+  `410` therefore means "call_num bound to a *different* serial **and** IP of
+  the same dev_type" — it is not a generic "occupied" signal.
+- **stale rows block**: probe rows left behind by earlier runs (same call_num,
+  foreign serial, foreign `dev_ip` — e.g. another host/container) keep the
+  slot at `410` until deleted or TTL-expired; dedup never consults `reg_time`.
+- **unregister**: `Expires: 0` → `200 OK` and deletes
+  `where serial_no='<s>' or dev_ip='<src>'` — verified **both** forms live
+  (2025-11-19): empty body deletes via `dev_ip` alone (foreign-serial probe
+  for the same call_num got `200` = row gone, not `410`), regXML body adds
+  the `serial_no` match which also clears stale rows of our serial from
+  *other* source IPs. Prefer the bodied form.
+- **no sync push on unregister**: the `Expires==0` path in `sip_registerMode`
+  deletes + `send_reply` and returns **without** calling
+  `vns_registrarSyncHook` (only the insert path calls it). The registrar's
+  row is gone (slot free, calls no longer routed), but the dev_reg table
+  copies pushed over visNet `:8102` keep the stale entry on every other
+  unit's device list until the next INSERT-triggered push or row expiry —
+  an unregister can never clear another unit's display immediately.
+- **post-insert stall**: after every successful insert the registrar runs
+  `vns_registrarSyncHook` on the sipServer task — blocking TCP `:8102`
+  connects to every `1000000000`-series row (stale/offline rows cost a
+  connect timeout each) — and ignores REGISTERs for ~5–10 s meanwhile.
+  Sweep probes must run sequentially, and post-200 unregisters need
+  retries to get through the window.
+- **`free_extension` verified end-to-end**: one consistent probe
+  (serial+MAC) → `…01`=`410`, `…02`=`200` → unreg → `10000000002`
+  reported free, matching the installation's real first free slot.
+
 ## 4. Numbering — `T FFF UU RRR II` (`vdm10_1.0/sip/server/registrar.c` header + `misc/util_common_visUtil.c.c`)
 
 The 11-digit `devLongNum` is `sscanf("%01d%03d%02d%03d%02d")` →

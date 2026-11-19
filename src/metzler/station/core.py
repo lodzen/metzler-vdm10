@@ -426,7 +426,10 @@ class StationCore:
     def start_threads(self):
         """spawn the daemon threads run() manages, WITHOUT installing the
         SIGTERM handler or blocking on the main loop - for embedded/library
-        use (vdm10-ha drives the station from a non-main thread)"""
+        use (vdm10-ha drives the station from a non-main thread). Includes
+        the provider/fritz REGISTER loops in non-local mode (they are daemon
+        threads like the rest; a plain embedded start must not silently
+        skip the trunks)."""
         self._threads = [
             threading.Thread(target=self.listener, daemon=True),
             *(threading.Thread(target=r.register_loop, daemon=True) for r in self.regs),
@@ -437,6 +440,8 @@ class StationCore:
             self._threads.append(threading.Thread(target=self.call_out, args=(self.o.call,), daemon=True))
         for t in self._threads:
             t.start()
+        if not self.local_mode:
+            self._start_trunks()
 
     def run(self):
         self.start_threads()
@@ -468,8 +473,6 @@ class StationCore:
                 bool(self.o.video_player),
                 self.o.alsa_device,
             )
-        else:
-            self._start_trunks()
 
         def terminate(signum, frame):
             raise KeyboardInterrupt
@@ -485,6 +488,8 @@ class StationCore:
 
     def _start_trunks(self):
         """provider (+ optional fritz) REGISTER loops and the startup log"""
+        if self.provider is None:
+            return  # no --sip-host: intercom-only mode (HA embeds this path)
         if self.provider.needs_register():
             threading.Thread(target=self.provider.register_loop, daemon=True).start()
         else:
