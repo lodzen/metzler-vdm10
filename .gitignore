@@ -20,3 +20,5 @@ node_modules/
 *.dav
 .env*
 /ghidra_proj*/
+docs/api/
+docs/build/
