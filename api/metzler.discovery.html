@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>metzler.discovery module &mdash; vdm10-python 0.1.2 documentation</title>
+  <title>metzler.discovery module &mdash; vdm10-python 0.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -121,6 +121,7 @@
 <li class="toctree-l3"><a class="reference internal" href="metzler.cli.html">metzler.cli module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="metzler.config.html">metzler.config module</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">metzler.discovery module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.arp_table"><code class="docutils literal notranslate"><span class="pre">arp_table()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.discover"><code class="docutils literal notranslate"><span class="pre">discover()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.docker_detected"><code class="docutils literal notranslate"><span class="pre">docker_detected()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.free_extension"><code class="docutils literal notranslate"><span class="pre">free_extension()</span></code></a></li>
@@ -191,16 +192,31 @@ and stay silent. Status codes map extension-slot state: <code class="docutils li
 unregister to clean up (verified: 200 OK).</p></li>
 </ol>
 <dl class="py function">
+<dt class="sig sig-object py" id="metzler.discovery.arp_table">
+<span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">arp_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/proc/net/arp'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/metzler/discovery.html#arp_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.arp_table" title="Link to this definition"></a></dt>
+<dd><p>IP -&gt; MAC map from the kernel ARP cache.</p>
+<p>After a subnet sweep (SADP unicast probes and the TCP candidate scan
+both trigger ARP resolution) every live host we touched has an entry -
+this recovers VDM10 units that answer neither SADP inquiries nor the
+SIP fingerprint (extension indoors, or units behind port filters).
+NAT’d/bridge containers never ARP LAN hosts, so this is empty there.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="metzler.discovery.discover">
-<span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">discover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subnet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#discover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.discover" title="Link to this definition"></a></dt>
-<dd><p>full LAN sweep -&gt; {“doors”: […], “registrars”: […], “candidates”: […]}</p>
+<span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">discover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subnet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#discover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.discover" title="Link to this definition"></a></dt>
+<dd><p>full LAN sweep -&gt; {“doors”, “registrars”, “candidates”, “vdm10_macs”}</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">doors</span></code>: SADP ProbeMatch dicts of outdoor stations (DeviceType 57619
 or VDM10 OUI)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">registrars</span></code>: hosts that answered the :5065 REGISTER fingerprint -
 i.e. the main indoor (extension indoors stay silent)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">candidates</span></code>: hosts with the Hikvision TCP signature that were neither
-SADP responders nor registrars - shown as “possible indoor” fallback</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">candidates</span></code>: hosts that could be an indoor but answered neither -
+Hikvision TCP signature <em>or</em> VDM10 OUI in the ARP cache (the OUI pass
+is what the passive DHCP discovery approximates, except the scan
+already filled the table, so it costs no extra packets)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vdm10_macs</span></code>: {ip: mac} of every subnet host carrying a VDM10 OUI -
+doors + registrars + extension indoors alike</p></li>
 </ul>
 </dd></dl>
 

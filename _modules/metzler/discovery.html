@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>metzler.discovery &mdash; vdm10-python 0.1.2 documentation</title>
+  <title>metzler.discovery &mdash; vdm10-python 0.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=92734c54"></script>
+      <script src="../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
@@ -486,6 +486,7 @@ window.runMermaid = runMermaid;</script>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">select</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
@@ -493,6 +494,8 @@ window.runMermaid = runMermaid;</script>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"indoor"</span><span class="p">)</span>
 
 <span class="n">SADP_GROUP</span> <span class="o">=</span> <span class="s2">"239.255.255.250"</span>
 <span class="n">SADP_PORT</span> <span class="o">=</span> <span class="mi">37020</span>
@@ -760,7 +763,9 @@ window.runMermaid = runMermaid;</script>
                     <span class="p">),</span>
                     <span class="n">reg_port</span><span class="p">,</span>
                 <span class="p">)</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">ext</span><span class="p">:</span> <span class="n">found</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">exts</span><span class="p">}</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="n">ext</span><span class="p">:</span> <span class="n">found</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">exts</span><span class="p">}</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"ext scan </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="p">{</span><span class="n">ext</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]:</span> <span class="n">code</span> <span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
+        <span class="k">return</span> <span class="n">res</span>
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -840,18 +845,40 @@ window.runMermaid = runMermaid;</script>
 
 
 
+<div class="viewcode-block" id="arp_table">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.arp_table">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">arp_table</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">"/proc/net/arp"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""IP -&gt; MAC map from the kernel ARP cache.</span>
+
+<span class="sd">    After a subnet sweep (SADP unicast probes and the TCP candidate scan</span>
+<span class="sd">    both trigger ARP resolution) every live host we touched has an entry -</span>
+<span class="sd">    this recovers VDM10 units that answer neither SADP inquiries nor the</span>
+<span class="sd">    SIP fingerprint (extension indoors, or units behind port filters).</span>
+<span class="sd">    NAT'd/bridge containers never ARP LAN hosts, so this is empty there.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="c1"># cols: ip, hw type, flags, hw addr, mask, device - flag 0x0 is</span>
+        <span class="c1"># an incomplete/failed resolution, skip it</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">6</span> <span class="ow">and</span> <span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"0x0"</span> <span class="ow">and</span> <span class="s2">":"</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">[</span><span class="mi">3</span><span class="p">]:</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+
 <div class="viewcode-block" id="is_vdm10_host">
 <a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.is_vdm10_host">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">is_vdm10_host</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""OUI check via the ARP table - Metzler/Hikvision VDM10 OUIs."""</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"/proc/net/arp"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ip</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">cols</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">VDM10_MAC_PREFIXES</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># outside Linux / no arp entry -&gt; don't filter it out</span></div>
+    <span class="n">mac</span> <span class="o">=</span> <span class="n">arp_table</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># outside Linux / no arp entry -&gt; don't filter it out</span>
+    <span class="k">return</span> <span class="n">mac</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">VDM10_MAC_PREFIXES</span><span class="p">)</span></div>
 
 
 
@@ -917,35 +944,70 @@ window.runMermaid = runMermaid;</script>
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_ip_tail</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">ip</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_vdm10_macs</span><span class="p">(</span><span class="n">arp</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">subnet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""VDM10-OUI entries inside the swept subnet."""</span>
+    <span class="n">hosts</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">ip</span><span class="p">:</span> <span class="n">mac</span> <span class="k">for</span> <span class="n">ip</span><span class="p">,</span> <span class="n">mac</span> <span class="ow">in</span> <span class="n">arp</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">hosts</span> <span class="ow">and</span> <span class="n">mac</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">VDM10_MAC_PREFIXES</span><span class="p">)}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_scan_result</span><span class="p">(</span><span class="n">doors</span><span class="p">,</span> <span class="n">tcp_hits</span><span class="p">,</span> <span class="n">answered</span><span class="p">,</span> <span class="n">macs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""classify sweep output -&gt; the discover() result dict."""</span>
+    <span class="n">door_ips</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s2">"_ip"</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">doors</span><span class="p">}</span>
+    <span class="n">registrars</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">tcp_hits</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">]</span>
+    <span class="n">silent</span> <span class="o">=</span> <span class="p">{</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">tcp_hits</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">}</span>
+    <span class="n">others</span> <span class="o">=</span> <span class="p">{</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">macs</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span><span class="p">}</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"doors"</span><span class="p">:</span> <span class="n">doors</span><span class="p">,</span>
+        <span class="s2">"registrars"</span><span class="p">:</span> <span class="n">registrars</span><span class="p">,</span>
+        <span class="s2">"candidates"</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">((</span><span class="n">silent</span> <span class="o">|</span> <span class="n">others</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">registrars</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">_ip_tail</span><span class="p">),</span>
+        <span class="s2">"vdm10_macs"</span><span class="p">:</span> <span class="n">macs</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
 <div class="viewcode-block" id="discover">
 <a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.discover">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">discover</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">subnet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""full LAN sweep -&gt; {"doors": [...], "registrars": [...], "candidates": [...]}</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">discover</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">subnet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""full LAN sweep -&gt; {"doors", "registrars", "candidates", "vdm10_macs"}</span>
 
 <span class="sd">    - ``doors``: SADP ProbeMatch dicts of outdoor stations (DeviceType 57619</span>
 <span class="sd">      or VDM10 OUI)</span>
 <span class="sd">    - ``registrars``: hosts that answered the :5065 REGISTER fingerprint -</span>
 <span class="sd">      i.e. the main indoor (extension indoors stay silent)</span>
-<span class="sd">    - ``candidates``: hosts with the Hikvision TCP signature that were neither</span>
-<span class="sd">      SADP responders nor registrars - shown as "possible indoor" fallback</span>
+<span class="sd">    - ``candidates``: hosts that could be an indoor but answered neither -</span>
+<span class="sd">      Hikvision TCP signature *or* VDM10 OUI in the ARP cache (the OUI pass</span>
+<span class="sd">      is what the passive DHCP discovery approximates, except the scan</span>
+<span class="sd">      already filled the table, so it costs no extra packets)</span>
+<span class="sd">    - ``vdm10_macs``: {ip: mac} of every subnet host carrying a VDM10 OUI -</span>
+<span class="sd">      doors + registrars + extension indoors alike</span>
 <span class="sd">    """</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
     <span class="n">local_ip</span> <span class="o">=</span> <span class="n">local_ip</span> <span class="ow">or</span> <span class="n">_default_local_ip</span><span class="p">()</span>
     <span class="n">subnet</span> <span class="o">=</span> <span class="n">subnet</span> <span class="ow">or</span> <span class="p">(</span><span class="n">subnet_of</span><span class="p">(</span><span class="n">local_ip</span><span class="p">)</span> <span class="k">if</span> <span class="n">local_ip</span> <span class="k">else</span> <span class="p">[])</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"vdm10 scan: local_ip=</span><span class="si">%s</span><span class="s2">, sweeping </span><span class="si">%d</span><span class="s2"> hosts"</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">subnet</span><span class="p">))</span>
     <span class="n">doors</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">m</span>
         <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">sadp_probe</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">SADP_PORT</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">subnet</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">iface_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">is_vdm10_outdoor</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="n">door_ips</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s2">"_ip"</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">doors</span><span class="p">}</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"vdm10 scan: </span><span class="si">%d</span><span class="s2"> door(s) via SADP: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">doors</span><span class="p">),</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">door_ips</span><span class="p">))</span>
     <span class="c1"># cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint</span>
     <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">tcp_candidates</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span><span class="p">]</span>
     <span class="n">answered</span> <span class="o">=</span> <span class="n">registrar_probe_many</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">local_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span>
-    <span class="n">registrars</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">"doors"</span><span class="p">:</span> <span class="n">doors</span><span class="p">,</span>
-        <span class="s2">"registrars"</span><span class="p">:</span> <span class="n">registrars</span><span class="p">,</span>
-        <span class="s2">"candidates"</span><span class="p">:</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">],</span>
-    <span class="p">}</span></div>
+    <span class="n">macs</span> <span class="o">=</span> <span class="n">_vdm10_macs</span><span class="p">(</span><span class="n">arp_table</span><span class="p">()</span> <span class="k">if</span> <span class="n">arp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">arp</span><span class="p">,</span> <span class="n">subnet</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="s2">"vdm10 scan done in </span><span class="si">%.1f</span><span class="s2">s: registrars=</span><span class="si">%s</span><span class="s2">, </span><span class="si">%d</span><span class="s2"> tcp candidate(s), </span><span class="si">%d</span><span class="s2"> vdm10-macs: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">,</span>
+        <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">],</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">),</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">macs</span><span class="p">),</span>
+        <span class="nb">sorted</span><span class="p">(</span><span class="n">macs</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_scan_result</span><span class="p">(</span><span class="n">doors</span><span class="p">,</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">answered</span><span class="p">,</span> <span class="n">macs</span><span class="p">)</span></div>
 
 
 
