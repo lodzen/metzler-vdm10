@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>metzler.discovery &mdash; vdm10-python 0.1.0 documentation</title>
+  <title>metzler.discovery &mdash; vdm10-python 0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/documentation_options.js?v=a58bc63e"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
@@ -656,6 +656,57 @@ window.runMermaid = runMermaid;</script>
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_bind_probe_sock</span><span class="p">(</span><span class="n">listen_port</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""the reply socket probes must use: the VDM10 registrar answers to</span>
+<span class="sd">    source-ip:5060 unconditionally, so every probe shares this bind. None</span>
+<span class="sd">    when the port is taken (a running station holds it)."""</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">""</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_collect_status</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">deadline</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="n">key_of</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""recv SIP replies until ``deadline`` -&gt; {key: status int}.</span>
+
+<span class="sd">    ``key_of(data, addr)`` maps a datagram to a pending key (None = stray</span>
+<span class="sd">    datagram, e.g. a late unregister-200 for an earlier probe)."""</span>
+    <span class="n">found</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">while</span> <span class="n">pending</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">deadline</span><span class="p">:</span>
+        <span class="n">ready</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">sock</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key_of</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pending</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">pending</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">"SIP/2.0 "</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">found</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">found</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_unregister</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">packet</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""a 200 inserted a dev_reg row - Expires:0 removes it; the registrar's</span>
+<span class="sd">    sync hook stalls its SIP loop after an insert, so retry past that</span>
+<span class="sd">    window (a missed row still dies with its TTL)."""</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">_probe_reply</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">):</span>
+            <span class="k">break</span>
+
+
 <div class="viewcode-block" id="scan_extension_slots">
 <a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.scan_extension_slots">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">scan_extension_slots</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="n">EXT_SLOTS</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
@@ -663,8 +714,112 @@ window.runMermaid = runMermaid;</script>
 
 <span class="sd">    Live semantics: 410 = slot taken by a device, 200 = free (slot row is</span>
 <span class="sd">    removed again by the probe's unregister follow-up), None = no registrar.</span>
+<span class="sd">    All REGISTERs go out up front on one shared reply socket and the replies</span>
+<span class="sd">    are matched back by their echoed Call-ID - ``timeout`` bounds the whole</span>
+<span class="sd">    sweep, so a silent host costs one wait instead of one per slot.</span>
 <span class="sd">    """</span>
-    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}{</span><span class="n">slot</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">registrar_probe</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}{</span><span class="n">slot</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">}</span></div>
+    <span class="n">local_ip</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"local_ip"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">local_ip_for</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+    <span class="n">timeout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"timeout"</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">))</span>
+    <span class="n">serial</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"serial"</span><span class="p">,</span> <span class="s2">"Q12345678"</span><span class="p">)</span>
+    <span class="n">mac</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mac"</span><span class="p">,</span> <span class="s2">"02:00:11:22:33:44"</span><span class="p">)</span>
+    <span class="n">floor</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"floor"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">reg_port</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reg_port"</span><span class="p">,</span> <span class="n">REGISTRAR_PORT</span><span class="p">)</span>
+    <span class="n">listen_port</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"listen_port"</span><span class="p">,</span> <span class="n">SIP_UA_PORT</span><span class="p">)</span>
+    <span class="n">exts</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}{</span><span class="n">slot</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">]</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">_bind_probe_sock</span><span class="p">(</span><span class="n">listen_port</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">exts</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">packets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ext</span><span class="p">:</span> <span class="n">_reg_packet</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"vdm10-scan-</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">exts</span>
+        <span class="p">}</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">blast</span><span class="p">(</span><span class="n">targets</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">packets</span><span class="p">[</span><span class="n">ext</span><span class="p">],</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">))</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">_addr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">pending</span> <span class="k">if</span> <span class="sa">f</span><span class="s2">"vdm10-scan-</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">data</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">pending</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">exts</span><span class="p">)</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+        <span class="n">blast</span><span class="p">(</span><span class="n">pending</span><span class="p">)</span>
+        <span class="n">found</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_collect_status</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)),</span> <span class="n">pending</span><span class="p">,</span> <span class="n">match</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">pending</span><span class="p">:</span>
+            <span class="n">blast</span><span class="p">(</span><span class="n">pending</span><span class="p">)</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_collect_status</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="n">match</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="n">_unregister</span><span class="p">(</span>
+                    <span class="n">sock</span><span class="p">,</span>
+                    <span class="n">host</span><span class="p">,</span>
+                    <span class="n">_reg_packet</span><span class="p">(</span>
+                        <span class="n">host</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"vdm10-scan-</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">-unreg"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span>
+                    <span class="p">),</span>
+                    <span class="n">reg_port</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">ext</span><span class="p">:</span> <span class="n">found</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span> <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">exts</span><span class="p">}</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="registrar_probe_many">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.registrar_probe_many">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">registrar_probe_many</span><span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">local_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""kind-1 indoor REGISTER fingerprint against several hosts at once -&gt;</span>
+<span class="sd">    the subset that answered (a registrar listens there).</span>
+
+<span class="sd">    Per-host probing can't parallelize: the registrar replies to source:5060</span>
+<span class="sd">    and parallel sockets would steal each other's datagrams. One shared</span>
+<span class="sd">    socket blasts REGISTERs to all hosts and matches replies by source IP -</span>
+<span class="sd">    ``timeout`` bounds the whole fingerprint, not each host.</span>
+<span class="sd">    """</span>
+    <span class="n">hosts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">hosts</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">hosts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">timeout</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">serial</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"serial"</span><span class="p">,</span> <span class="s2">"Q12345678"</span><span class="p">)</span>
+    <span class="n">mac</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"mac"</span><span class="p">,</span> <span class="s2">"02:00:11:22:33:44"</span><span class="p">)</span>
+    <span class="n">floor</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"floor"</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">reg_port</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reg_port"</span><span class="p">,</span> <span class="n">REGISTRAR_PORT</span><span class="p">)</span>
+    <span class="n">listen_port</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"listen_port"</span><span class="p">,</span> <span class="n">SIP_UA_PORT</span><span class="p">)</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ext"</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}</span><span class="s2">0"</span>
+    <span class="n">lip</span> <span class="o">=</span> <span class="n">local_ip</span> <span class="ow">or</span> <span class="n">local_ip_for</span><span class="p">(</span><span class="n">hosts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">reg_port</span><span class="p">)</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">_bind_probe_sock</span><span class="p">(</span><span class="n">listen_port</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">sock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"vdm10-probe-</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">12</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">packets</span> <span class="o">=</span> <span class="p">{</span><span class="n">h</span><span class="p">:</span> <span class="n">_reg_packet</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">lip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">}</span>
+        <span class="n">pending</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">hosts</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">blast</span><span class="p">(</span><span class="n">targets</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">:</span>
+                <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">packets</span><span class="p">[</span><span class="n">h</span><span class="p">],</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">))</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">by_addr</span><span class="p">(</span><span class="n">_data</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">blast</span><span class="p">(</span><span class="n">pending</span><span class="p">)</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="n">_collect_status</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)),</span> <span class="n">pending</span><span class="p">,</span> <span class="n">by_addr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pending</span><span class="p">:</span>
+            <span class="n">blast</span><span class="p">(</span><span class="n">pending</span><span class="p">)</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_collect_status</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">pending</span><span class="p">,</span> <span class="n">by_addr</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">found</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="n">_unregister</span><span class="p">(</span>
+                    <span class="n">sock</span><span class="p">,</span>
+                    <span class="n">h</span><span class="p">,</span>
+                    <span class="n">_reg_packet</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cid</span><span class="si">}</span><span class="s2">-unreg"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">lip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">),</span>
+                    <span class="n">reg_port</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">found</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 
@@ -777,16 +932,13 @@ window.runMermaid = runMermaid;</script>
     <span class="p">]</span>
     <span class="n">door_ips</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s2">"_ip"</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">doors</span><span class="p">}</span>
     <span class="c1"># cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint</span>
-    <span class="n">candidates</span> <span class="o">=</span> <span class="n">tcp_candidates</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span>
-    <span class="n">registrars</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">h</span>
-        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span>
-        <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span> <span class="ow">and</span> <span class="n">registrar_probe</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">local_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="p">]</span>
+    <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">tcp_candidates</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span><span class="p">]</span>
+    <span class="n">answered</span> <span class="o">=</span> <span class="n">registrar_probe_many</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">local_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span>
+    <span class="n">registrars</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">"doors"</span><span class="p">:</span> <span class="n">doors</span><span class="p">,</span>
         <span class="s2">"registrars"</span><span class="p">:</span> <span class="n">registrars</span><span class="p">,</span>
-        <span class="s2">"candidates"</span><span class="p">:</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span> <span class="ow">and</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registrars</span><span class="p">],</span>
+        <span class="s2">"candidates"</span><span class="p">:</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">answered</span><span class="p">],</span>
     <span class="p">}</span></div>
 
 

@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>metzler.discovery module &mdash; vdm10-python 0.1.0 documentation</title>
+  <title>metzler.discovery module &mdash; vdm10-python 0.1.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/documentation_options.js?v=a58bc63e"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -130,6 +130,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.provider_status"><code class="docutils literal notranslate"><span class="pre">provider_status()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.register_status"><code class="docutils literal notranslate"><span class="pre">register_status()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.registrar_probe"><code class="docutils literal notranslate"><span class="pre">registrar_probe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.registrar_probe_many"><code class="docutils literal notranslate"><span class="pre">registrar_probe_many()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.sadp_probe"><code class="docutils literal notranslate"><span class="pre">sadp_probe()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.scan_extension_slots"><code class="docutils literal notranslate"><span class="pre">scan_extension_slots()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#metzler.discovery.subnet_of"><code class="docutils literal notranslate"><span class="pre">subnet_of()</span></code></a></li>
@@ -266,6 +267,17 @@ unregister is sent immediately to remove the dev_reg row again.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="metzler.discovery.registrar_probe_many">
+<span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">registrar_probe_many</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hosts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#registrar_probe_many"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.registrar_probe_many" title="Link to this definition"></a></dt>
+<dd><p>kind-1 indoor REGISTER fingerprint against several hosts at once -&gt;
+the subset that answered (a registrar listens there).</p>
+<p>Per-host probing can’t parallelize: the registrar replies to source:5060
+and parallel sockets would steal each other’s datagrams. One shared
+socket blasts REGISTERs to all hosts and matches replies by source IP -
+<code class="docutils literal notranslate"><span class="pre">timeout</span></code> bounds the whole fingerprint, not each host.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="metzler.discovery.sadp_probe">
 <span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">sadp_probe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multicast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iface_ip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#sadp_probe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.sadp_probe" title="Link to this definition"></a></dt>
 <dd><p>SADP inquiry -&gt; list of {tag: value} dicts keyed by responding IP.</p>
@@ -277,7 +289,10 @@ unregister is sent immediately to remove the dev_reg row again.</p>
 <span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">scan_extension_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">range(0,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#scan_extension_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.scan_extension_slots" title="Link to this definition"></a></dt>
 <dd><p>probe <code class="docutils literal notranslate"><span class="pre">{base}{slot}</span></code> for each slot -&gt; {ext_number: status|None}.</p>
 <p>Live semantics: 410 = slot taken by a device, 200 = free (slot row is
-removed again by the probe’s unregister follow-up), None = no registrar.</p>
+removed again by the probe’s unregister follow-up), None = no registrar.
+All REGISTERs go out up front on one shared reply socket and the replies
+are matched back by their echoed Call-ID - <code class="docutils literal notranslate"><span class="pre">timeout</span></code> bounds the whole
+sweep, so a silent host costs one wait instead of one per slot.</p>
 </dd></dl>
 
 <dl class="py function">
