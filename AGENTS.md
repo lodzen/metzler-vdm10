@@ -22,7 +22,7 @@
   config incl. isort rules in `pyproject.toml`; VSCode formats + sorts imports on save).
 - Types: `uv run ty check` (src + tests; `unresolved-attribute` ignored in `station/` — mixin `self`).
   Standalone stays stdlib-only: `typing`/`pathlib` ok, third-party types stay test-only or TYPE_CHECKING.
-- Reverse-engineering artifacts live in the parent `metzler-vdm` repo (this
+- Reverse-engineering artifacts live in the parent `metzler-vdm-doc` repo (this
   checkout is a submodule of it, so they sit at `../`). Paths cited in
   docs/comments (`vdm10_1.0/`, `VDM10_2.0/`, `ghidra_proj*/`, `ghidra_out*/`,
   `ANALYSIS.md`, `HIKCONNECT.md`) resolve at that repo's root.
