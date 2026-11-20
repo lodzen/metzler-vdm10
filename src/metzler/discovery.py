@@ -22,6 +22,7 @@ Two mechanisms, both verified against live firmware V2.0.24:
 
 from __future__ import annotations
 
+import logging
 import random
 import select
 import socket
@@ -29,6 +30,8 @@ import time
 import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+log = logging.getLogger("indoor")
 
 SADP_GROUP = "239.255.255.250"
 SADP_PORT = 37020
@@ -285,7 +288,9 @@ def scan_extension_slots(host, slots=EXT_SLOTS, **kw):
                     ),
                     reg_port,
                 )
-        return {ext: found.get(ext) for ext in exts}
+        res = {ext: found.get(ext) for ext in exts}
+        log.debug("ext scan %s: %s", host, {ext[-2:]: code for ext, code in res.items()})
+        return res
     finally:
         sock.close()
 
@@ -358,16 +363,35 @@ def free_extension(host, **kw) -> str | None:
     return None
 
 
+def arp_table(path="/proc/net/arp") -> dict[str, str]:
+    """IP -> MAC map from the kernel ARP cache.
+
+    After a subnet sweep (SADP unicast probes and the TCP candidate scan
+    both trigger ARP resolution) every live host we touched has an entry -
+    this recovers VDM10 units that answer neither SADP inquiries nor the
+    SIP fingerprint (extension indoors, or units behind port filters).
+    NAT'd/bridge containers never ARP LAN hosts, so this is empty there.
+    """
+    try:
+        lines = Path(path).read_text().splitlines()[1:]
+    except OSError:
+        return {}
+    out = {}
+    for line in lines:
+        cols = line.split()
+        # cols: ip, hw type, flags, hw addr, mask, device - flag 0x0 is
+        # an incomplete/failed resolution, skip it
+        if len(cols) >= 6 and cols[2] != "0x0" and ":" in cols[3]:
+            out[cols[0]] = cols[3].lower()
+    return out
+
+
 def is_vdm10_host(ip: str) -> bool:
     """OUI check via the ARP table - Metzler/Hikvision VDM10 OUIs."""
-    try:
-        for line in Path("/proc/net/arp").read_text().splitlines()[1:]:
-            cols = line.split()
-            if cols[0] == ip:
-                return cols[3].lower().startswith(VDM10_MAC_PREFIXES)
-    except OSError:
-        pass
-    return True  # outside Linux / no arp entry -> don't filter it out
+    mac = arp_table().get(ip)
+    if mac is None:
+        return True  # outside Linux / no arp entry -> don't filter it out
+    return mac.startswith(VDM10_MAC_PREFIXES)
 
 
 def docker_detected() -> bool:
@@ -420,33 +444,68 @@ def tcp_candidates(subnet, ports=(8000, 8102), connect_timeout=0.5):
     return out
 
 
-def discover(timeout=3.0, subnet=None, local_ip=None):
-    """full LAN sweep -> {"doors": [...], "registrars": [...], "candidates": [...]}
+def _ip_tail(ip: str) -> int:
+    return int(ip.rsplit(".", 1)[1])
+
+
+def _vdm10_macs(arp: dict, subnet) -> dict[str, str]:
+    """VDM10-OUI entries inside the swept subnet."""
+    hosts = set(subnet)
+    return {ip: mac for ip, mac in arp.items() if ip in hosts and mac.startswith(VDM10_MAC_PREFIXES)}
+
+
+def _scan_result(doors, tcp_hits, answered, macs):
+    """classify sweep output -> the discover() result dict."""
+    door_ips = {d["_ip"] for d in doors}
+    registrars = [h for h in tcp_hits if h in answered]
+    silent = {h for h in tcp_hits if h not in answered}
+    others = {h for h in macs if h not in door_ips}
+    return {
+        "doors": doors,
+        "registrars": registrars,
+        "candidates": sorted((silent | others) - set(registrars), key=_ip_tail),
+        "vdm10_macs": macs,
+    }
+
+
+def discover(timeout=3.0, subnet=None, local_ip=None, arp=None):
+    """full LAN sweep -> {"doors", "registrars", "candidates", "vdm10_macs"}
 
     - ``doors``: SADP ProbeMatch dicts of outdoor stations (DeviceType 57619
       or VDM10 OUI)
     - ``registrars``: hosts that answered the :5065 REGISTER fingerprint -
       i.e. the main indoor (extension indoors stay silent)
-    - ``candidates``: hosts with the Hikvision TCP signature that were neither
-      SADP responders nor registrars - shown as "possible indoor" fallback
+    - ``candidates``: hosts that could be an indoor but answered neither -
+      Hikvision TCP signature *or* VDM10 OUI in the ARP cache (the OUI pass
+      is what the passive DHCP discovery approximates, except the scan
+      already filled the table, so it costs no extra packets)
+    - ``vdm10_macs``: {ip: mac} of every subnet host carrying a VDM10 OUI -
+      doors + registrars + extension indoors alike
     """
+    t0 = time.monotonic()
     local_ip = local_ip or _default_local_ip()
     subnet = subnet or (subnet_of(local_ip) if local_ip else [])
+    log.debug("vdm10 scan: local_ip=%s, sweeping %d hosts", local_ip, len(subnet))
     doors = [
         m
         for m in sadp_probe(targets=((h, SADP_PORT) for h in subnet), timeout=timeout, iface_ip=local_ip)
         if is_vdm10_outdoor(m)
     ]
     door_ips = {d["_ip"] for d in doors}
+    log.debug("vdm10 scan: %d door(s) via SADP: %s", len(doors), sorted(door_ips))
     # cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint
     candidates = [h for h in tcp_candidates(subnet) if h not in door_ips]
     answered = registrar_probe_many(candidates, timeout=min(timeout, 2.0), local_ip=local_ip)
-    registrars = [h for h in candidates if h in answered]
-    return {
-        "doors": doors,
-        "registrars": registrars,
-        "candidates": [h for h in candidates if h not in answered],
-    }
+    macs = _vdm10_macs(arp_table() if arp is None else arp, subnet)
+    log.debug(
+        "vdm10 scan done in %.1fs: registrars=%s, %d tcp candidate(s), %d vdm10-macs: %s",
+        time.monotonic() - t0,
+        [h for h in candidates if h in answered],
+        len(candidates),
+        len(macs),
+        sorted(macs),
+    )
+    return _scan_result(doors, candidates, answered, macs)
 
 
 def _default_local_ip():

@@ -164,6 +164,39 @@ def test_free_extension_picks_lowest_free():
     t.join(timeout=2)
 
 
+def test_arp_table_parses_and_skips_incomplete(tmp_path):
+    f = tmp_path / "arp"
+    f.write_text(
+        "IP address       HW type     Flags       HW address            Mask     Device\n"
+        "192.168.178.38   0x1         0x2         bc:9b:5e:01:a1:b3     *        eth0\n"
+        "192.168.178.99   0x1         0x0         00:00:00:00:00:00     *        eth0\n"
+    )
+    assert discovery.arp_table(str(f)) == {"192.168.178.38": "bc:9b:5e:01:a1:b3"}
+    assert discovery.arp_table(str(tmp_path / "missing")) == {}
+
+
+def test_discover_arp_finds_oui_hosts():
+    """a VDM10 OUI in the ARP cache (e.g. an extension indoor that neither
+    answers SADP nor the fingerprint) lands in candidates + vdm10_macs."""
+    res = discovery.discover(
+        subnet=["127.0.0.9"],
+        local_ip="127.0.0.1",
+        timeout=1,
+        arp={"127.0.0.9": "bc:9b:5e:aa:bb:cc", "192.168.99.1": "bc:9b:5e:00:00:01"},
+    )
+    assert res["vdm10_macs"] == {"127.0.0.9": "bc:9b:5e:aa:bb:cc"}  # off-subnet OUI filtered
+    assert res["candidates"] == ["127.0.0.9"]
+    assert res["registrars"] == [] and res["doors"] == []
+
+
+def test_discover_arp_ignores_other_macs():
+    res = discovery.discover(
+        subnet=["127.0.0.9"], local_ip="127.0.0.1", timeout=1, arp={"127.0.0.9": "aa:bb:cc:00:11:22"}
+    )
+    assert res["vdm10_macs"] == {}
+    assert res["candidates"] == []
+
+
 def test_free_extension_never_picks_main_indoor():
     """`…00` is the main indoor's own AOR - some firmware 200s a REGISTER for
     it, so even a caller sweeping slot 0 must not be offered it."""
