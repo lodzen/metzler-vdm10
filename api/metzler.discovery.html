@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>metzler.discovery module &mdash; vdm10-python 0.1.1 documentation</title>
+  <title>metzler.discovery module &mdash; vdm10-python 0.1.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a58bc63e"></script>
+      <script src="../_static/documentation_options.js?v=92734c54"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
@@ -215,6 +215,9 @@ useless for SIP: callers must ask the user for the host’s real LAN IP.</p>
 <dt class="sig sig-object py" id="metzler.discovery.free_extension">
 <span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">free_extension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/metzler/discovery.html#free_extension"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.free_extension" title="Link to this definition"></a></dt>
 <dd><p>lowest free (status 200) extension long-number on the registrar.</p>
+<p>Never returns the idx-0 number - that AOR is the main indoor itself even
+when the registrar accepts a REGISTER for it (no dev_reg row exists to
+collide with, so some firmware answers 200).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -286,7 +289,7 @@ socket blasts REGISTERs to all hosts and matches replies by source IP -
 
 <dl class="py function">
 <dt class="sig sig-object py" id="metzler.discovery.scan_extension_slots">
-<span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">scan_extension_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">range(0,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#scan_extension_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.scan_extension_slots" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">metzler.discovery.</span></span><span class="sig-name descname"><span class="pre">scan_extension_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">range(1,</span> <span class="pre">6)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/discovery.html#scan_extension_slots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.discovery.scan_extension_slots" title="Link to this definition"></a></dt>
 <dd><p>probe <code class="docutils literal notranslate"><span class="pre">{base}{slot}</span></code> for each slot -&gt; {ext_number: status|None}.</p>
 <p>Live semantics: 410 = slot taken by a device, 200 = free (slot row is
 removed again by the probe’s unregister follow-up), None = no registrar.
