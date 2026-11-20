@@ -14,6 +14,7 @@ from metzler.station.station import IndoorStation
 
 log = logging.getLogger("indoor")
 
+
 def main(argv=None):
     env = load_env(os.environ.get("INDOOR_ENV", ".env"))
     ap = build_parser(env)

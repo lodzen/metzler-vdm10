@@ -72,9 +72,7 @@ def test_md5_without_qop_like_the_intercom_registrar():
     hdr = 'Digest realm="TIGERYIN", nonce="abc123"'
     f = fields(digest_response(hdr, "REGISTER", "sip:10.0.0.38:5065", "10000000003", "pw"))
     assert "qop" not in f and "cnonce" not in f
-    assert f["response"] == expected(
-        md5, "10000000003", "TIGERYIN", "pw", "REGISTER", "sip:10.0.0.38:5065", "abc123"
-    )
+    assert f["response"] == expected(md5, "10000000003", "TIGERYIN", "pw", "REGISTER", "sip:10.0.0.38:5065", "abc123")
 
 
 def test_linphone_unquoted_sha256_is_honoured():

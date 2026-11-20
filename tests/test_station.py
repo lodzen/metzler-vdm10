@@ -336,10 +336,7 @@ def test_provider_address_match_includes_the_port(trunk_station):
 def test_nat_identity_is_learned_from_the_echoed_via(linphone_station):
     p = linphone_station.provider
     p._learn_public(
-        sip(
-            "SIP/2.0 401 Unauthorized\nVia: SIP/2.0/UDP 10.0.0.96:5060;"
-            "rport=57474;branch=z9;received=198.51.100.7\n\n"
-        )
+        sip("SIP/2.0 401 Unauthorized\nVia: SIP/2.0/UDP 10.0.0.96:5060;rport=57474;branch=z9;received=198.51.100.7\n\n")
     )
     assert (p.sdp_ip(), p.sdp_port()) == ("198.51.100.7", 57474)
 
