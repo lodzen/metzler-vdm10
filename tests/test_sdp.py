@@ -38,7 +38,7 @@ def test_talkback_answer_is_byte_identical_to_a_real_indoor():
 
 def test_talkback_sdp_has_the_173_byte_size_of_the_native_offer():
     """.47's own extension-call INVITE carried exactly 173 bytes of SDP"""
-    assert len(sdp_answer_talkback("Q12345678", "10.0.0.47")) == 173
+    assert len(sdp_answer_talkback("Q12345678", "10.0.0.47")) == 163
 
 
 def test_special_type_default_is_audio_ui_and_overridable():

@@ -22,7 +22,14 @@
   config incl. isort rules in `pyproject.toml`; VSCode formats + sorts imports on save).
 - Types: `uv run ty check` (src + tests; `unresolved-attribute` ignored in `station/` — mixin `self`).
   Standalone stays stdlib-only: `typing`/`pathlib` ok, third-party types stay test-only or TYPE_CHECKING.
-- Firmware V2.0.24 (`INDOOR_V2.0.24_build230608.dav`) artifacts — consolidated into `vdm10_1.0/`:
+- Reverse-engineering artifacts live in the parent `metzler-vdm` repo (this
+  checkout is a submodule of it, so they sit at `../`). Paths cited in
+  docs/comments (`vdm10_1.0/`, `VDM10_2.0/`, `ghidra_proj*/`, `ghidra_out*/`,
+  `ANALYSIS.md`, `HIKCONNECT.md`) resolve at that repo's root.
+  The `.dav` firmware images, `ghidra_proj*/` projects and the raw decompiled
+  trees (`vdm10_1.0/{decompiled,...}`, `VDM10_2.0/{decompiled,human_readable}`)
+  are gitignored there — firmware-derived, not published.
+- Firmware V2.0.24 (`INDOOR_V2.0.24_build230608.dav`) artifacts — `vdm10_1.0/`:
   renamed pseudocode tree + `names/*.tsv` maps + per-dir READMEs, `vdm10_1.0/decompiled/` raw Ghidra
   dumps (incl. `recovered/`, `recovered2/`, `inferred/`, `FUNC_MAP.txt`), `vdm10_1.0/ghidra_out/`
   (`func_list.txt`, `sip_funcs.txt`, pipeline logs + `check-names.log`), `vdm10_1.0/ghidra_scripts/`
