@@ -133,6 +133,39 @@ def test_registrar_probe_silent_returns_none():
     assert st is None
 
 
+def test_registrar_probe_ignores_stray_replies():
+    """datagrams from another source must not count as the answer - :5060
+    is shared and a concurrent scan's replies can land on this socket."""
+    lsock = _bind()
+    lport = lsock.getsockname()[1]
+    lsock.close()
+    stray = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    stray.bind(("127.0.0.2", 0))
+    dead = _bind()
+    dead_port = dead.getsockname()[1]
+    dead.close()
+    stop = threading.Event()
+
+    def spammer():
+        pkt = b"SIP/2.0 200 OK\r\nCall-ID: stray\r\n\r\n"
+        while not stop.is_set():
+            stray.sendto(pkt, ("127.0.0.1", lport))
+            time.sleep(0.02)
+
+    t = threading.Thread(target=spammer, daemon=True)
+    t.start()
+    try:
+        # .9 is silent - only the stray 200s from .2 arrive
+        st = registrar_probe(
+            "127.0.0.9", "10000000000", listen_port=lport, reg_port=dead_port, local_ip="127.0.0.1", timeout=1
+        )
+    finally:
+        stop.set()
+        stray.close()
+        t.join(timeout=1)
+    assert st is None
+
+
 def test_scan_slots_finds_free_ext():
     got = []
     reg_port, t = _registrar(
@@ -195,6 +228,22 @@ def test_discover_arp_ignores_other_macs():
     )
     assert res["vdm10_macs"] == {}
     assert res["candidates"] == []
+
+
+def test_tcp_candidates_sweep_is_parallel(monkeypatch):
+    """the sweep must submit all probes before collecting results - result()
+    inside the submit loop serialized it (minutes on a mostly-silent /24)."""
+
+    def fake_conn(addr, timeout):
+        time.sleep(0.05)
+        raise OSError("no route")
+
+    monkeypatch.setattr(discovery.socket, "create_connection", fake_conn)
+    t0 = time.monotonic()
+    res = discovery.tcp_candidates([f"127.0.0.{i}" for i in range(1, 41)], connect_timeout=0.05)
+    assert res == {}
+    # 80 probes serialized would take >4s; on 64 workers it's ~two waves
+    assert time.monotonic() - t0 < 1.5
 
 
 def test_free_extension_never_picks_main_indoor():

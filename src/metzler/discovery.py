@@ -167,9 +167,11 @@ def registrar_probe(
     status, end = None, time.time() + timeout
     while time.time() < end:
         try:
-            data, _ = u.recvfrom(65535)
+            data, addr = u.recvfrom(65535)
         except TimeoutError:
             break
+        if addr[0] != host:
+            continue  # stray datagram - :5060 is shared, other probes' replies can land here
         status = _status_of(data) or status
         if status and status >= 200:  # final response (skip 1xx)
             break
@@ -437,10 +439,12 @@ def tcp_candidates(subnet, ports=(8000, 8102), connect_timeout=0.5):
 
     out = {}
     with concurrent.futures.ThreadPoolExecutor(64) as ex:
-        for host, port in [(h, p) for h in subnet for p in ports]:
-            r = ex.submit(probe, host, port)
-            if r.result() is not None:
-                out.setdefault(host, []).append(r.result())
+        # submit the whole sweep first - calling result() inside the loop
+        # would serialize the probes (minutes on a mostly-silent /24)
+        futures = {ex.submit(probe, h, p): h for h in subnet for p in ports}
+        for fut, host in futures.items():
+            if (r := fut.result()) is not None:
+                out.setdefault(host, []).append(r)
     return out
 
 
@@ -495,6 +499,7 @@ def discover(timeout=3.0, subnet=None, local_ip=None, arp=None):
     log.debug("vdm10 scan: %d door(s) via SADP: %s", len(doors), sorted(door_ips))
     # cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint
     candidates = [h for h in tcp_candidates(subnet) if h not in door_ips]
+    log.debug("vdm10 scan: %d host(s) with tcp signature: %s", len(candidates), candidates)
     answered = registrar_probe_many(candidates, timeout=min(timeout, 2.0), local_ip=local_ip)
     macs = _vdm10_macs(arp_table() if arp is None else arp, subnet)
     log.debug(
