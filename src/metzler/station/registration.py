@@ -26,7 +26,7 @@ class IntercomRegistration:
         self.username, self.name = o.username, o.name
         self.password = o.password
         self.mac, self.serial = o.mac, o.serial
-        self.reg_call_id, self.reg_cseq = call_id(), 1
+        self.reg_call_id, self.reg_cseq = call_id(), 0
         self.reg_queue = queue.Queue()
         self.registered = threading.Event()
 
@@ -53,6 +53,7 @@ class IntercomRegistration:
             frm_uri=f'"{self.name}"<sip:{self.username}@{self.o.local_ip}>;tag={st.local_tag}',
         )
         p.set("Call-ID", self.reg_call_id)
+        self.reg_cseq += 1  # CSeq must strictly increase per request in the dialog
         p.set("CSeq", f"{self.reg_cseq} REGISTER")
         expires = self.o.expires if expires is None else expires
         p.set("Expires", str(expires))
@@ -97,7 +98,6 @@ class IntercomRegistration:
                 raise RuntimeError("stopping")
             if resp.status_line.startswith(("SIP/2.0 401", "SIP/2.0 407")):
                 hdr = resp.get("WWW-Authenticate") or resp.get("Proxy-Authenticate")
-                self.reg_cseq += 1
                 uri = f"sip:{self.o.server}:{self.o.server_port}"
                 auth = digest_response(hdr, "REGISTER", uri, self.username, self.password)
                 self.st.send(self.build_register(auth=auth), self.st.server)

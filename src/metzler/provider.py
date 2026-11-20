@@ -39,7 +39,7 @@ class SipProvider:
         self.label = "provider"
         self.proxy = (o.sip_host, o.sip_port)
         self.reg_call_id = call_id()
-        self.reg_cseq = 1
+        self.reg_cseq = 0  # incremented per request inside _register_pkt
         self.reg_queue = queue.Queue()
         self.registered = threading.Event()
         self.public_ip = None  # Via received= learned from the proxy
@@ -106,6 +106,7 @@ class SipProvider:
         p.set("To", f"<sip:{self.o.sip_user}@{self.o.sip_domain}>")
         p.set("Contact", f"<sip:{self.o.sip_user}@{self.o.local_ip}:{self.st.bind_port}>")
         p.set("Call-ID", self.reg_call_id)
+        self.reg_cseq += 1  # CSeq must strictly increase per request in the dialog
         p.set("CSeq", f"{self.reg_cseq} REGISTER")
         p.set("Expires", "600")
         if auth:
@@ -141,10 +142,20 @@ class SipProvider:
             if resp.status_line.startswith(("SIP/2.0 401", "SIP/2.0 407")):
                 if attempt == 2:
                     return log.warning("%s auth failed (check sip password)", self.label)
-                self.reg_cseq += 1
                 self.st.send(self._register_pkt(self._reg_auth(resp)), self.proxy)
             elif re.match(r"SIP/2\.0 [456]", resp.status_line):
-                return log.warning("%s register rejected: %s", self.label, resp.status_line)
+                return self._reg_rejected(resp)
+
+    def _reg_rejected(self, resp):
+        """final failure on the REGISTER round. A 5xx while still registered
+        is the Fritz!Box 'still-live registration' quirk: it clamps Expires
+        to ~300s, so the 240s refresh lands inside the window and the box
+        declines the unauthenticated refresh with a 500 instead of a 401.
+        Harmless - the registration is still valid; once expired, the next
+        round gets the usual 401 -> digest -> 200."""
+        if resp.status_line.startswith("SIP/2.0 5") and self.registered.is_set():
+            return log.info("%s refresh declined (%s) - still registered", self.label, resp.status_line)
+        return log.warning("%s register rejected: %s", self.label, resp.status_line)
 
     def _wait_reply(self, deadline):
         try:

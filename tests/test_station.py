@@ -1153,3 +1153,61 @@ def test_fritz_wins_an_intercom_call(station_factory):
     assert call.trunk is st.fritz and call.state == "established"
     assert call.fritz_leg is None and call.prov_call_id == finv.get("Call-ID")
     assert call.media.peer == ("10.0.0.30", 40000)  # fritz audio peer
+
+
+def test_fritz_register_cseq_strictly_increases(station_factory):
+    """RFC 3261: every REGISTER within the Call-ID gets a fresh CSeq - reusing
+    the last successful one on refresh rounds is what made the box answer 500."""
+    st = fritz_station(station_factory)
+    assert st.fritz._register_pkt().get("CSeq") == "1 REGISTER"
+    assert st.fritz._register_pkt().get("CSeq") == "2 REGISTER"
+
+
+def test_fritz_500_while_still_registered_is_benign(station_factory, caplog):
+    """Fritz!Box quirk: an unauthenticated re-REGISTER during the still-valid
+    Expires window gets a 500 instead of a 401. Not a real rejection - the
+    registration is still live and the next round renews normally."""
+    import logging
+    import threading
+
+    st = fritz_station(station_factory)
+    st.fritz.registered.set()
+    resp = sip("SIP/2.0 500 Internal Server Error\n\n")
+    threading.Timer(0.05, lambda: st.fritz.reg_queue.put(resp)).start()
+    with caplog.at_level(logging.WARNING, "indoor"):
+        st.fritz._register_once()
+    assert st.fritz.registered.is_set()
+    assert not any("rejected" in r.getMessage() for r in caplog.records)
+    regs = [p for p, a in st.sent if a == FRITZ and p.status_line.startswith("REGISTER")]
+    assert len(regs) == 1  # no retry storm inside the round
+
+
+def test_fritz_500_without_registration_warns(station_factory, caplog):
+    import logging
+    import threading
+
+    st = fritz_station(station_factory)
+    resp = sip("SIP/2.0 500 Internal Server Error\n\n")
+    threading.Timer(0.05, lambda: st.fritz.reg_queue.put(resp)).start()
+    with caplog.at_level(logging.WARNING, "indoor"):
+        st.fritz._register_once()
+    assert not st.fritz.registered.is_set()
+    assert any("rejected" in r.getMessage() for r in caplog.records)
+
+
+def test_fritz_digest_round_gets_fresh_cseqs(station_factory):
+    """a normal renew round (unauthed -> 401 -> digest -> 200) also uses
+    strictly increasing CSeq numbers now"""
+    import threading
+
+    st = fritz_station(station_factory)
+    threading.Timer(
+        0.05,
+        lambda: st.fritz.reg_queue.put(sip(f"SIP/2.0 401 Unauthorized\nWWW-Authenticate: {LINPHONE_CHALLENGE}\n\n")),
+    ).start()
+    threading.Timer(0.1, lambda: st.fritz.reg_queue.put(sip("SIP/2.0 200 OK\n\n"))).start()
+    st.fritz._register_once()
+    assert st.fritz.registered.is_set()
+    regs = [p for p, a in st.sent if a == FRITZ and p.status_line.startswith("REGISTER")]
+    assert [p.get("CSeq") for p in regs] == ["1 REGISTER", "2 REGISTER"]
+    assert regs[1].get("Authorization")
