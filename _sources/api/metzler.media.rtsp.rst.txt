@@ -1,0 +1,7 @@
+metzler.media.rtsp module
+=========================
+
+.. automodule:: metzler.media.rtsp
+   :members:
+   :show-inheritance:
+   :undoc-members:

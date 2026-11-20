@@ -1,0 +1,308 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration surface &amp; gates — V2.0.24 vs V2.2.100 &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="What did NOT change — V2.0.24 vs V2.2.100" href="unchanged.html" />
+    <link rel="prev" title="Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100" href="subsystem-changes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#raw-cfg-offsets">1. Raw cfg offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#named-config-fields-v2-dump-shell-task-command-server-0x0008f56c">2. Named config fields (V2 dump, <code class="docutils literal notranslate"><span class="pre">shell_task_command_server</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0008f56c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gui-wizard-gates">3. GUI / wizard gates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#runtime-gates-that-decide-register-fate-v2">4. Runtime gates that decide REGISTER fate (V2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-a-provisioning-client-must-know">5. What a provisioning client must know</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/version-comparison/config-and-gates.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration-surface-gates-v2-0-24-vs-v2-2-100">
+<h1>Configuration surface &amp; gates — V2.0.24 vs V2.2.100<a class="headerlink" href="#configuration-surface-gates-v2-0-24-vs-v2-2-100" title="Link to this heading"></a></h1>
+<p>Where the two builds read their SIP behavior from. V1 offsets per
+<code class="docutils literal notranslate"><span class="pre">docs/firmware/intercom-registration.md</span></code> + <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/</span></code>; V2 offsets per
+<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/</span></code> (decompiled cfg reads + the serial-shell config dump
+<code class="docutils literal notranslate"><span class="pre">shell_task_command_server</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0008f56c</span></code>).</p>
+<section id="raw-cfg-offsets">
+<h2>1. Raw cfg offsets<a class="headerlink" href="#raw-cfg-offsets" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Offset</p></th>
+<th class="head"><p>V1</p></th>
+<th class="head"><p>V2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>own number (<code class="docutils literal notranslate"><span class="pre">devLongNum</span></code>, 11 chars)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x34fcc</span></code> (regXML <code class="docutils literal notranslate"><span class="pre">sipNum</span></code>); <code class="docutils literal notranslate"><span class="pre">cfg+0x2d354</span></code> used by heartbeat <code class="docutils literal notranslate"><span class="pre">&lt;num&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x2d354</span></code> — From/To username <strong>and</strong> the own-number match in <code class="docutils literal notranslate"><span class="pre">sip_lookup_registration_password</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00119bb8</span></code>; also written by <code class="docutils literal notranslate"><span class="pre">gui/devicepairing.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Registration password</p></td>
+<td><p>not separated — client auth used the generic SIP password path</p></td>
+<td><p><strong><code class="docutils literal notranslate"><span class="pre">cfg+0x35a14</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">regPassword</span></code>, ≤32 B) — read by the registrar’s own-number lookup <em>and</em> by <code class="docutils literal notranslate"><span class="pre">eXosip_add_authentication_info</span></code> in <code class="docutils literal notranslate"><span class="pre">cli_send_regist</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00130c50</span></code>; written by <code class="docutils literal notranslate"><span class="pre">gui/{confrelatedev,devicepairing}.c</span></code>, <code class="docutils literal notranslate"><span class="pre">isapi_set_iot_param</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00315ecc</span></code>, <code class="docutils literal notranslate"><span class="pre">isapi_set_device_communication_to_json</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0031fcb8</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>SIP1.0/2.0 byte</strong></p></td>
+<td><p>n/a (single private-SIP dialect + <code class="docutils literal notranslate"><span class="pre">Private</span></code>/<code class="docutils literal notranslate"><span class="pre">StandardSIP</span></code> mode)</p></td>
+<td><p><strong><code class="docutils literal notranslate"><span class="pre">cfg+0x35e8d</span></code></strong> — tested <code class="docutils literal notranslate"><span class="pre">==1</span></code> by <code class="docutils literal notranslate"><span class="pre">vis_aux_f_q</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00161fd0</span></code>; the registrar’s auth byte is initialized as <code class="docutils literal notranslate"><span class="pre">getter()==0</span></code> by <code class="docutils literal notranslate"><span class="pre">sip_start_server_control_thread</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0011c0c4</span></code> (<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code> E4; offset from prior investigation, the DAT indirection makes the raw decompile ambiguous — verified at the getter, inferred at the offset)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Site prefix (type/floor/unit)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x2d330</span></code> (type), <code class="docutils literal notranslate"><span class="pre">+0x2d332</span></code> (floor), <code class="docutils literal notranslate"><span class="pre">+0x2d334</span></code> (unit), class flag <code class="docutils literal notranslate"><span class="pre">cfg+0x2d335</span></code></p></td>
+<td><p>same split fields consumed via <code class="docutils literal notranslate"><span class="pre">sip_sdk_query_device_number_fields</span></code> in the 410 gate</p></td>
+</tr>
+<tr class="row-even"><td><p>Registrar address block</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x5fd0</span></code> (registrar ip), <code class="docutils literal notranslate"><span class="pre">cfg+0x5fe8</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg+0x6034</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg+0x601c</span></code> role blocks</p></td>
+<td><p>same offsets reused (<code class="docutils literal notranslate"><span class="pre">cli_send_regist</span></code>, <code class="docutils literal notranslate"><span class="pre">cli_heartbeat_task</span></code> still read <code class="docutils literal notranslate"><span class="pre">*cfg+0x5fd0</span></code> etc.)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Door pre-reg</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x34fac/0x34fcc/0x34fec</span></code> numbers, <code class="docutils literal notranslate"><span class="pre">cfg+0x35040</span></code> port, <code class="docutils literal notranslate"><span class="pre">cfg+0x350ce</span></code> expiry-minutes</p></td>
+<td><p>same role-9 path reads <code class="docutils literal notranslate"><span class="pre">+0x34fac…0x34fec</span></code>, <code class="docutils literal notranslate"><span class="pre">+0x35000/0x35044</span></code> host, u16 port, minutes×60</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="named-config-fields-v2-dump-shell-task-command-server-0x0008f56c">
+<h2>2. Named config fields (V2 dump, <code class="docutils literal notranslate"><span class="pre">shell_task_command_server</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0008f56c</span></code>)<a class="headerlink" href="#named-config-fields-v2-dump-shell-task-command-server-0x0008f56c" title="Link to this heading"></a></h2>
+<p>The debug shell prints the SIP configuration as named fields — new-side
+vocabulary verified by literals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SIP1.0</span></code> / <code class="docutils literal notranslate"><span class="pre">SIP2.0</span></code> — protocol-generation status label</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sipServerIpAddr</span></code> / <code class="docutils literal notranslate"><span class="pre">sipServerIpAddrV6</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mainDoorIpAddr</span></code> / <code class="docutils literal notranslate"><span class="pre">mainDoorIpAddrV6</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">regToDoor</span></code> / <code class="docutils literal notranslate"><span class="pre">regToCenter</span></code> / <code class="docutils literal notranslate"><span class="pre">regToConfirm</span></code> — per-target registration
+enable flags (roles 9/0xa in <code class="docutils literal notranslate"><span class="pre">cli_send_regist</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sip</span> <span class="pre">server</span> <span class="pre">port:</span> <span class="pre">%d</span></code></p></li>
+<li><p>plus IPv6 gateway fields (<code class="docutils literal notranslate"><span class="pre">Gateway</span></code>, <code class="docutils literal notranslate"><span class="pre">IPV6</span> <span class="pre">Gateway</span></code>, <code class="docutils literal notranslate"><span class="pre">set/del</span> <span class="pre">gateway</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gatewayv6</span></code> DB column &#64;<code class="docutils literal notranslate"><span class="pre">0x00044e10</span></code>).</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">mainDoorIpAddr:</span></code>/<code class="docutils literal notranslate"><span class="pre">devlongnum=%s,</span> <span class="pre">regToDoor=%d</span></code> also appear in client code
+(&#64;<code class="docutils literal notranslate"><span class="pre">0x00147c9c</span></code>, <code class="docutils literal notranslate"><span class="pre">0x00157b70</span></code>, <code class="docutils literal notranslate"><span class="pre">cli_get_subdoor_ip</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00130038</span></code> region).</p>
+</section>
+<section id="gui-wizard-gates">
+<h2>3. GUI / wizard gates<a class="headerlink" href="#gui-wizard-gates" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Gate</p></th>
+<th class="head"><p>V1</p></th>
+<th class="head"><p>V2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SIP mode select</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Private</span></code> vs <code class="docutils literal notranslate"><span class="pre">StandardSIP</span></code> (ISAPI <code class="docutils literal notranslate"><span class="pre">IntercomProtocolType</span></code>, persisted <code class="docutils literal notranslate"><span class="pre">g_cfg+0x350cd</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/videointercom{,_do}.c</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">IntercomProtocolType</span></code> options now include <strong><code class="docutils literal notranslate"><span class="pre">Compatible</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">serialize_intercom_protocol_type_xml_response</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00328bd4</span></code>, <code class="docutils literal notranslate"><span class="pre">opt=&quot;Compatible&quot;</span></code>); separate <code class="docutils literal notranslate"><span class="pre">sdkSetStandardSipCfgV50</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000d8fec</span></code>; <code class="docutils literal notranslate"><span class="pre">&quot;not</span> <span class="pre">sup</span> <span class="pre">Standard</span> <span class="pre">SIP&quot;</span></code> diagnostics &#64;<code class="docutils literal notranslate"><span class="pre">0x002f185c</span></code>/<code class="docutils literal notranslate"><span class="pre">0x002f5aa0</span></code> — i.e. “Compatible with SIP1.0 indoor station” ↔ “Enable Standard SIP” toggles</p></td>
+</tr>
+<tr class="row-odd"><td><p>Registration password</p></td>
+<td><p>optional/cosmetic (no verifier in old registrar)</p></td>
+<td><p><strong>mandatory in GUI</strong>: <code class="docutils literal notranslate"><span class="pre">gui/registerpassword.c</span></code> (password-grade widget <code class="docutils literal notranslate"><span class="pre">pwd_grade_*</span></code>), <code class="docutils literal notranslate"><span class="pre">simplewizard_password*.c</span></code> wizard flow; <code class="docutils literal notranslate"><span class="pre">regPassword</span></code>/<code class="docutils literal notranslate"><span class="pre">commPasswordWithDoor</span></code>/<code class="docutils literal notranslate"><span class="pre">commPasswordWithConfirm</span></code> fields pushed in indoor-info XML (<code class="docutils literal notranslate"><span class="pre">xml_parse_result_v2</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001237d8</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Mailbox verification</p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui/mailboxverifi.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>IPv6</p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui/networkset_ipv6.c</span></code>, <code class="docutils literal notranslate"><span class="pre">src_gui_networkset_ipv6_c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>NTP</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/time.c</span></code> basics</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/serialization/ntp_server.c</span></code>, <code class="docutils literal notranslate"><span class="pre">time_synchronization.c</span></code> (system)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Device mgmt (<code class="docutils literal notranslate"><span class="pre">[manage]</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/gui/exdesktop.c</span></code> contacts/exroom list</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui/manage.c</span></code> (<code class="docutils literal notranslate"><span class="pre">gui_manage_delete_gateway</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00540670</span></code>), device types incl. <strong>SIP Server</strong> role and <strong>EZVIZ Gateway</strong> (<code class="docutils literal notranslate"><span class="pre">win_ezvizgateway</span></code>, <code class="docutils literal notranslate"><span class="pre">sadpc_get_devlist_ezviz_gateway</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0017e8c0</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_third_party_remotecontrolgateway</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="runtime-gates-that-decide-register-fate-v2">
+<h2>4. Runtime gates that decide REGISTER fate (V2)<a class="headerlink" href="#runtime-gates-that-decide-register-fate-v2" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Gate</p></th>
+<th class="head"><p>Where</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_config_is_reg_body_skip_enabled</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230a8c</span></code> (config+0x20==1)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_server_register_device</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">==0</span></code> → body is TinyXML-parsed (normal app path: init byte 0); <code class="docutils literal notranslate"><span class="pre">==1</span></code> also suppresses the <code class="docutils literal notranslate"><span class="pre">rp_track_device_change</span></code>→<code class="docutils literal notranslate"><span class="pre">sip_notify_device_registration_change</span></code> notify. Renamed pass23 (was <code class="docutils literal notranslate"><span class="pre">sip_config_is_digest_auth_enabled</span></code> — a mislabel; the digest gate uses +0x24)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_config_get_auth_mode</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230a30</span></code></p></td>
+<td><p>same</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">==0</span></code> → compat mode: classification + site-prefix <strong>410 gate</strong>; <code class="docutils literal notranslate"><span class="pre">==1</span></code> + Expires&gt;0 → 401→Digest flow. Renamed pass23 (was <code class="docutils literal notranslate"><span class="pre">sipsvr_device_state_read</span></code>; reads config+0x24 on the registrar config object, not a device record)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_config_is_device_mode_one</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0021ef80</span></code> (config+0x30)</p></td>
+<td><p>same</p></td>
+<td><p>registrar is device-type 1 → activates the peer-class site compare</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_config_get_local_devtype</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230ac8</span></code> (config+0x30, init from <code class="docutils literal notranslate"><span class="pre">sipDevSDK_get_local_devtype()</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_classify_and_split_device_number</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0023b194</span></code></p></td>
+<td><p>local device type 10/0xb → site-prefix branch vs other; <strong>not</strong> a numbering-scheme/digit-count selector. Renamed pass23 (was <code class="docutils literal notranslate"><span class="pre">sip_config_get_numbering_scheme</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_config_get_ipv6_mode</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230b2c</span></code></p></td>
+<td><p>response path</p></td>
+<td><p>AF_INET vs AF_INET6 source-address decode</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">vis_aux_f_q</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00161fd0</span></code> (<code class="docutils literal notranslate"><span class="pre">cfg+0x35e8d==1</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_start_server_control_thread</span></code></p></td>
+<td><p>feeds the server-control init byte (local_2b) — the SIP1.0/2.0 personality switch; <strong>factory default unknown</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vis_pred_a/b/c_q</span></code>, <code class="docutils literal notranslate"><span class="pre">vis_dev_chk_*</span></code>, <code class="docutils literal notranslate"><span class="pre">cfg_dev_get</span></code></p></td>
+<td><p>client tasks</p></td>
+<td><p>device-class predicates choosing primary/secondary NIC (<code class="docutils literal notranslate"><span class="pre">srv_primaryIpText</span></code>/<code class="docutils literal notranslate"><span class="pre">srv_secondaryIpText</span></code>), dual-NIC registration targets</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sipsvr_cfg_flag_0x28_check</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230af0</span></code></p></td>
+<td><p>numbering + XML parser</p></td>
+<td><p>alternate number split + optional <code class="docutils literal notranslate"><span class="pre">floorNum</span></code> read</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-a-provisioning-client-must-know">
+<h2>5. What a provisioning client must know<a class="headerlink" href="#what-a-provisioning-client-must-know" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">regPassword</span></code> (<code class="docutils literal notranslate"><span class="pre">cfg+0x35a14</span></code>) is a first-class field in V2 — it is the
+own-number HA1 input <em>and</em> part of the response-key derivation secret
+(<code class="docutils literal notranslate"><span class="pre">%s_%s</span></code>). Provisioning it wrong breaks both auth and the encrypted layer.</p></li>
+<li><p>Extension passwords are per-row in the device DB (<code class="docutils literal notranslate"><span class="pre">sip_pwd</span></code> column),
+<strong>not</strong> the station regPassword — see <code class="docutils literal notranslate"><span class="pre">registration.md</span></code> checklist item 4.</p></li>
+<li><p>The SIP1.0/2.0 byte changes <em>which handler semantics</em> run (compat vs
+auth, 410 gate) — a SIP-1.0 client needs “Compatible”/SIP1.0 mode or a
+provisioned password.</p></li>
+<li><p>IPv6 configuration exists end-to-end; on dual-NIC the secondary address
+is used for the same registration roles as V1.</p></li>
+<li><p>Don’t derive defaults from strings: <code class="docutils literal notranslate"><span class="pre">SIP1.0</span></code>/<code class="docutils literal notranslate"><span class="pre">SIP2.0</span></code> labels and both
+code paths exist in the binary regardless of the configured value.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="subsystem-changes.html" class="btn btn-neutral float-left" title="Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="unchanged.html" class="btn btn-neutral float-right" title="What did NOT change — V2.0.24 vs V2.2.100" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

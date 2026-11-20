@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler.station.core module &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="metzler.station.door_unlock module" href="metzler.station.door_unlock.html" />
+    <link rel="prev" title="metzler.station.call module" href="metzler.station.call.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="metzler.html">metzler package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.IntercomMedia"><code class="docutils literal notranslate"><span class="pre">IntercomMedia</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.Packet"><code class="docutils literal notranslate"><span class="pre">Packet</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.RtpRelay"><code class="docutils literal notranslate"><span class="pre">RtpRelay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.RtspPuller"><code class="docutils literal notranslate"><span class="pre">RtspPuller</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.SipProvider"><code class="docutils literal notranslate"><span class="pre">SipProvider</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.Srtp"><code class="docutils literal notranslate"><span class="pre">Srtp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.SrtpSession"><code class="docutils literal notranslate"><span class="pre">SrtpSession</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.alaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">alaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.answer_policy"><code class="docutils literal notranslate"><span class="pre">answer_policy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.bind_rtp"><code class="docutils literal notranslate"><span class="pre">bind_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.branch"><code class="docutils literal notranslate"><span class="pre">branch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.call_id"><code class="docutils literal notranslate"><span class="pre">call_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.digest_response"><code class="docutils literal notranslate"><span class="pre">digest_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.env_bool"><code class="docutils literal notranslate"><span class="pre">env_bool()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.env_default"><code class="docutils literal notranslate"><span class="pre">env_default()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.finalize_options"><code class="docutils literal notranslate"><span class="pre">finalize_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.is_rtp"><code class="docutils literal notranslate"><span class="pre">is_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.load_env"><code class="docutils literal notranslate"><span class="pre">load_env()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.md5"><code class="docutils literal notranslate"><span class="pre">md5()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.media_addr"><code class="docutils literal notranslate"><span class="pre">media_addr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.parse_sdp"><code class="docutils literal notranslate"><span class="pre">parse_sdp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.pcm_to_ulaw"><code class="docutils literal notranslate"><span class="pre">pcm_to_ulaw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.sdp_answer_firmware"><code class="docutils literal notranslate"><span class="pre">sdp_answer_firmware()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.sdp_answer_talkback"><code class="docutils literal notranslate"><span class="pre">sdp_answer_talkback()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.set_rtp_range"><code class="docutils literal notranslate"><span class="pre">set_rtp_range()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.sip_uri"><code class="docutils literal notranslate"><span class="pre">sip_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.srtp_available"><code class="docutils literal notranslate"><span class="pre">srtp_available()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.tag"><code class="docutils literal notranslate"><span class="pre">tag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.ulaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">ulaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="metzler.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.html">metzler.media package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.sip.html">metzler.sip package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="metzler.station.html">metzler.station package</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.html#metzler.station.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.html#metzler.station.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="metzler.station.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="metzler.html">metzler package</a></li>
+          <li class="breadcrumb-item"><a href="metzler.station.html">metzler.station package</a></li>
+      <li class="breadcrumb-item active">metzler.station.core module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/metzler.station.core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-metzler.station.core">
+<span id="metzler-station-core-module"></span><h1>metzler.station.core module<a class="headerlink" href="#module-metzler.station.core" title="Link to this heading"></a></h1>
+<p>The station’s SIP endpoint: socket, RTSP server, packet helpers, the
+receive loop and request routing, run/shutdown.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.station.core.</span></span><span class="sig-name descname"><span class="pre">StationCore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>The station’s SIP endpoint: socket, RTSP server, packet helpers, the
+receive loop and request routing, run/shutdown.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.DECLINE_CODES">
+<span class="sig-name descname"><span class="pre">DECLINE_CODES</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.15)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#frozenset" title="(in Python v3.15)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({486,</span> <span class="pre">603})</span></span><a class="headerlink" href="#metzler.station.core.StationCore.DECLINE_CODES" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.DTMF_SEQ_WINDOW">
+<span class="sig-name descname"><span class="pre">DTMF_SEQ_WINDOW</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.0</span></span><a class="headerlink" href="#metzler.station.core.StationCore.DTMF_SEQ_WINDOW" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.REQUEST_HANDLERS">
+<span class="sig-name descname"><span class="pre">REQUEST_HANDLERS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.15)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.15)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'ACK':</span> <span class="pre">None,</span> <span class="pre">'BYE':</span> <span class="pre">'on_bye',</span> <span class="pre">'CANCEL':</span> <span class="pre">'on_cancel',</span> <span class="pre">'INFO':</span> <span class="pre">'on_info',</span> <span class="pre">'INVITE':</span> <span class="pre">'on_invite',</span> <span class="pre">'MESSAGE':</span> <span class="pre">'on_message',</span> <span class="pre">'OPTIONS':</span> <span class="pre">'on_options'}</span></span><a class="headerlink" href="#metzler.station.core.StationCore.REQUEST_HANDLERS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.RING_TIMEOUT">
+<span class="sig-name descname"><span class="pre">RING_TIMEOUT</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.15)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></span><a class="headerlink" href="#metzler.station.core.StationCore.RING_TIMEOUT" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.UNLOCK_COOLDOWN">
+<span class="sig-name descname"><span class="pre">UNLOCK_COOLDOWN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.0</span></span><a class="headerlink" href="#metzler.station.core.StationCore.UNLOCK_COOLDOWN" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.base_request">
+<span class="sig-name descname"><span class="pre">base_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frm_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.base_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.base_request" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.contact">
+<span class="sig-name descname"><span class="pre">contact</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.contact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.contact" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.ended_resp">
+<span class="sig-name descname"><span class="pre">ended_resp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.ended_resp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.ended_resp" title="Link to this definition"></a></dt>
+<dd><p>the final response of a just-ended call, or None; lazily prunes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.handle_datagram">
+<span class="sig-name descname"><span class="pre">handle_datagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.handle_datagram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.handle_datagram" title="Link to this definition"></a></dt>
+<dd><p>parse one UDP datagram and route it (REGISTER replies go to the
+waiting registration loops, everything else to its handler)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.in_dialog_response">
+<span class="sig-name descname"><span class="pre">in_dialog_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">req</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_to_tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.in_dialog_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.in_dialog_response" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.listener">
+<span class="sig-name descname"><span class="pre">listener</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.listener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.listener" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.on_info">
+<span class="sig-name descname"><span class="pre">on_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.on_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.on_info" title="Link to this definition"></a></dt>
+<dd><p>SIP INFO: dtmf-relay bodies on a trunk leg feed the door-unlock
+sequence detector (Signal=&lt;d&gt;); intercom-leg INFO is just acked</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.on_message">
+<span class="sig-name descname"><span class="pre">on_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.on_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.on_message" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.on_options">
+<span class="sig-name descname"><span class="pre">on_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.on_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.on_options" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.on_response">
+<span class="sig-name descname"><span class="pre">on_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.on_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.on_response" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.reply">
+<span class="sig-name descname"><span class="pre">reply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.reply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.reply" title="Link to this definition"></a></dt>
+<dd><p>answer call.invite and remember the response - a retransmitted
+INVITE gets it resent (see _retransmitted_invite)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.send">
+<span class="sig-name descname"><span class="pre">send</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.send" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.shutdown">
+<span class="sig-name descname"><span class="pre">shutdown</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.shutdown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.shutdown" title="Link to this definition"></a></dt>
+<dd><p>clean exit: end every call (BYE/CANCEL so the registrar’s busy
+tracking clears), then Expires=0 to remove our dev_reg row —
+leaving stale state marks the whole system busy (486 to the door)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.start_threads">
+<span class="sig-name descname"><span class="pre">start_threads</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.start_threads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.start_threads" title="Link to this definition"></a></dt>
+<dd><p>spawn the daemon threads run() manages, WITHOUT installing the
+SIGTERM handler or blocking on the main loop - for embedded/library
+use (vdm10-ha drives the station from a non-main thread). Includes
+the provider/fritz REGISTER loops in non-local mode (they are daemon
+threads like the rest; a plain embedded start must not silently
+skip the trunks).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.unlock_door">
+<span class="sig-name descname"><span class="pre">unlock_door</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">door</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.unlock_door"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.unlock_door" title="Link to this definition"></a></dt>
+<dd><p>open door n: ISAPI PUT on the outdoor station (the SDP address of
+the door that is calling us)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.station.core.StationCore.via">
+<span class="sig-name descname"><span class="pre">via</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/core.html#StationCore.via"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.station.core.StationCore.via" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="metzler.station.call.html" class="btn btn-neutral float-left" title="metzler.station.call module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metzler.station.door_unlock.html" class="btn btn-neutral float-right" title="metzler.station.door_unlock module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

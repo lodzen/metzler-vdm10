@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>What did NOT change — V2.0.24 vs V2.2.100 &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="metzler package" href="../api/metzler.html" />
+    <link rel="prev" title="Configuration surface &amp; gates — V2.0.24 vs V2.2.100" href="config-and-gates.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What did NOT change — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#container-extraction">Container &amp; extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sip-wire-contract">SIP wire contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#packaging-deltas-that-are-not-protocol-changes">Packaging deltas that are <em>not</em> protocol changes</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">What did NOT change — V2.0.24 vs V2.2.100</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/version-comparison/unchanged.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="what-did-not-change-v2-0-24-vs-v2-2-100">
+<h1>What did NOT change — V2.0.24 vs V2.2.100<a class="headerlink" href="#what-did-not-change-v2-0-24-vs-v2-2-100" title="Link to this heading"></a></h1>
+<p>Deliberately conservative list: the things a simulator/peer can rely on
+without knowing which build it faces. Verified = read in both decompiles;
+live-verified = also captured on V1.</p>
+<section id="container-extraction">
+<h2>Container &amp; extraction<a class="headerlink" href="#container-extraction" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.dav</span></code> wrapper with cramfs at file offset <strong><code class="docutils literal notranslate"><span class="pre">0x6c</span></code></strong> (magic <code class="docutils literal notranslate"><span class="pre">453dcd28</span></code>),
+byte-identical to the carved <code class="docutils literal notranslate"><span class="pre">rootfs.cramfs</span></code> on both images
+(<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/INVENTORY.md</span></code>, archive audit).</p></li>
+<li><p>Same encryption tooling: encrypted payloads (<code class="docutils literal notranslate"><span class="pre">app</span></code>, <code class="docutils literal notranslate"><span class="pre">vistalk</span></code>, <code class="docutils literal notranslate"><span class="pre">misc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">audio</span></code>, <code class="docutils literal notranslate"><span class="pre">rv</span></code>, <code class="docutils literal notranslate"><span class="pre">start.sh</span></code>) decrypt with the <strong>same 24-byte 3DES-EDE ECB
+key</strong> (<code class="docutils literal notranslate"><span class="pre">21</span> <span class="pre">02</span> <span class="pre">03</span> <span class="pre">4d</span> <span class="pre">56</span> <span class="pre">13</span> <span class="pre">…</span> <span class="pre">1d</span></code>, <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §2 recipe applies to both).</p></li>
+<li><p>Same boot shape: tarballs → <code class="docutils literal notranslate"><span class="pre">/home/app</span></code> tmpfs → <code class="docutils literal notranslate"><span class="pre">/home/app/hicore</span></code>;
+stripped ARM32 LE EABI5 uClibc ELF, <code class="docutils literal notranslate"><span class="pre">/lib/ld-uClibc.so.0</span></code>.</p></li>
+<li><p>Same base system style: busybox-ish userland, <code class="docutils literal notranslate"><span class="pre">dec</span></code> helper, <code class="docutils literal notranslate"><span class="pre">*.tar.lzma</span></code>
+payloads, <code class="docutils literal notranslate"><span class="pre">hicore</span></code> as the one giant monolith.</p></li>
+</ul>
+</section>
+<section id="sip-wire-contract">
+<h2>SIP wire contract<a class="headerlink" href="#sip-wire-contract" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Registrar still UDP 5065</strong> (<code class="docutils literal notranslate"><span class="pre">0x13c9</span></code> default, <code class="docutils literal notranslate"><span class="pre">sip_start_server_control_thread</span></code>
+&#64;<code class="docutils literal notranslate"><span class="pre">0x0011c0c4</span></code> vs <code class="docutils literal notranslate"><span class="pre">sip_udpServerInit</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000da6f0</span></code>); client leg still on
+:5060 (<code class="docutils literal notranslate"><span class="pre">eXosip</span></code> listen).</p></li>
+<li><p><strong>eXosip client leg</strong> on both: <code class="docutils literal notranslate"><span class="pre">eXosip_register_build_initial_register</span></code>,
+<code class="docutils literal notranslate"><span class="pre">eXosip_add_authentication_info(…,&quot;MD5&quot;,0)</span></code>, automatic 401 retry; the
+<code class="docutils literal notranslate"><span class="pre">.so</span></code> files ship in both <code class="docutils literal notranslate"><span class="pre">trees/misc/</span></code>.</p></li>
+<li><p><strong>REGISTER <code class="docutils literal notranslate"><span class="pre">regXML</span></code> fields</strong>: <code class="docutils literal notranslate"><span class="pre">regDevSerial</span></code> + <code class="docutils literal notranslate"><span class="pre">regDevMacAddr</span></code> required on
+V2 and always sent by both builders; <code class="docutils literal notranslate"><span class="pre">regDevName</span></code>/<code class="docutils literal notranslate"><span class="pre">floorNum</span></code> optional on
+both. <code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">text/xml</span></code>.</p></li>
+<li><p><strong>Digest</strong>: realm <code class="docutils literal notranslate"><span class="pre">&quot;Hikvision&quot;</span></code>, no-qop MD5 — V2’s verifier accepts the
+exact formula a V1 client produces (synthetic check in
+<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/simulator-digest-check.json</span></code>).</p></li>
+<li><p><strong>Heartbeat</strong>: <code class="docutils literal notranslate"><span class="pre">MESSAGE</span> <span class="pre">sip:sipCmd&#64;&lt;registrar&gt;:5065</span></code>,
+<code class="docutils literal notranslate"><span class="pre">videoIntercomMsg</span></code> method=1/action=1, ~<code class="docutils literal notranslate"><span class="pre">0x77</span></code> s cadence, gated on 11-char
+devLongNum (<code class="docutils literal notranslate"><span class="pre">cli_heartbeat_task</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00133668</span></code> vs
+<code class="docutils literal notranslate"><span class="pre">task_sipClient_HeartBeat</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000e28dc</span></code>).</p></li>
+<li><p><strong>Numbering</strong>: <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">FFF</span> <span class="pre">UU</span> <span class="pre">RRR</span> <span class="pre">II</span></code> via the identical sscanf format
+<code class="docutils literal notranslate"><span class="pre">%01d%03d%02d%03d%02d</span></code>; <code class="docutils literal notranslate"><span class="pre">UU!=0</span> <span class="pre">&amp;&amp;</span> <span class="pre">RRR==0</span> <span class="pre">→</span> <span class="pre">type</span> <span class="pre">1</span></code> in both; <code class="docutils literal notranslate"><span class="pre">againdevice</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code>, <code class="docutils literal notranslate"><span class="pre">1000000000N</span></code>-series room numbers still special.</p></li>
+<li><p><strong>Method set</strong>: REGISTER/INVITE/ACK/BYE/CANCEL/MESSAGE/INFO/OPTIONS.</p></li>
+<li><p><strong>In-dialog controls</strong>: <code class="docutils literal notranslate"><span class="pre">locknumXML</span></code> MESSAGE fast-path and <code class="docutils literal notranslate"><span class="pre">INFO</span></code>
+<code class="docutils literal notranslate"><span class="pre">application/dtmf-relay</span></code> <code class="docutils literal notranslate"><span class="pre">Signal=&lt;d&gt;</span></code> bodies still handled
+(<code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code> literals).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Subject:</span></code> as protocol field</strong>, private SDP attrs
+<code class="docutils literal notranslate"><span class="pre">doorFloor/responseType/doorType/isSpecialType/isConfirm</span></code>, <code class="docutils literal notranslate"><span class="pre">s=Talk</span> <span class="pre">session</span></code>
+template — all still emitted (<code class="docutils literal notranslate"><span class="pre">0x00127fa4</span></code>/<code class="docutils literal notranslate"><span class="pre">0x00139fa4</span></code> literals).</p></li>
+<li><p><strong>dev_reg concept</strong>: a registration table keyed by SIP number with
+serial/MAC/IP/expiry, persisted to the device DB and seeding a
+<code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code> pseudo-row — survives the C→C++ rewrite as
+<code class="docutils literal notranslate"><span class="pre">sip_addressbook</span></code> + <code class="docutils literal notranslate"><span class="pre">room_extension_net_info</span></code>.</p></li>
+<li><p><strong>visNet TCP :8102</strong> proprietary channel: <code class="docutils literal notranslate"><span class="pre">serverInfo</span></code>→nonce→signature
+handshake, <code class="docutils literal notranslate"><span class="pre">vns_nonce_gen</span></code>/<code class="docutils literal notranslate"><span class="pre">vns_nonce_key_fold</span></code>/<code class="docutils literal notranslate"><span class="pre">vns_md5_sign</span></code>/
+<code class="docutils literal notranslate"><span class="pre">vns_payloadXor</span></code> (cross-version-matched implementations,
+<code class="docutils literal notranslate"><span class="pre">human_readable/visnet/server.c</span></code>), cmd <code class="docutils literal notranslate"><span class="pre">0x2033</span></code> dev-table push after
+registration (<code class="docutils literal notranslate"><span class="pre">vns_registrar_sync_hook</span></code> both sides).</p></li>
+<li><p><strong>Core call flow</strong>: INVITE→100/180/200+ACK, BYE→200, CANCEL→487; door
+calls announced then fanned out; extension calls routed direct to
+<code class="docutils literal notranslate"><span class="pre">dev_ip:5060</span></code> when resolvable (both register <code class="docutils literal notranslate"><span class="pre">100000000</span></code>-style aliases and
+keep the direct-dial path, <code class="docutils literal notranslate"><span class="pre">cli_invite</span></code>/<code class="docutils literal notranslate"><span class="pre">cli_call_doorphone</span></code> vs
+<code class="docutils literal notranslate"><span class="pre">sip_callLongNum</span></code>); global-busy semantics retained (busy/cancel/bye event
+hooks in <code class="docutils literal notranslate"><span class="pre">talkback_tables.c</span></code>).</p></li>
+<li><p><strong>Dual-NIC concept</strong>: primary/secondary IP selection
+(<code class="docutils literal notranslate"><span class="pre">srv_primaryIpText</span></code>/<code class="docutils literal notranslate"><span class="pre">srv_secondaryIpText</span></code>) drives registration targets on
+both builds.</p></li>
+<li><p><strong>RTSP :554 media pulls</strong> and talkback RTP ports survive in the net layer
+(<code class="docutils literal notranslate"><span class="pre">net_netService_rtpSession_*</span></code>, <code class="docutils literal notranslate"><span class="pre">ipc_talkback*</span></code>).</p></li>
+</ul>
+</section>
+<section id="packaging-deltas-that-are-not-protocol-changes">
+<h2>Packaging deltas that are <em>not</em> protocol changes<a class="headerlink" href="#packaging-deltas-that-are-not-protocol-changes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>New rootfs members (<code class="docutils literal notranslate"><span class="pre">dhcp6c.tar.lzma</span></code>, <code class="docutils literal notranslate"><span class="pre">firmware.bin</span></code>, <code class="docutils literal notranslate"><span class="pre">io</span></code>,
+<code class="docutils literal notranslate"><span class="pre">R0-common.dtb</span></code>), one dropped (<code class="docutils literal notranslate"><span class="pre">DS17054.dtb</span></code>), and <code class="docutils literal notranslate"><span class="pre">start.sh</span></code> rewrites
+(plain commands replacing <code class="docutils literal notranslate"><span class="pre">hik_*</span></code> helpers, libcrypto/libssl symlinks,
+<code class="docutils literal notranslate"><span class="pre">log4j</span></code> start, <code class="docutils literal notranslate"><span class="pre">cam_iq</span></code>, <code class="docutils literal notranslate"><span class="pre">min_free_kbytes</span> <span class="pre">4096→2048</span></code>, 65M tmpfs, <code class="docutils literal notranslate"><span class="pre">sdbg</span></code>
+modes) — <strong>extraction-level facts</strong> from the removed <code class="docutils literal notranslate"><span class="pre">fw2_extracted</span></code> tree;
+hashes in <code class="docutils literal notranslate"><span class="pre">extracted-file-comparison.json</span></code>; re-derive via the cramfs carve</p>
+<ul>
+<li><p>3DES recipe if needed. (<code class="docutils literal notranslate"><span class="pre">hik_rm</span></code> strings still exist inside the new
+<code class="docutils literal notranslate"><span class="pre">hicore</span></code> — the shell-script switch is packaging, not a binary change.)</p></li>
+</ul>
+</li>
+<li><p>GPL list file renamed/duplicated (<code class="docutils literal notranslate"><span class="pre">Open_Source_Software_Licenses.cfg</span></code> →
+<code class="docutils literal notranslate"><span class="pre">_NEU.cfg</span></code>/<code class="docutils literal notranslate"><span class="pre">_STD.cfg</span></code>); osip/eXosip entries absent from the new lists
+while the <code class="docutils literal notranslate"><span class="pre">.so</span></code>s still ship — licensing-label change, not a stack change
+(extraction note; cfg contents not retained in-repo).</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="config-and-gates.html" class="btn btn-neutral float-left" title="Configuration surface &amp; gates — V2.0.24 vs V2.2.100" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/metzler.html" class="btn btn-neutral float-right" title="metzler package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

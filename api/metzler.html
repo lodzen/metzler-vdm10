@@ -1,0 +1,1113 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler package &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="metzler.media package" href="metzler.media.html" />
+    <link rel="prev" title="What did NOT change — V2.0.24 vs V2.2.100" href="../version-comparison/unchanged.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">metzler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Call.stop"><code class="docutils literal notranslate"><span class="pre">Call.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.IntercomMedia"><code class="docutils literal notranslate"><span class="pre">IntercomMedia</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.IntercomMedia.mic_frame"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.mic_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.IntercomMedia.on_audio"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.on_audio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.IntercomMedia.on_video"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.on_video()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.IntercomMedia.start"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.IntercomMedia.stop"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.LocalMediaBridge"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.LocalMediaBridge.on_packet"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.on_packet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.LocalMediaBridge.rx_loop"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.rx_loop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.LocalMediaBridge.start"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.LocalMediaBridge.stop"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.stop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.LocalMediaBridge.tx_loop"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.tx_loop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.Packet"><code class="docutils literal notranslate"><span class="pre">Packet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Packet.get"><code class="docutils literal notranslate"><span class="pre">Packet.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Packet.get_all"><code class="docutils literal notranslate"><span class="pre">Packet.get_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Packet.parse"><code class="docutils literal notranslate"><span class="pre">Packet.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Packet.set"><code class="docutils literal notranslate"><span class="pre">Packet.set()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.RtpRelay"><code class="docutils literal notranslate"><span class="pre">RtpRelay</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtpRelay.rtp_port"><code class="docutils literal notranslate"><span class="pre">RtpRelay.rtp_port</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtpRelay.run"><code class="docutils literal notranslate"><span class="pre">RtpRelay.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtpRelay.set_peer"><code class="docutils literal notranslate"><span class="pre">RtpRelay.set_peer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtpRelay.stop"><code class="docutils literal notranslate"><span class="pre">RtpRelay.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.RtspPuller"><code class="docutils literal notranslate"><span class="pre">RtspPuller</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtspPuller.run"><code class="docutils literal notranslate"><span class="pre">RtspPuller.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtspPuller.stop"><code class="docutils literal notranslate"><span class="pre">RtspPuller.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtspServer.handle"><code class="docutils literal notranslate"><span class="pre">RtspServer.handle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtspServer.run"><code class="docutils literal notranslate"><span class="pre">RtspServer.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.RtspServer.stream"><code class="docutils literal notranslate"><span class="pre">RtspServer.stream()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.SipIntercomMedia"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.DTMF_CHARS"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.DTMF_CHARS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.mic_frame"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.mic_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.on_audio"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.on_audio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.on_video"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.on_video()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.set_provider"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.set_provider()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.start"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipIntercomMedia.stop"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.SipProvider"><code class="docutils literal notranslate"><span class="pre">SipProvider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.FORK_TTL"><code class="docutils literal notranslate"><span class="pre">SipProvider.FORK_TTL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.ack"><code class="docutils literal notranslate"><span class="pre">SipProvider.ack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.answer_sdp"><code class="docutils literal notranslate"><span class="pre">SipProvider.answer_sdp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.bind_srtp"><code class="docutils literal notranslate"><span class="pre">SipProvider.bind_srtp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.bye"><code class="docutils literal notranslate"><span class="pre">SipProvider.bye()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.cancel"><code class="docutils literal notranslate"><span class="pre">SipProvider.cancel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.handle_response"><code class="docutils literal notranslate"><span class="pre">SipProvider.handle_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.invite"><code class="docutils literal notranslate"><span class="pre">SipProvider.invite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.is_provider_addr"><code class="docutils literal notranslate"><span class="pre">SipProvider.is_provider_addr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.is_reg_response"><code class="docutils literal notranslate"><span class="pre">SipProvider.is_reg_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.needs_register"><code class="docutils literal notranslate"><span class="pre">SipProvider.needs_register()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.offer_sdp"><code class="docutils literal notranslate"><span class="pre">SipProvider.offer_sdp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.owns"><code class="docutils literal notranslate"><span class="pre">SipProvider.owns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.register_loop"><code class="docutils literal notranslate"><span class="pre">SipProvider.register_loop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.sdp_ip"><code class="docutils literal notranslate"><span class="pre">SipProvider.sdp_ip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.sdp_port"><code class="docutils literal notranslate"><span class="pre">SipProvider.sdp_port()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SipProvider.unregister"><code class="docutils literal notranslate"><span class="pre">SipProvider.unregister()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.Srtp"><code class="docutils literal notranslate"><span class="pre">Srtp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Srtp.TAG"><code class="docutils literal notranslate"><span class="pre">Srtp.TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Srtp.from_inline"><code class="docutils literal notranslate"><span class="pre">Srtp.from_inline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Srtp.protect"><code class="docutils literal notranslate"><span class="pre">Srtp.protect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.Srtp.unprotect"><code class="docutils literal notranslate"><span class="pre">Srtp.unprotect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.SrtpSession"><code class="docutils literal notranslate"><span class="pre">SrtpSession</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SrtpSession.accept_answer"><code class="docutils literal notranslate"><span class="pre">SrtpSession.accept_answer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#metzler.SrtpSession.crypto_attr"><code class="docutils literal notranslate"><span class="pre">SrtpSession.crypto_attr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.alaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">alaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.answer_policy"><code class="docutils literal notranslate"><span class="pre">answer_policy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.bind_rtp"><code class="docutils literal notranslate"><span class="pre">bind_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.branch"><code class="docutils literal notranslate"><span class="pre">branch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.call_id"><code class="docutils literal notranslate"><span class="pre">call_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.digest_response"><code class="docutils literal notranslate"><span class="pre">digest_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.env_bool"><code class="docutils literal notranslate"><span class="pre">env_bool()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.env_default"><code class="docutils literal notranslate"><span class="pre">env_default()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.finalize_options"><code class="docutils literal notranslate"><span class="pre">finalize_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.is_rtp"><code class="docutils literal notranslate"><span class="pre">is_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.load_env"><code class="docutils literal notranslate"><span class="pre">load_env()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.md5"><code class="docutils literal notranslate"><span class="pre">md5()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.media_addr"><code class="docutils literal notranslate"><span class="pre">media_addr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.parse_sdp"><code class="docutils literal notranslate"><span class="pre">parse_sdp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.pcm_to_ulaw"><code class="docutils literal notranslate"><span class="pre">pcm_to_ulaw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.sdp_answer_firmware"><code class="docutils literal notranslate"><span class="pre">sdp_answer_firmware()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.sdp_answer_talkback"><code class="docutils literal notranslate"><span class="pre">sdp_answer_talkback()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.set_rtp_range"><code class="docutils literal notranslate"><span class="pre">set_rtp_range()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.sip_uri"><code class="docutils literal notranslate"><span class="pre">sip_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.srtp_available"><code class="docutils literal notranslate"><span class="pre">srtp_available()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.tag"><code class="docutils literal notranslate"><span class="pre">tag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metzler.ulaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">ulaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.html">metzler.media package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.sip.html">metzler.sip package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.html">metzler.station package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.cli.html">metzler.cli module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.config.html">metzler.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.discovery.html">metzler.discovery module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html">metzler.provider module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">metzler package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/metzler.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-metzler">
+<span id="metzler-package"></span><h1>metzler package<a class="headerlink" href="#module-metzler" title="Link to this heading"></a></h1>
+<p>Metzler/Hikvision indoor-station simulator and SIP bridge.</p>
+<p>Simulates a VTH extension on the private intercom registrar, accepts
+intercom/door calls in the firmware’s SIP dialect and bridges them to a
+standard SIP provider/PBX or the local headset. See docs/architecture.md and
+docs/protocol.md; wire details in ANALYSIS.md.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>uv run indoor-station            # or: python -m metzler / __main__.py</dt><dd><p>–server 10.0.0.38         # registrar (main indoor :5065)
+–username 10000000003          # extension number (SIP user)
+–password secret               # extension password (iVMS/SIP config)
+–local-ip 10.0.0.96       # this host
+–sip-host sip.linphone.org     # SIP provider proxy/registrar
+–sip-user alice –sip-pass secret
+–sip-target <a class="reference external" href="sip:alice&#64;sip.linphone.org">sip:alice&#64;sip.linphone.org</a></p>
+</dd>
+</dl>
+<p>Asterisk / PBX trunk (no provider REGISTER when –sip-user/–sip-pass are
+empty; a bare extension is expanded to sip:&lt;ext&gt;&#64;&lt;sip-host&gt;):</p>
+<blockquote>
+<div><p>–sip-host 192.168.0.20 –sip-target 6000 [–no-sip-srtp]</p>
+</div></blockquote>
+</div></blockquote>
+<p>Stdlib only at module level. SRTP (default on for the provider leg) lazily
+uses the optional <cite>cryptography</cite> package; a peer that refuses the SRTP offer
+with 488 is re-offered plain RTP.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.Call">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">Call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">station</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invite</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/call.html#Call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Call" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Call.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/call.html#Call.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Call.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.IndoorStation">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">IndoorStation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/station/station.html#IndoorStation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IndoorStation" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="metzler.station.registration.html#metzler.station.registration.RegistrationMixin" title="metzler.station.registration.RegistrationMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">RegistrationMixin</span></code></a>, <a class="reference internal" href="metzler.station.bridge.html#metzler.station.bridge.ProviderBridgeMixin" title="metzler.station.bridge.ProviderBridgeMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProviderBridgeMixin</span></code></a>, <a class="reference internal" href="metzler.station.ha_answer.html#metzler.station.ha_answer.HaAnswerMixin" title="metzler.station.ha_answer.HaAnswerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">HaAnswerMixin</span></code></a>, <a class="reference internal" href="metzler.station.local_answer.html#metzler.station.local_answer.LocalAnswerMixin" title="metzler.station.local_answer.LocalAnswerMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalAnswerMixin</span></code></a>, <a class="reference internal" href="metzler.station.outbound.html#metzler.station.outbound.OutboundCallMixin" title="metzler.station.outbound.OutboundCallMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutboundCallMixin</span></code></a>, <a class="reference internal" href="metzler.station.inbound.html#metzler.station.inbound.InboundCallMixin" title="metzler.station.inbound.InboundCallMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">InboundCallMixin</span></code></a>, <a class="reference internal" href="metzler.station.teardown.html#metzler.station.teardown.TeardownMixin" title="metzler.station.teardown.TeardownMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">TeardownMixin</span></code></a>, <a class="reference internal" href="metzler.station.core.html#metzler.station.core.StationCore" title="metzler.station.core.StationCore"><code class="xref py py-class docutils literal notranslate"><span class="pre">StationCore</span></code></a></p>
+<p>A Hikvision/Metzler indoor extension (VTH) on the intercom LAN.</p>
+<p>StationCore           socket, RTSP server, receive loop, request routing, run/shutdown
+RegistrationMixin     REGISTER + &lt;regXML&gt; at the registrar, MESSAGE heartbeat
+ProviderBridgeMixin   incoming intercom/door INVITE -&gt; SIP provider leg
+HaAnswerMixin         ha_mode: parked calls answered/ended programmatically (vdm10-ha)
+LocalAnswerMixin      local headset mode (answer on this machine)
+OutboundCallMixin     –call: dial another station (direct or via registrar)
+InboundCallMixin      inbound SIP app call -&gt; –inbound-target on the intercom
+TeardownMixin         CANCEL/BYE from either leg</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.IntercomMedia">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">IntercomMedia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller_ip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#IntercomMedia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IntercomMedia" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>local-mode media for intercom calls: serves our mic over the shared RtspServer
+and pulls the caller’s stream. Owns aplay/arecord/ffplay like LocalMediaBridge.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.IntercomMedia.mic_frame">
+<span class="sig-name descname"><span class="pre">mic_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#IntercomMedia.mic_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IntercomMedia.mic_frame" title="Link to this definition"></a></dt>
+<dd><p>called by RtspServer.stream - one 20ms ulaw frame</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.IntercomMedia.on_audio">
+<span class="sig-name descname"><span class="pre">on_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ulaw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#IntercomMedia.on_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IntercomMedia.on_audio" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.IntercomMedia.on_video">
+<span class="sig-name descname"><span class="pre">on_video</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#IntercomMedia.on_video"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IntercomMedia.on_video" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.IntercomMedia.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#IntercomMedia.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IntercomMedia.start" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.IntercomMedia.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#IntercomMedia.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.IntercomMedia.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.LocalMediaBridge">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">LocalMediaBridge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">door_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">door_v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fixed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/local.html#LocalMediaBridge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.LocalMediaBridge" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></a></p>
+<p>Door RTP &lt;-&gt; local speaker/mic via aplay/arecord; optional video pipe to ffplay.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.LocalMediaBridge.on_packet">
+<span class="sig-name descname"><span class="pre">on_packet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/local.html#LocalMediaBridge.on_packet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.LocalMediaBridge.on_packet" title="Link to this definition"></a></dt>
+<dd><p>one RTP packet from the door: classify audio/video, then play it</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.LocalMediaBridge.rx_loop">
+<span class="sig-name descname"><span class="pre">rx_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/local.html#LocalMediaBridge.rx_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.LocalMediaBridge.rx_loop" title="Link to this definition"></a></dt>
+<dd><p>door -&gt; speaker (+ video -&gt; ffplay)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.LocalMediaBridge.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/local.html#LocalMediaBridge.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.LocalMediaBridge.start" title="Link to this definition"></a></dt>
+<dd><p>Start the thread’s activity.</p>
+<p>It must be called at most once per thread object. It arranges for the
+object’s run() method to be invoked in a separate thread of control.</p>
+<p>This method will raise a RuntimeError if called more than once on the
+same thread object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.LocalMediaBridge.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/local.html#LocalMediaBridge.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.LocalMediaBridge.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.LocalMediaBridge.tx_loop">
+<span class="sig-name descname"><span class="pre">tx_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/local.html#LocalMediaBridge.tx_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.LocalMediaBridge.tx_loop" title="Link to this definition"></a></dt>
+<dd><p>mic/tone -&gt; door</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.Packet">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">Packet</span></span><a class="reference internal" href="../_modules/metzler/sip/message.html#Packet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Packet" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Packet.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#Packet.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Packet.get" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Packet.get_all">
+<span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#Packet.get_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Packet.get_all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Packet.parse">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#Packet.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Packet.parse" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Packet.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#Packet.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Packet.set" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.RtpRelay">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">RtpRelay</span></span><a class="reference internal" href="../_modules/metzler/media/rtp.html#RtpRelay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtpRelay" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></a></p>
+<p>Bidirectional UDP relay between door-side and provider-side endpoints.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="metzler.RtpRelay.rtp_port">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">rtp_port</span></span><a class="headerlink" href="#metzler.RtpRelay.rtp_port" title="Link to this definition"></a></dt>
+<dd><p>the provider-facing port — what offer_sdp advertises in m= lines</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtpRelay.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtp.html#RtpRelay.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtpRelay.run" title="Link to this definition"></a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtpRelay.set_peer">
+<span class="sig-name descname"><span class="pre">set_peer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtp.html#RtpRelay.set_peer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtpRelay.set_peer" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtpRelay.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtp.html#RtpRelay.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtpRelay.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.RtspPuller">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">RtspPuller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_audio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_video</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_puller.html#RtspPuller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspPuller" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></a></p>
+<p>pulls the caller’s <a class="reference external" href="rtsp:/">rtsp:/</a>/&lt;caller&gt;:554 stream -&gt; their audio to the speaker,
+their video to ffplay. The callee side of the symmetric intercom pull.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtspPuller.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_puller.html#RtspPuller.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspPuller.run" title="Link to this definition"></a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtspPuller.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_puller.html#RtspPuller.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspPuller.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.RtspServer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">RtspServer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_server.html#RtspServer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspServer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/threading.html#threading.Thread" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Thread</span></code></a></p>
+<p>hikvision-style RTSP server on :554 - the caller pulls our stream here.
+DESCRIBE always advertises video+audio (mandatory for their client); the
+data path sends only 320B/40ms PCMU, exactly like a real indoor unit.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtspServer.handle">
+<span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_server.html#RtspServer.handle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspServer.handle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtspServer.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_server.html#RtspServer.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspServer.run" title="Link to this definition"></a></dt>
+<dd><p>Method representing the thread’s activity.</p>
+<p>You may override this method in a subclass. The standard run() method
+invokes the callable object passed to the object’s constructor as the
+target argument, if any, with sequential and keyword arguments taken
+from the args and kwargs arguments, respectively.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.RtspServer.stream">
+<span class="sig-name descname"><span class="pre">stream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wlock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chmap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssrcs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtsp_server.html#RtspServer.stream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.RtspServer.stream" title="Link to this definition"></a></dt>
+<dd><p>send the stream exactly like a real indoor unit serves it:
+the SDP advertises video+audio (their client requires the video track),
+but on the wire the unit emits ONLY PCMU audio - 320B payloads, 40 ms,
+ts += 320 &#64;8kHz - never a single video RTP packet (verified from a
+live pull of the main indoor’s :554 during an extension call:
+1.5 MB, all ch2 PT0 320B, zero ch0). The RTP ssrc must equal the one
+we declared in the SETUP reply or their player drops the packets.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">SipIntercomMedia</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller_ip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">video</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>provider-mode media for intercom calls (header-only SDP): pulls the
+caller’s <a class="reference external" href="rtsp:/">rtsp:/</a>/&lt;caller&gt;:554 PCMU and forwards it as RTP (PT0) to the SIP
+peer; incoming SIP peer RTP feeds RtspServer.mic so the caller’s pull
+hears the peer. Replaces the ALSA headset with a UDP RTP socket.
+With video=True (door calls only) also forwards the pulled H264 stream
+as a PT96 RTP leg to the provider peer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.DTMF_CHARS">
+<span class="sig-name descname"><span class="pre">DTMF_CHARS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0123456789*#ABCD'</span></span><a class="headerlink" href="#metzler.SipIntercomMedia.DTMF_CHARS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.mic_frame">
+<span class="sig-name descname"><span class="pre">mic_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia.mic_frame"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia.mic_frame" title="Link to this definition"></a></dt>
+<dd><p>called by RtspServer.stream - one 160B/20ms ulaw frame of PEER audio.
+Shed to ~8 frames (160ms) first: the queue fills while early media
+arrives before the caller’s pull runs, and serving oldest-first would
+lock that backlog in as a constant delay for the whole call (the
+fill and drain rates match once the call is up).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.on_audio">
+<span class="sig-name descname"><span class="pre">on_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ulaw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia.on_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia.on_audio" title="Link to this definition"></a></dt>
+<dd><p>caller’s PCMU frame (320B/40ms) -&gt; provider RTP</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.on_video">
+<span class="sig-name descname"><span class="pre">on_video</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia.on_video"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia.on_video" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.set_provider">
+<span class="sig-name descname"><span class="pre">set_provider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia.set_provider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia.set_provider" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia.start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia.start" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipIntercomMedia.stop">
+<span class="sig-name descname"><span class="pre">stop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/intercom.html#SipIntercomMedia.stop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipIntercomMedia.stop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.SipProvider">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">SipProvider</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">st</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Standard-SIP trunk to a hosted provider (e.g. sip.linphone.org).</p>
+<p>Everything the public-SIP side needs lives here so the station only ever
+delegates: REGISTER (digest auth, NAT learn via the echoed Via), one
+outbound INVITE leg per bridged Call, and ACK/CANCEL/BYE for that leg.</p>
+<dl>
+<dt>Packet flow:</dt><dd><dl class="simple">
+<dt>station listener  -&gt;  is_reg_response()  -&gt; reg_queue (REGISTER replies)</dt><dd><p>-&gt;  calls[Call-ID]     -&gt; handle_response() (INVITE replies)</p>
+</dd>
+</dl>
+<p>on_invite bridge  -&gt;  invite(call)   (offer built by offer_sdp())
+provider 200 OK   -&gt;  station.provider_answered() -&gt; ack()
+teardown          -&gt;  cancel() / bye()</p>
+</dd>
+</dl>
+<p>The provider object sends on the station’s UDP socket (shared source port)
+via the <cite>st</cite> back-reference; it owns no sockets of its own.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.SipProvider.FORK_TTL">
+<span class="sig-name descname"><span class="pre">FORK_TTL</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">600</span></span><a class="headerlink" href="#metzler.SipProvider.FORK_TTL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.ack">
+<span class="sig-name descname"><span class="pre">ack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.ack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.ack" title="Link to this definition"></a></dt>
+<dd><p>ACK the provider 200 OK; To/From echo the response, target = its Contact</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.answer_sdp">
+<span class="sig-name descname"><span class="pre">answer_sdp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">media</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.answer_sdp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.answer_sdp" title="Link to this definition"></a></dt>
+<dd><p>200 OK body for an inbound provider call: accept the first audio
+m= line (SRTP when the offer was SAVP and we bound a session),
+reject every other stream (port 0, offered proto kept)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.bind_srtp">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">bind_srtp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">media</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">answer_media</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.bind_srtp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.bind_srtp" title="Link to this definition"></a></dt>
+<dd><p>take the peer’s key from its answered m= line; a plain RTP/AVP
+answer drops SRTP for that stream. Returns ‘srtp’|’rtp’ for logging.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.bye">
+<span class="sig-name descname"><span class="pre">bye</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.bye"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.bye" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.cancel">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.cancel" title="Link to this definition"></a></dt>
+<dd><p>CANCEL only matches the INVITE transaction when it echoes the live
+INVITE’s Via branch and CSeq number (RFC 3261 9.1); a fresh branch is
+a new transaction the proxy doesn’t know - 481, app keeps ringing</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.handle_response">
+<span class="sig-name descname"><span class="pre">handle_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.handle_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.handle_response" title="Link to this definition"></a></dt>
+<dd><p>dispatch one response on the provider INVITE leg</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.invite">
+<span class="sig-name descname"><span class="pre">invite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.invite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.invite" title="Link to this definition"></a></dt>
+<dd><p>send the outbound INVITE for a bridged call; registers the leg so
+listener() can route its replies via calls[prov_call_id]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.is_provider_addr">
+<span class="sig-name descname"><span class="pre">is_provider_addr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">addr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.is_provider_addr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.is_provider_addr" title="Link to this definition"></a></dt>
+<dd><p>request came from the provider proxy/PBX (not from an intercom
+station); ip+port, so a PBX sharing a host with other SIP gear works</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.is_reg_response">
+<span class="sig-name descname"><span class="pre">is_reg_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.is_reg_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.is_reg_response" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.needs_register">
+<span class="sig-name descname"><span class="pre">needs_register</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.needs_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.needs_register" title="Link to this definition"></a></dt>
+<dd><p>hosted providers need REGISTER; an IP-authenticated PBX trunk does not</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.offer_sdp">
+<span class="sig-name descname"><span class="pre">offer_sdp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.offer_sdp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.offer_sdp" title="Link to this definition"></a></dt>
+<dd><p>provider leg offer: PCMU audio (intercom calls) or audio + H264
+video (door calls). With –sip-srtp each m= line is RTP/SAVP carrying
+its own SDES key; the media objects keep the matching SrtpSession.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.owns">
+<span class="sig-name descname"><span class="pre">owns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.owns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.owns" title="Link to this definition"></a></dt>
+<dd><p>did we ever originate this Call-ID? (forked-call loop guard - kept
+a while after the call ends so late fork retransmits still don’t look
+like new calls; lazily pruned so it cannot grow forever)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.register_loop">
+<span class="sig-name descname"><span class="pre">register_loop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.register_loop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.register_loop" title="Link to this definition"></a></dt>
+<dd><p>keeps the account registered: REGISTER -&gt; 401 digest retry -&gt; 200.
+Every response’s Via carries received=/rport= = our public identity.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.sdp_ip">
+<span class="sig-name descname"><span class="pre">sdp_ip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.sdp_ip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.sdp_ip" title="Link to this definition"></a></dt>
+<dd><p>address we advertise in provider-leg SDP/Contact (public if known)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.sdp_port">
+<span class="sig-name descname"><span class="pre">sdp_port</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.sdp_port"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.sdp_port" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SipProvider.unregister">
+<span class="sig-name descname"><span class="pre">unregister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/provider.html#SipProvider.unregister"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SipProvider.unregister" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.Srtp">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">Srtp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">master_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">master_salt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#Srtp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Srtp" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>One direction of an RFC 3711 SRTP stream, suite AES_CM_128_HMAC_SHA1_80
+(the SDES default Linphone accepts). Key-derivation rate 0, no MKI.
+protect(): RTP -&gt; SRTP for sending; unprotect(): SRTP -&gt; RTP or None if
+the auth tag fails. RTCP is not protected (the bridge sends none).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="metzler.Srtp.TAG">
+<span class="sig-name descname"><span class="pre">TAG</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></span><a class="headerlink" href="#metzler.Srtp.TAG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Srtp.from_inline">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">from_inline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b64</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#Srtp.from_inline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Srtp.from_inline" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Srtp.protect">
+<span class="sig-name descname"><span class="pre">protect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#Srtp.protect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Srtp.protect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.Srtp.unprotect">
+<span class="sig-name descname"><span class="pre">unprotect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#Srtp.unprotect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.Srtp.unprotect" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="metzler.SrtpSession">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">SrtpSession</span></span><a class="reference internal" href="../_modules/metzler/media/srtp.html#SrtpSession"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SrtpSession" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>both directions of one media stream: tx from our offered key, rx from
+the key in the peer’s answer (a=crypto). <cite>inline</cite> is our SDP key.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SrtpSession.accept_answer">
+<span class="sig-name descname"><span class="pre">accept_answer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">media</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#SrtpSession.accept_answer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SrtpSession.accept_answer" title="Link to this definition"></a></dt>
+<dd><p>bind the rx key from the answered m= line; False if the peer
+answered without SRTP (plain RTP fallback)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="metzler.SrtpSession.crypto_attr">
+<span class="sig-name descname"><span class="pre">crypto_attr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#SrtpSession.crypto_attr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.SrtpSession.crypto_attr" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.alaw_to_pcm">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">alaw_to_pcm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alaw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/g711.html#alaw_to_pcm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.alaw_to_pcm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.answer_policy">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">answer_policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/config.html#answer_policy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.answer_policy" title="Link to this definition"></a></dt>
+<dd><p>INDOOR_AUTO_ANSWER: off | all | extension (only calls the main indoor places to us)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.bind_rtp">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">bind_rtp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sock</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtp.html#bind_rtp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.bind_rtp" title="Link to this definition"></a></dt>
+<dd><p>bind an RTP socket inside the configured port range (any port if unset)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.branch">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">branch</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#branch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.branch" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.build_parser">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">build_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/cli.html#build_parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.build_parser" title="Link to this definition"></a></dt>
+<dd><p>CLI options; every default comes from the INDOOR_* keys of <cite>env</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.call_id">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">call_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#call_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.call_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.digest_response">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">digest_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auth_hdr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/digest.html#digest_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.digest_response" title="Link to this definition"></a></dt>
+<dd><p>RFC 2617/8760 digest - honors the server’s algorithm= (MD5 or SHA-256).
+Params may be quoted or bare (linphone sends algorithm=SHA-256 unquoted).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.env_bool">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">env_bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/config.html#env_bool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.env_bool" title="Link to this definition"></a></dt>
+<dd><p>INDOOR_&lt;KEY&gt; as a flag; unset -&gt; <cite>default</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.env_default">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">env_default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/config.html#env_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.env_default" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.finalize_options">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">finalize_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ap</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/cli.html#finalize_options"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.finalize_options" title="Link to this definition"></a></dt>
+<dd><p>derive provider defaults, check required options, degrade SRTP when
+the optional crypto package is missing (stdlib-only standalone run)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.is_rtp">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">is_rtp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pkt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtp.html#is_rtp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.is_rtp" title="Link to this definition"></a></dt>
+<dd><p>RTP (not RTCP: PT 72..76 once the marker bit is masked off)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.load_env">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">load_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/config.html#load_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.load_env" title="Link to this definition"></a></dt>
+<dd><p>minimal .env loader: KEY=VALUE lines, # comments, optional quotes</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.main">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">argv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/cli.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.md5">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">md5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/digest.html#md5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.md5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.media_addr">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">media_addr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sdp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mtype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/sdp.html#media_addr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.media_addr" title="Link to this definition"></a></dt>
+<dd><p>-&gt; (ip, port) of the first media line of <cite>mtype</cite>, or None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.parse_sdp">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">parse_sdp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/sdp.html#parse_sdp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.parse_sdp" title="Link to this definition"></a></dt>
+<dd><p>-&gt; {ip, media:[{type, port, formats}]}</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.pcm_to_ulaw">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">pcm_to_ulaw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/g711.html#pcm_to_ulaw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.pcm_to_ulaw" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.sdp_answer_firmware">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">sdp_answer_firmware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_port</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">video_port</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/sdp.html#sdp_answer_firmware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.sdp_answer_firmware" title="Link to this definition"></a></dt>
+<dd><p>the exact template hicore emits (FUN_000dd18c)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.sdp_answer_talkback">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">sdp_answer_talkback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">serial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">video_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/sdp.html#sdp_answer_talkback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.sdp_answer_talkback" title="Link to this definition"></a></dt>
+<dd><p>the real 200 OK SDP a hicore station emits when answering an EXTENSION call
+(sess+0x7c == 3 -&gt; FUN_000dd18c header-only path, sip_client.c ~5968/6160).
+Header-only SDP + the same private session attrs as the offer:</p>
+<blockquote>
+<div><p>doorFloor:0 responseType:&lt;wait outcome&gt; doorType:0 isSpecialType:&lt;2|0&gt; isConfirm:0</p>
+</div></blockquote>
+<p>responseType = FUN_000dc2dc wait outcome: 0 = answered (200); the caller copies
+attr#1 -&gt; sess+0x78 and attr#3 -&gt; sess+0xcc and posts {+0x78,+0x7c,+0xcc} to the
+GUI (msg 0x80f; byte0==4 routes to the videocall window, else the initiate
+window).</p>
+<p>isSpecialType — VERIFIED ON THE WIRE (real indoor 10000000001 &#64; .47, both
+its offer and its 200 OK send 2): 2 = “no remote video exists” -&gt; the
+caller’s videocallProc skips the remote-video rect -&gt; audio-call UI.
+0 -&gt; video rect drawn -&gt; “video session” UI. Real indoor stations claim
+the special-model flag (isSpecialModel -&gt; product-code band, FUN_00064da8).
+Default 2 to match; INDOOR_SPECIAL_TYPE overrides for A/B tests.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.set_rtp_range">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">set_rtp_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hi</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/rtp.html#set_rtp_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.set_rtp_range" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.sip_uri">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">sip_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#sip_uri"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.sip_uri" title="Link to this definition"></a></dt>
+<dd><p>‘6000’ (Asterisk extension) or <a class="reference external" href="mailto:'user&#37;&#52;&#48;host">‘user<span>&#64;</span>host</a>’ -&gt; full sip: URI</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.srtp_available">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">srtp_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/srtp.html#srtp_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.srtp_available" title="Link to this definition"></a></dt>
+<dd><p>SRTP needs AES from the optional ‘cryptography’ package; everything
+else in this script is stdlib, so it still runs standalone without it</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.tag">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">tag</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/sip/message.html#tag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.tag" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="metzler.ulaw_to_pcm">
+<span class="sig-prename descclassname"><span class="pre">metzler.</span></span><span class="sig-name descname"><span class="pre">ulaw_to_pcm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ulaw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/metzler/media/g711.html#ulaw_to_pcm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#metzler.ulaw_to_pcm" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="metzler.media.html">metzler.media package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.media.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.g711.html">metzler.media.g711 module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.g711.html#metzler.media.g711.alaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">alaw_to_pcm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.g711.html#metzler.media.g711.pcm_to_ulaw"><code class="docutils literal notranslate"><span class="pre">pcm_to_ulaw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.g711.html#metzler.media.g711.ulaw_encode_sample"><code class="docutils literal notranslate"><span class="pre">ulaw_encode_sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.g711.html#metzler.media.g711.ulaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">ulaw_to_pcm()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.intercom.html">metzler.media.intercom module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.intercom.html#metzler.media.intercom.IntercomMedia"><code class="docutils literal notranslate"><span class="pre">IntercomMedia</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.intercom.html#metzler.media.intercom.IntercomVideoLeg"><code class="docutils literal notranslate"><span class="pre">IntercomVideoLeg</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.intercom.html#metzler.media.intercom.SipIntercomMedia"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.local.html">metzler.media.local module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.local.html#metzler.media.local.LocalMediaBridge"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.rtp.html">metzler.media.rtp module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtp.html#metzler.media.rtp.RtpRelay"><code class="docutils literal notranslate"><span class="pre">RtpRelay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtp.html#metzler.media.rtp.bind_rtp"><code class="docutils literal notranslate"><span class="pre">bind_rtp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtp.html#metzler.media.rtp.is_rtp"><code class="docutils literal notranslate"><span class="pre">is_rtp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtp.html#metzler.media.rtp.set_rtp_range"><code class="docutils literal notranslate"><span class="pre">set_rtp_range()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.rtsp.html">metzler.media.rtsp module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtsp.html#metzler.media.rtsp.read_rtsp_request"><code class="docutils literal notranslate"><span class="pre">read_rtsp_request()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtsp.html#metzler.media.rtsp.rtsp_header"><code class="docutils literal notranslate"><span class="pre">rtsp_header()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtsp.html#metzler.media.rtsp.rtsp_reply"><code class="docutils literal notranslate"><span class="pre">rtsp_reply()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.rtsp_puller.html">metzler.media.rtsp_puller module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtsp_puller.html#metzler.media.rtsp_puller.RtspPuller"><code class="docutils literal notranslate"><span class="pre">RtspPuller</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.rtsp_server.html">metzler.media.rtsp_server module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.rtsp_server.html#metzler.media.rtsp_server.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.srtp.html">metzler.media.srtp module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.srtp.html#metzler.media.srtp.Srtp"><code class="docutils literal notranslate"><span class="pre">Srtp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.srtp.html#metzler.media.srtp.SrtpSession"><code class="docutils literal notranslate"><span class="pre">SrtpSession</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.srtp.html#metzler.media.srtp.srtp_available"><code class="docutils literal notranslate"><span class="pre">srtp_available()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metzler.sip.html">metzler.sip package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.sip.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.sip.digest.html">metzler.sip.digest module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.digest.html#metzler.sip.digest.digest_response"><code class="docutils literal notranslate"><span class="pre">digest_response()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.digest.html#metzler.sip.digest.md5"><code class="docutils literal notranslate"><span class="pre">md5()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.sip.message.html">metzler.sip.message module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.Packet"><code class="docutils literal notranslate"><span class="pre">Packet</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.branch"><code class="docutils literal notranslate"><span class="pre">branch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.call_id"><code class="docutils literal notranslate"><span class="pre">call_id()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.sip_uri"><code class="docutils literal notranslate"><span class="pre">sip_uri()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.tag"><code class="docutils literal notranslate"><span class="pre">tag()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.uri_of"><code class="docutils literal notranslate"><span class="pre">uri_of()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.message.html#metzler.sip.message.userpart"><code class="docutils literal notranslate"><span class="pre">userpart()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.sip.sdp.html">metzler.sip.sdp module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.sdp.html#metzler.sip.sdp.media_addr"><code class="docutils literal notranslate"><span class="pre">media_addr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.sdp.html#metzler.sip.sdp.parse_sdp"><code class="docutils literal notranslate"><span class="pre">parse_sdp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.sdp.html#metzler.sip.sdp.sdp_answer_firmware"><code class="docutils literal notranslate"><span class="pre">sdp_answer_firmware()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.sdp.html#metzler.sip.sdp.sdp_answer_talkback"><code class="docutils literal notranslate"><span class="pre">sdp_answer_talkback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.sdp.html#metzler.sip.sdp.telephone_event_pt"><code class="docutils literal notranslate"><span class="pre">telephone_event_pt()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metzler.station.html">metzler.station package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.station.html#metzler.station.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.html#metzler.station.Call.stop"><code class="docutils literal notranslate"><span class="pre">Call.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.station.html#metzler.station.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.station.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.bridge.html">metzler.station.bridge module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.bridge.html#metzler.station.bridge.ProviderBridgeMixin"><code class="docutils literal notranslate"><span class="pre">ProviderBridgeMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.call.html">metzler.station.call module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.call.html#metzler.station.call.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.core.html">metzler.station.core module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.core.html#metzler.station.core.StationCore"><code class="docutils literal notranslate"><span class="pre">StationCore</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.door_unlock.html">metzler.station.door_unlock module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.door_unlock.html#metzler.station.door_unlock.digest_opener"><code class="docutils literal notranslate"><span class="pre">digest_opener()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.door_unlock.html#metzler.station.door_unlock.isapi_open_door"><code class="docutils literal notranslate"><span class="pre">isapi_open_door()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.ha_answer.html">metzler.station.ha_answer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.ha_answer.html#metzler.station.ha_answer.HaAnswerMixin"><code class="docutils literal notranslate"><span class="pre">HaAnswerMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.ha_media.html">metzler.station.ha_media module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.ha_media.html#metzler.station.ha_media.HaCallMedia"><code class="docutils literal notranslate"><span class="pre">HaCallMedia</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.ha_media.html#metzler.station.ha_media.HaIntercomMedia"><code class="docutils literal notranslate"><span class="pre">HaIntercomMedia</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.inbound.html">metzler.station.inbound module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.inbound.html#metzler.station.inbound.InboundCallMixin"><code class="docutils literal notranslate"><span class="pre">InboundCallMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.local_answer.html">metzler.station.local_answer module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.local_answer.html#metzler.station.local_answer.LocalAnswerMixin"><code class="docutils literal notranslate"><span class="pre">LocalAnswerMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.outbound.html">metzler.station.outbound module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.outbound.html#metzler.station.outbound.OutboundCallMixin"><code class="docutils literal notranslate"><span class="pre">OutboundCallMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.registration.html">metzler.station.registration module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.registration.html#metzler.station.registration.IntercomRegistration"><code class="docutils literal notranslate"><span class="pre">IntercomRegistration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.registration.html#metzler.station.registration.RegistrationMixin"><code class="docutils literal notranslate"><span class="pre">RegistrationMixin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.station.html">metzler.station.station module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.station.html#metzler.station.station.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.teardown.html">metzler.station.teardown module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.teardown.html#metzler.station.teardown.TeardownMixin"><code class="docutils literal notranslate"><span class="pre">TeardownMixin</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="metzler.cli.html">metzler.cli module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.cli.html#metzler.cli.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.cli.html#metzler.cli.finalize_options"><code class="docutils literal notranslate"><span class="pre">finalize_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.cli.html#metzler.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metzler.config.html">metzler.config module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.config.html#metzler.config.answer_policy"><code class="docutils literal notranslate"><span class="pre">answer_policy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.config.html#metzler.config.env_bool"><code class="docutils literal notranslate"><span class="pre">env_bool()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.config.html#metzler.config.env_default"><code class="docutils literal notranslate"><span class="pre">env_default()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.config.html#metzler.config.load_env"><code class="docutils literal notranslate"><span class="pre">load_env()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metzler.discovery.html">metzler.discovery module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.discover"><code class="docutils literal notranslate"><span class="pre">discover()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.docker_detected"><code class="docutils literal notranslate"><span class="pre">docker_detected()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.free_extension"><code class="docutils literal notranslate"><span class="pre">free_extension()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.is_vdm10_host"><code class="docutils literal notranslate"><span class="pre">is_vdm10_host()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.is_vdm10_outdoor"><code class="docutils literal notranslate"><span class="pre">is_vdm10_outdoor()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.local_ip_for"><code class="docutils literal notranslate"><span class="pre">local_ip_for()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.provider_status"><code class="docutils literal notranslate"><span class="pre">provider_status()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.register_status"><code class="docutils literal notranslate"><span class="pre">register_status()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.registrar_probe"><code class="docutils literal notranslate"><span class="pre">registrar_probe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.sadp_probe"><code class="docutils literal notranslate"><span class="pre">sadp_probe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.scan_extension_slots"><code class="docutils literal notranslate"><span class="pre">scan_extension_slots()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.subnet_of"><code class="docutils literal notranslate"><span class="pre">subnet_of()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.tcp_candidates"><code class="docutils literal notranslate"><span class="pre">tcp_candidates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metzler.provider.html">metzler.provider module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.provider.html#metzler.provider.FritzTrunk"><code class="docutils literal notranslate"><span class="pre">FritzTrunk</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.FritzTrunk.cancel_leg"><code class="docutils literal notranslate"><span class="pre">FritzTrunk.cancel_leg()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.FritzTrunk.handle_response"><code class="docutils literal notranslate"><span class="pre">FritzTrunk.handle_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.FritzTrunk.invite"><code class="docutils literal notranslate"><span class="pre">FritzTrunk.invite()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider"><code class="docutils literal notranslate"><span class="pre">SipProvider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.FORK_TTL"><code class="docutils literal notranslate"><span class="pre">SipProvider.FORK_TTL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.ack"><code class="docutils literal notranslate"><span class="pre">SipProvider.ack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.answer_sdp"><code class="docutils literal notranslate"><span class="pre">SipProvider.answer_sdp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.bind_srtp"><code class="docutils literal notranslate"><span class="pre">SipProvider.bind_srtp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.bye"><code class="docutils literal notranslate"><span class="pre">SipProvider.bye()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.cancel"><code class="docutils literal notranslate"><span class="pre">SipProvider.cancel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.handle_response"><code class="docutils literal notranslate"><span class="pre">SipProvider.handle_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.invite"><code class="docutils literal notranslate"><span class="pre">SipProvider.invite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.is_provider_addr"><code class="docutils literal notranslate"><span class="pre">SipProvider.is_provider_addr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.is_reg_response"><code class="docutils literal notranslate"><span class="pre">SipProvider.is_reg_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.needs_register"><code class="docutils literal notranslate"><span class="pre">SipProvider.needs_register()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.offer_sdp"><code class="docutils literal notranslate"><span class="pre">SipProvider.offer_sdp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.owns"><code class="docutils literal notranslate"><span class="pre">SipProvider.owns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.register_loop"><code class="docutils literal notranslate"><span class="pre">SipProvider.register_loop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.sdp_ip"><code class="docutils literal notranslate"><span class="pre">SipProvider.sdp_ip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.sdp_port"><code class="docutils literal notranslate"><span class="pre">SipProvider.sdp_port()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider.unregister"><code class="docutils literal notranslate"><span class="pre">SipProvider.unregister()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../version-comparison/unchanged.html" class="btn btn-neutral float-left" title="What did NOT change — V2.0.24 vs V2.2.100" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="metzler.media.html" class="btn btn-neutral float-right" title="metzler.media package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

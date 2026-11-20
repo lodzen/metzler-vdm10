@@ -1,0 +1,22 @@
+metzler.media package
+=====================
+
+.. automodule:: metzler.media
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   metzler.media.g711
+   metzler.media.intercom
+   metzler.media.local
+   metzler.media.rtp
+   metzler.media.rtsp
+   metzler.media.rtsp_puller
+   metzler.media.rtsp_server
+   metzler.media.srtp

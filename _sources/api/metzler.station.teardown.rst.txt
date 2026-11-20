@@ -1,0 +1,7 @@
+metzler.station.teardown module
+===============================
+
+.. automodule:: metzler.station.teardown
+   :members:
+   :show-inheritance:
+   :undoc-members:

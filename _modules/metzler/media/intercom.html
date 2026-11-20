@@ -1,0 +1,882 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler.media.intercom &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metzler.media.intercom</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metzler.media.intercom</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Media adapters for intercom (RTSP) calls: to the local headset, or to a SIP peer."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.media.g711</span><span class="w"> </span><span class="kn">import</span> <span class="n">pcm_to_ulaw</span><span class="p">,</span> <span class="n">ulaw_to_pcm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.media.rtp</span><span class="w"> </span><span class="kn">import</span> <span class="n">bind_rtp</span><span class="p">,</span> <span class="n">is_rtp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.media.rtsp_puller</span><span class="w"> </span><span class="kn">import</span> <span class="n">RtspPuller</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"indoor"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="IntercomMedia">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomMedia">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IntercomMedia</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""local-mode media for intercom calls: serves our mic over the shared RtspServer</span>
+<span class="sd">    and pulls the caller's stream. Owns aplay/arecord/ffplay like LocalMediaBridge."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">caller_ip</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller_ip</span> <span class="o">=</span> <span class="n">o</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">caller_ip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aplay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arecord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffplay</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puller</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">door_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">door_v</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for log compatibility</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rx</span> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+                <span class="n">cmd</span><span class="p">,</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span> <span class="k">if</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"aplay"</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span> <span class="k">if</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">"aplay"</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> not found - disabled"</span><span class="p">,</span> <span class="n">cmd</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="IntercomMedia.start">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomMedia.start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">local_audio</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aplay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spawn</span><span class="p">([</span><span class="s2">"aplay"</span><span class="p">,</span> <span class="s2">"-q"</span><span class="p">,</span> <span class="s2">"-D"</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">alsa_device</span><span class="p">,</span> <span class="s2">"-f"</span><span class="p">,</span> <span class="s2">"S16_LE"</span><span class="p">,</span> <span class="s2">"-r"</span><span class="p">,</span> <span class="s2">"8000"</span><span class="p">,</span> <span class="s2">"-c"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">local_mic</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">arecord</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spawn</span><span class="p">([</span><span class="s2">"arecord"</span><span class="p">,</span> <span class="s2">"-q"</span><span class="p">,</span> <span class="s2">"-D"</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">alsa_device</span><span class="p">,</span> <span class="s2">"-f"</span><span class="p">,</span> <span class="s2">"S16_LE"</span><span class="p">,</span> <span class="s2">"-r"</span><span class="p">,</span> <span class="s2">"8000"</span><span class="p">,</span> <span class="s2">"-c"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">video_player</span> <span class="ow">and</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">"ffplay"</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ffplay</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+                <span class="p">[</span><span class="s2">"ffplay"</span><span class="p">,</span> <span class="s2">"-f"</span><span class="p">,</span> <span class="s2">"h264"</span><span class="p">,</span> <span class="s2">"-fflags"</span><span class="p">,</span> <span class="s2">"nobuffer"</span><span class="p">,</span> <span class="s2">"-probesize"</span><span class="p">,</span> <span class="s2">"32"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">],</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">mic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mic_frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puller</span> <span class="o">=</span> <span class="n">RtspPuller</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_audio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_video</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="IntercomMedia.mic_frame">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomMedia.mic_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mic_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""called by RtspServer.stream - one 20ms ulaw frame"""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">arecord</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">arecord</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pcm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">arecord</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">320</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pcm</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">pcm</span><span class="p">)</span> <span class="o">==</span> <span class="mi">320</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">return</span> <span class="n">pcm_to_ulaw</span><span class="p">(</span><span class="n">pcm</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span>
+        <span class="k">return</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\xff</span><span class="s2">"</span> <span class="o">*</span> <span class="mi">160</span></div>
+
+
+<div class="viewcode-block" id="IntercomMedia.on_audio">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomMedia.on_audio">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ulaw</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">aplay</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">aplay</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">aplay</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ulaw_to_pcm</span><span class="p">(</span><span class="n">ulaw</span><span class="p">))</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">BrokenPipeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IntercomMedia.on_video">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomMedia.on_video">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_video</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffplay</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffplay</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ffplay</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="mi">12</span><span class="p">:])</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">BrokenPipeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IntercomMedia.stop">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomMedia.stop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"intercom media stopped: RTSP rx audio=</span><span class="si">%d</span><span class="s2"> video=</span><span class="si">%d</span><span class="s2">, tx audio=</span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">True</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">False</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">tx</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">mic</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mic_frame</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">mic</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aplay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">arecord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffplay</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">stdin</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                    <span class="k">pass</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                <span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="IntercomVideoLeg">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomVideoLeg">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IntercomVideoLeg</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""provider-facing video channel for door calls: repacks each pulled</span>
+<span class="sd">    H264 RTP frame as PT96 with our seq/ssrc (source timestamp kept) and</span>
+<span class="sd">    protects it when the provider leg is SRTP. offer_sdp/_media_block use</span>
+<span class="sd">    the .rtp_port/.srtp attributes like any other media object."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="n">bind_rtp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtp_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># provider video addr from answer SDP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># SrtpSession bound via bind_srtp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssrc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="IntercomVideoLeg.forward">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomVideoLeg.forward">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""door's pulled RTP frame -&gt; provider leg (PT96, our seq/ssrc)"""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">pkt</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">bytes</span><span class="p">([</span><span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">)</span> <span class="o">|</span> <span class="mi">96</span><span class="p">])</span>
+            <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;H"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seq</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">frame</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+            <span class="o">+</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;I"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssrc</span><span class="p">)</span>
+            <span class="o">+</span> <span class="n">frame</span><span class="p">[</span><span class="mi">12</span><span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span><span class="p">:</span>
+            <span class="n">pkt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">protect</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="IntercomVideoLeg.close">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.IntercomVideoLeg.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SipIntercomMedia">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SipIntercomMedia</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""provider-mode media for intercom calls (header-only SDP): pulls the</span>
+<span class="sd">    caller's rtsp://&lt;caller&gt;:554 PCMU and forwards it as RTP (PT0) to the SIP</span>
+<span class="sd">    peer; incoming SIP peer RTP feeds RtspServer.mic so the caller's pull</span>
+<span class="sd">    hears the peer. Replaces the ALSA headset with a UDP RTP socket.</span>
+<span class="sd">    With video=True (door calls only) also forwards the pulled H264 stream</span>
+<span class="sd">    as a PT96 RTP leg to the provider peer."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">caller_ip</span><span class="p">,</span> <span class="n">video</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller_ip</span> <span class="o">=</span> <span class="n">o</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">caller_ip</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">video</span> <span class="o">=</span> <span class="n">IntercomVideoLeg</span><span class="p">()</span> <span class="k">if</span> <span class="n">video</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="n">bind_rtp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtp_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># provider RTP (ip, port)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># SrtpSession when the leg is encrypted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>  <span class="c1"># peer PCMU payloads -&gt; caller pull</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puller</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssrc</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rx</span> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">False</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">door_a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">door_v</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># for log compatibility</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_dtmf</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set by the station: digit sink</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtmf_pt</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># telephone-event PT from the answer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dropped</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># diagnostic: non-PT0 packets logged</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_srtp_ok</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># first authenticated peer packet seen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plain</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># pre-auth plain-RTP packets accepted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_dtmf</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_dtmf_ts</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<div class="viewcode-block" id="SipIntercomMedia.start">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia.start">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">mic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mic_frame</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="p">:</span>  <span class="c1"># re-entry (a racing leg won after early</span>
+            <span class="k">return</span>  <span class="c1"># media already started): peers re-latched</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puller</span> <span class="o">=</span> <span class="n">RtspPuller</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">caller_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_audio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_video</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_recv_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="SipIntercomMedia.set_provider">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia.set_provider">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_provider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="o">=</span> <span class="n">addr</span></div>
+
+
+<div class="viewcode-block" id="SipIntercomMedia.on_audio">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia.on_audio">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_audio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ulaw</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""caller's PCMU frame (320B/40ms) -&gt; provider RTP"""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">rtp</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">"&gt;BBHII"</span><span class="p">,</span> <span class="mh">0x80</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssrc</span><span class="p">)</span> <span class="o">+</span> <span class="n">ulaw</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span><span class="p">:</span>
+            <span class="n">rtp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span><span class="o">.</span><span class="n">tx</span><span class="o">.</span><span class="n">protect</span><span class="p">(</span><span class="n">rtp</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">rtp</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peer</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seq</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ts</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ulaw</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mh">0xFFFFFFFF</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SipIntercomMedia.on_video">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia.on_video">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_video</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="p">:</span>  <span class="c1"># door call: forward the door's H264</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_recv_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">peer</span> <span class="o">=</span> <span class="n">addr</span>  <span class="c1"># latch (symmetric RTP)</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcmu_payload</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>  <span class="c1"># ~1s jitter bound</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pcmu_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""peer packet -&gt; PCMU payload; PT101 telephone-event digits are</span>
+<span class="sd">        tapped into on_dtmf first. None for RTCP, a bad SRTP tag (after the</span>
+<span class="sd">        first authenticated packet), or any PT other than PT0 (the only codec</span>
+<span class="sd">        we offer). Pre-key early media arrives unencrypted and is accepted as</span>
+<span class="sd">        plain RTP until the first SRTP packet authenticates."""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_rtp</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">13</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dropped</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dropped</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"peer RTP dropped: bad SRTP/short, </span><span class="si">%d</span><span class="s2">B, PT </span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="p">),</span> <span class="n">raw</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">pt</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x7F</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtmf_pt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pt</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtmf_pt</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dtmf_event</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">d</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_dtmf</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">on_dtmf</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">pt</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dropped</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dropped</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">"peer RTP dropped: PT </span><span class="si">%d</span><span class="s2">, </span><span class="si">%d</span><span class="s2">B, payload </span><span class="si">%s</span><span class="s2"> (dtmf_pt=</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+                    <span class="n">pt</span><span class="p">,</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+                    <span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">20</span><span class="p">]</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dtmf_pt</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="mi">12</span><span class="p">:]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""SRTP-unprotect. Early media sent before the peer's SRTP engine</span>
+<span class="sd">        armed arrives unencrypted: pass it through until the first packet</span>
+<span class="sd">        authenticates, then strict (None on auth failure)"""</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">srtp</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span><span class="o">.</span><span class="n">rx</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">srtp</span><span class="o">.</span><span class="n">rx</span><span class="o">.</span><span class="n">unprotect</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_srtp_ok</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="n">out</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_srtp_ok</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plain</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"peer RTP: plain </span><span class="si">%d</span><span class="s2">B PT </span><span class="si">%d</span><span class="s2"> accepted pre-SRTP-auth"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0x7F</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plain</span> <span class="o">==</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"peer keeps sending unencrypted RTP on an SRTP-negotiated leg"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="n">DTMF_CHARS</span> <span class="o">=</span> <span class="s2">"0123456789*#ABCD"</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dtmf_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""RFC4733 telephone-event: emit the digit once on the end-bit</span>
+<span class="sd">        packet; the end packet's own retransmits (~400ms) are suppressed"""</span>
+        <span class="n">ev</span><span class="p">,</span> <span class="n">flags</span> <span class="o">=</span> <span class="n">pkt</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">pkt</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">flags</span> <span class="o">&amp;</span> <span class="mh">0x80</span> <span class="ow">or</span> <span class="n">ev</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DTMF_CHARS</span><span class="p">):</span>  <span class="c1"># E bit = top bit of byte 1</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ev</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_dtmf</span> <span class="ow">and</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_dtmf_ts</span> <span class="o">&lt;</span> <span class="mf">0.4</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_dtmf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_dtmf_ts</span> <span class="o">=</span> <span class="n">ev</span><span class="p">,</span> <span class="n">now</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">DTMF_CHARS</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SipIntercomMedia.mic_frame">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia.mic_frame">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mic_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""called by RtspServer.stream - one 160B/20ms ulaw frame of PEER audio.</span>
+<span class="sd">        Shed to ~8 frames (160ms) first: the queue fills while early media</span>
+<span class="sd">        arrives before the caller's pull runs, and serving oldest-first would</span>
+<span class="sd">        lock that backlog in as a constant delay for the whole call (the</span>
+<span class="sd">        fill and drain rates match once the call is up)."""</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\xff</span><span class="s2">"</span> <span class="o">*</span> <span class="mi">160</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tx</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">160</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">160</span><span class="p">,</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\xff</span><span class="s2">"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rxq</span><span class="o">.</span><span class="n">appendleft</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">160</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">p</span><span class="p">[:</span><span class="mi">160</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="SipIntercomMedia.stop">
+<a class="viewcode-back" href="../../../api/metzler.media.intercom.html#metzler.SipIntercomMedia.stop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"sip intercom media stopped: RTSP rx audio=</span><span class="si">%d</span><span class="s2"> video=</span><span class="si">%d</span><span class="s2">, tx audio=</span><span class="si">%d</span><span class="s2"> video=</span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rx</span><span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tx</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">tx</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">video</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">puller</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">mic</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mic_frame</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="o">.</span><span class="n">mic</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

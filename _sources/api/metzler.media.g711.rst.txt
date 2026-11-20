@@ -1,0 +1,7 @@
+metzler.media.g711 module
+=========================
+
+.. automodule:: metzler.media.g711
+   :members:
+   :show-inheritance:
+   :undoc-members:

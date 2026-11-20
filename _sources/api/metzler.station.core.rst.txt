@@ -1,0 +1,7 @@
+metzler.station.core module
+===========================
+
+.. automodule:: metzler.station.core
+   :members:
+   :show-inheritance:
+   :undoc-members:

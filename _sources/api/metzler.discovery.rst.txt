@@ -1,0 +1,7 @@
+metzler.discovery module
+========================
+
+.. automodule:: metzler.discovery
+   :members:
+   :show-inheritance:
+   :undoc-members:

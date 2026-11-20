@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Door unlock via ISAPI (HTTP XML) — firmware internals &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ISAPI endpoints registered by hicore (VDM10 indoor, fw 2.0.24)" href="isapi-endpoints.html" />
+    <link rel="prev" title="Hik-Connect / EZVIZ cloud channel — registration and call-state pushes" href="hikconnect.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Door unlock via ISAPI (HTTP XML) — firmware internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#registered-uri">1. Registered URI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request">2. Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#execution-isapiexecuteremoteopendoor-0x001d2538">3. Execution — <code class="docutils literal notranslate"><span class="pre">isapiExecuteRemoteOpenDoor</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001d2538</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#down-the-queue-vns-opendoor-up-0x001085f0">4. Down the queue — <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001085f0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#device-type-gate-the-catch-for-an-indoor-station">5. Device-type gate (the catch for an indoor station)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#errors-all-verified-in-dispatcher-parser-executor">6. Errors (all verified in dispatcher/parser/executor)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authentication">7. Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unknowns-not-established">8. Unknowns / not established</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#function-index">9. Function index</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Door unlock via ISAPI (HTTP XML) — firmware internals</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware/door-unlock-api.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="door-unlock-via-isapi-http-xml-firmware-internals">
+<h1>Door unlock via ISAPI (HTTP XML) — firmware internals<a class="headerlink" href="#door-unlock-via-isapi-http-xml-firmware-internals" title="Link to this heading"></a></h1>
+<p>How <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (Metzler VTH 2.0.24, rebranded Hikvision indoor station)
+exposes <strong>remote door-unlock</strong> over its ISAPI REST interface, what XML it
+actually parses, and where the request goes inside the firmware. Call
+flow on the wire level: <a class="reference internal" href="door-call-flow.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">door-call-flow.md</span></code></span></a>;
+registration: <a class="reference internal" href="intercom-registration.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">intercom-registration.md</span></code></span></a>.</p>
+<p>Sources: <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/{videointercom.c,videointercom_do.c,README.md}</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/misc/{net_sipClient_visNetServer.c.c,</span> <span class="pre">net_sdkService_sdkUpload.c.c,</span> <span class="pre">net_sdkService_netFuncs.c.c,</span> <span class="pre">event_ioEvent_talkBackIoEvent.c.c,</span> <span class="pre">net_sipClient_sip_client.c.c,</span> <span class="pre">rest_comm_comm_rest_misc.c.c}</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/gui/comSubDefine.c</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/visnet/visnet_server.c</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/names/*.tsv</span></code>, plus the
+URI table recovered from <code class="docutils literal notranslate"><span class="pre">hicore</span></code> <code class="docutils literal notranslate"><span class="pre">.data</span></code> (file <code class="docutils literal notranslate"><span class="pre">0x749cbc</span></code>…, PT_LOAD
+maps file <code class="docutils literal notranslate"><span class="pre">+0x10000</span></code> = vaddr). Each claim is marked <strong>verified</strong>
+(decompile- or table-cited) or <strong>inferred</strong>.</p>
+<p><strong>TL;DR</strong> — the endpoint exists on every unit: <code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/ISAPI/VideoIntercom/remoteOpenDoor</span></code> with a <code class="docutils literal notranslate"><span class="pre">&lt;RemoteOpenDoor&gt;</span></code> XML body.
+But the dispatcher is gated to door-type devices (<code class="docutils literal notranslate"><span class="pre">getDevType()</span> <span class="pre">∈</span> <span class="pre">{1</span> <span class="pre">outdoor,</span> <span class="pre">4</span> <span class="pre">wall,</span> <span class="pre">5</span> <span class="pre">villa}</span></code>); a room-type indoor station (<code class="docutils literal notranslate"><span class="pre">getDevType()</span> <span class="pre">==</span> <span class="pre">3</span></code>) accepts the route yet always replies <em>device-not-supported</em>. The
+generic Hikvision <code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/ISAPI/AccessControl/RemoteControl/door/&lt;n&gt;</span></code> /
+<code class="docutils literal notranslate"><span class="pre">&lt;RemoteControlDoor&gt;</span></code> convention is <strong>not</strong> registered in this firmware.</p>
+<blockquote>
+<div><p><strong>Live-verified on the outdoor station (2026-11-02)</strong> — the outdoor
+unit at <code class="docutils literal notranslate"><span class="pre">10.0.0.48</span></code> is itself a <code class="docutils literal notranslate"><span class="pre">VDM10-VM-POE</span></code>, <strong>firmware V2.2.56</strong>
+(build 230608), a newer build than the indoor 2.0.24 analysed below, and
+it <em>does</em> serve the generic route. HTTP Digest, user <code class="docutils literal notranslate"><span class="pre">admin</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>request</p></th>
+<th class="head"><p>result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/ISAPI/System/deviceInfo</span></code></p></td>
+<td><p>200, model/serial/firmware</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/ISAPI/AccessControl/RemoteControl/door/capabilities</span></code></p></td>
+<td><p>200: <code class="docutils literal notranslate"><span class="pre">doorNo</span> <span class="pre">min=1</span> <span class="pre">max=2</span></code>, <code class="docutils literal notranslate"><span class="pre">cmd</span> <span class="pre">opt=&quot;open,alwaysOpen,resume&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/ISAPI/AccessControl/RemoteControl/door/1</span></code></p></td>
+<td><p>400 <code class="docutils literal notranslate"><span class="pre">methodNotAllowed</span></code> (route exists, PUT only)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/ISAPI/VideoIntercom/remoteOpenDoor/capabilities</span></code></p></td>
+<td><p>404 <code class="docutils literal notranslate"><span class="pre">invalidOperation</span></code> (not in this build)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PUT</span> <span class="pre">/ISAPI/AccessControl/RemoteControl/door/1</span></code> body <code class="docutils literal notranslate"><span class="pre">&lt;RemoteControlDoor</span> <span class="pre">version=&quot;2.0&quot;</span> <span class="pre">xmlns=&quot;http://www.isapi.org/ver20/XMLSchema&quot;&gt;&lt;cmd&gt;open&lt;/cmd&gt;&lt;/RemoteControlDoor&gt;</span></code></p></td>
+<td><p><strong>200 <code class="docutils literal notranslate"><span class="pre">statusCode</span> <span class="pre">1</span> <span class="pre">ok</span></code>, the door unlocked (audible)</strong></p></td>
+</tr>
+</tbody>
+</table>
+<p>The bridge uses this for <code class="docutils literal notranslate"><span class="pre">#&lt;n&gt;</span></code> (n = 1 or 2) on the phone
+(<code class="docutils literal notranslate"><span class="pre">station/door_unlock.py</span></code>). It is the only unlock mechanism the bridge
+uses: it sends no SIP INFO unlock.</p>
+</div></blockquote>
+<section id="registered-uri">
+<h2>1. Registered URI<a class="headerlink" href="#registered-uri" title="Link to this heading"></a></h2>
+<p>Rows in the ISAPI URI table are <code class="docutils literal notranslate"><span class="pre">0x68</span></code>-byte records <code class="docutils literal notranslate"><span class="pre">{name*,</span> <span class="pre">handler*,</span> <span class="pre">childTbl*,</span> <span class="pre">flags&#64;+0x14}</span></code>; <code class="docutils literal notranslate"><span class="pre">/X</span></code>-named rows are group terminators — a
+parent’s children are the contiguous rows before its <code class="docutils literal notranslate"><span class="pre">/X</span></code> row and its
+leaf row’s <code class="docutils literal notranslate"><span class="pre">childTbl</span></code> points at the first child. Verified rows:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>vaddr</p></th>
+<th class="head"><p>file</p></th>
+<th class="head"><p>name</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x756d34</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x746d34</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI</span></code></p></td>
+<td><p>—</p></td>
+<td><p>group marker; children = <code class="docutils literal notranslate"><span class="pre">System,</span> <span class="pre">VideoIntercom,</span> <span class="pre">Event,</span> <span class="pre">Security,</span> <span class="pre">Image,</span> <span class="pre">AccessControl,</span> <span class="pre">Streaming,</span> <span class="pre">SecurityCP,</span> <span class="pre">ContentMgmt,</span> <span class="pre">SmartLock,</span> <span class="pre">SingleSmartLock</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x756924</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x746924</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VideoIntercom</span></code></p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">childTbl→0x75b7f4</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x75bb34</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x74bb34</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">remoteOpenDoor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x001ced50</span></code></p></td>
+<td><p>inside the <code class="docutils literal notranslate"><span class="pre">/VideoIntercom</span></code> block (marker <code class="docutils literal notranslate"><span class="pre">0x75c14c</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x75b174</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x74b174</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x001cef7c</span></code></p></td>
+<td><p>sole child of <code class="docutils literal notranslate"><span class="pre">remoteOpenDoor</span></code> (marker <code class="docutils literal notranslate"><span class="pre">0x75b1dc</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">0x001ced50</span></code>/<code class="docutils literal notranslate"><span class="pre">0x001cef7c</span></code> are the real function entries (<code class="docutils literal notranslate"><span class="pre">cmp</span> <span class="pre">r1,#0;</span> <span class="pre">cmpne</span> <span class="pre">r0,#0</span></code> prologue); Ghidra labels them <code class="docutils literal notranslate"><span class="pre">FUN_001ced58</span></code> /
+<code class="docutils literal notranslate"><span class="pre">FUN_001cef84</span></code> a few bytes in:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">PUT</span>&#160; <span class="pre">/ISAPI/VideoIntercom/remoteOpenDoor</span></code> →
+<code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorBasic</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001ced58</span></code>
+(<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/videointercom.c:518</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GET</span>&#160; <span class="pre">/ISAPI/VideoIntercom/remoteOpenDoor/capabilities</span></code> →
+<code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorCapBasic</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001cef84</span></code> (line 552)</p></li>
+</ul>
+<p>A second <code class="docutils literal notranslate"><span class="pre">/ISAPI</span></code> marker exists at <code class="docutils literal notranslate"><span class="pre">0x75e41c</span></code> — the tree appears
+registered twice (inferred: HTTP/HTTPS or a legacy copy).</p>
+</section>
+<section id="request">
+<h2>2. Request<a class="headerlink" href="#request" title="Link to this heading"></a></h2>
+<div class="highlight-http notranslate"><div class="highlight"><pre><span></span><span class="nf">PUT</span> <span class="nn">/ISAPI/VideoIntercom/remoteOpenDoor</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Content-Type</span><span class="o">:</span> <span class="l">application/xml</span>
+</pre></div>
+</div>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;RemoteOpenDoor&gt;</span>
+<span class="w">  </span><span class="nt">&lt;gateWayIndex&gt;</span>1<span class="nt">&lt;/gateWayIndex&gt;</span>
+<span class="w">  </span><span class="nt">&lt;command&gt;</span>unlock<span class="nt">&lt;/command&gt;</span>
+<span class="w">  </span><span class="nt">&lt;controlSrc&gt;</span>remote-http<span class="nt">&lt;/controlSrc&gt;</span>
+<span class="nt">&lt;/RemoteOpenDoor&gt;</span>
+</pre></div>
+</div>
+<p>Exactly three child tags are parsed by <code class="docutils literal notranslate"><span class="pre">isapiParseTagRemoteOpenDoor</span></code>
+&#64; <code class="docutils literal notranslate"><span class="pre">0x001d2324</span></code> (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/videointercom_do.c:171</span></code>), into a
+<code class="docutils literal notranslate"><span class="pre">0xac</span></code>-byte <code class="docutils literal notranslate"><span class="pre">ControlGateway</span></code> buffer:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>tag</p></th>
+<th class="head"><p>effect</p></th>
+<th class="head"><p>constraints (verified)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>root <code class="docutils literal notranslate"><span class="pre">RemoteOpenDoor</span></code></p></td>
+<td><p>—</p></td>
+<td><p>wrong root tag → <code class="docutils literal notranslate"><span class="pre">0x60000000</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gateWayIndex</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">out+0x04</span></code> u32</p></td>
+<td><p>must be a non-negative integer, else <code class="docutils literal notranslate"><span class="pre">0x60000000</span></code>; executor requires <strong>exactly 1</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">command</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">out+0x08</span></code> u8</p></td>
+<td><p>only literal <code class="docutils literal notranslate"><span class="pre">unlock</span></code> sets <code class="docutils literal notranslate"><span class="pre">1</span></code>; anything else is logged and <strong>ignored</strong> (stays 0 → executor rejects)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">controlSrc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">out+0x0c</span></code> char[0x20]</p></td>
+<td><p>value ≤ <code class="docutils literal notranslate"><span class="pre">0x1f</span></code> bytes, else <code class="docutils literal notranslate"><span class="pre">0x40000006</span></code>; executor requires non-empty</p></td>
+</tr>
+<tr class="row-even"><td><p><em>(unparsed)</em> <code class="docutils literal notranslate"><span class="pre">out+0x09</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">byLockType</span></code></p></td>
+<td><p><strong>no tag reads it</strong> — always 0 via HTTP</p></td>
+</tr>
+<tr class="row-odd"><td><p><em>(unparsed)</em> <code class="docutils literal notranslate"><span class="pre">out+0x30</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">password</span></code></p></td>
+<td><p><strong>no tag reads it</strong> — always empty via HTTP</p></td>
+</tr>
+</tbody>
+</table>
+<p>Nothing else is parsed: no <code class="docutils literal notranslate"><span class="pre">cmd</span></code>/<code class="docutils literal notranslate"><span class="pre">open</span></code>/<code class="docutils literal notranslate"><span class="pre">close</span></code>/<code class="docutils literal notranslate"><span class="pre">alwaysOpen</span></code>/<code class="docutils literal notranslate"><span class="pre">resume</span></code>,
+no <code class="docutils literal notranslate"><span class="pre">version</span></code>/<code class="docutils literal notranslate"><span class="pre">xmlns</span></code> requirement on the root, no lock id, no
+<code class="docutils literal notranslate"><span class="pre">controlType</span></code>. Unknown tags are silently skipped.</p>
+<p>The capability document (GET …<code class="docutils literal notranslate"><span class="pre">/capabilities</span></code>, built by
+<code class="docutils literal notranslate"><span class="pre">isapiAddRemoteOpenDoorCapToXml</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001d2868</span></code>) advertises the same
+shape: <code class="docutils literal notranslate"><span class="pre">gateWayIndex</span> <span class="pre">min=&quot;1&quot;</span> <span class="pre">max=&quot;1&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">opt=&quot;unlock&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">controlSrc</span> <span class="pre">min=&quot;1&quot;</span> <span class="pre">max=&quot;31&quot;</span></code>.</p>
+</section>
+<section id="execution-isapiexecuteremoteopendoor-0x001d2538">
+<h2>3. Execution — <code class="docutils literal notranslate"><span class="pre">isapiExecuteRemoteOpenDoor</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001d2538</span></code><a class="headerlink" href="#execution-isapiexecuteremoteopendoor-0x001d2538" title="Link to this heading"></a></h2>
+<p>(<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/videointercom_do.c:199</span></code>; raw decompile
+<code class="docutils literal notranslate"><span class="pre">FUN_001d2538</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/decompiled/isapi_videointercom_isapi_videointercom_do.c.c</span></code>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>switch (byLockType):
+  case 0:                    /* normal door lock — the only HTTP-reachable case */
+      gateWayIndex must == 1, byCommand == 1, controlSrc non-empty
+      msg[0x21]: msg[0] = 5; snprintf(msg+1, 0x20, controlSrc)
+      vns_opendoor_up(msg)   -&gt; return 0x10000000
+  case 1:                    /* smart-lock/gateway — dead via HTTP */
+      index 1..3, cmd 1, controlSrc AND password(+0x30) non-empty
+      -&gt; return ok WITHOUT posting anything
+  default -&gt; 0x40000006
+</pre></div>
+</div>
+<p>Lock type 1 returns success but performs no action, and the HTTP parser
+never populates <code class="docutils literal notranslate"><span class="pre">byLockType</span></code>/<code class="docutils literal notranslate"><span class="pre">password</span></code>, so via ISAPI only the type-0
+path ever runs — index <strong>1</strong> is the only valid door number through this
+endpoint. A parallel binary-SDK implementation exists in
+<code class="docutils literal notranslate"><span class="pre">netClientRemoteControlGateWay</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000ac474</span></code>
+(<code class="docutils literal notranslate"><span class="pre">misc/net_sdkService_netFuncs.c.c:1776</span></code>): same <code class="docutils literal notranslate"><span class="pre">{1,4,5}</span></code> devType gate,
+same <code class="docutils literal notranslate"><span class="pre">index==1</span> <span class="pre">&amp;&amp;</span> <span class="pre">cmd==1</span> <span class="pre">&amp;&amp;</span> <span class="pre">controlSrc</span> <span class="pre">&amp;&amp;</span> <span class="pre">lockType==0</span></code> checks, same
+<code class="docutils literal notranslate"><span class="pre">{5,controlSrc}</span></code> → <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code> — but gated on
+<code class="docutils literal notranslate"><span class="pre">netu_verify_user(ctx,</span> <span class="pre">peer_ip,</span> <span class="pre">0x20000)</span></code> instead of ISAPI auth.</p>
+</section>
+<section id="down-the-queue-vns-opendoor-up-0x001085f0">
+<h2>4. Down the queue — <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001085f0</span></code><a class="headerlink" href="#down-the-queue-vns-opendoor-up-0x001085f0" title="Link to this heading"></a></h2>
+<p>(<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/misc/net_sipClient_visNetServer.c.c:6151</span></code>; verified)</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">vns_opendoor_up</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                    </span><span class="cm">/* msg = {type u8, src[0x20]} */</span>
+<span class="w">    </span><span class="n">memset</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mh">0xc</span><span class="p">);</span>
+<span class="w">    </span><span class="n">notifySdkUploadOpenRecord</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span><span class="w">            </span><span class="cm">/* @0x000c9b84, sdkUpload.c */</span>
+<span class="w">    </span><span class="n">mqSend</span><span class="p">(</span><span class="o">*</span><span class="n">DAT_00108640</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="mh">0xc</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">   </span><span class="cm">/* *0xa6c95c = /ioOutEventMsgQ */</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">notifySdkUploadOpenRecord</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000c9b84</span></code>
+(<code class="docutils literal notranslate"><span class="pre">misc/net_sdkService_sdkUpload.c.c:656</span></code>) logs
+<code class="docutils literal notranslate"><span class="pre">&quot;upload</span> <span class="pre">open</span> <span class="pre">door</span> <span class="pre">info,</span> <span class="pre">type:%d,</span> <span class="pre">details:%s&quot;</span></code> and builds a <code class="docutils literal notranslate"><span class="pre">0x8fc</span></code>
+open-door record <code class="docutils literal notranslate"><span class="pre">{kind</span> <span class="pre">0,</span> <span class="pre">time,</span> <span class="pre">type,</span> <span class="pre">details}</span></code>: when <code class="docutils literal notranslate"><span class="pre">sip_devMode6()</span> <span class="pre">==</span> <span class="pre">0</span></code> it is <code class="docutils literal notranslate"><span class="pre">mqSend</span></code>’d to the SDK upload queue (mqd &#64;vaddr <code class="docutils literal notranslate"><span class="pre">0x753218</span></code>;
+the consumer is the SDK alarm-upload worker <code class="docutils literal notranslate"><span class="pre">alarmUpTask</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000afa48</span></code>,
+<code class="docutils literal notranslate"><span class="pre">netFuncs.c</span></code> — <em>inferred</em>, queue open not recovered); otherwise it goes
+to <code class="docutils literal notranslate"><span class="pre">db_opendoor_insert</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000fbf84</span></code> (db table 7, open-door log).</p>
+<p><code class="docutils literal notranslate"><span class="pre">/ioOutEventMsgQ</span></code> is drained by <code class="docutils literal notranslate"><span class="pre">talkBackIoOutEventTask</span></code> /
+<code class="docutils literal notranslate"><span class="pre">gui_oversee_door_handle_msg_unlock_proc</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x00108650</span></code>
+(<code class="docutils literal notranslate"><span class="pre">misc/event_ioEvent_talkBackIoEvent.c.c</span></code>), whose <code class="docutils literal notranslate"><span class="pre">switch</span></code> on the
+12-byte message’s type field does: 2–5 LED on/off, 6–7 LCD on/off,
+8 LED-blink, <strong>0xa/0xb/0xc → alarm-output bitmask →
+<code class="docutils literal notranslate"><span class="pre">ddm_set_alarm_out_status</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">interface_kernel_ddm_interface.c.c</span></code>
+&#64; <code class="docutils literal notranslate"><span class="pre">0x00051918</span></code>). The message <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code> posts is <em>all zero</em>
+(type 0 → default → no action) — so the mq post is a decompiled no-op
+nudge, and the final relay actuation is <strong>not</strong> shown by this chain
+(§8).</p>
+<p>The same terminal runs door-side for <strong>VisNet cmd <code class="docutils literal notranslate"><span class="pre">0x2001</span></code></strong>
+(<code class="docutils literal notranslate"><span class="pre">VIS_NETCMD_UNLOCK</span></code>, <code class="docutils literal notranslate"><span class="pre">visnet_server.c</span></code> + <code class="docutils literal notranslate"><span class="pre">visNetServer.c.c</span></code> case
+<code class="docutils literal notranslate"><span class="pre">0x2001</span></code>): the handler parses the caller’s devNum, sets the record type
+to <code class="docutils literal notranslate"><span class="pre">4</span></code> or <code class="docutils literal notranslate"><span class="pre">5</span></code> depending on caller devType, calls <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code>, and
+replies code <code class="docutils literal notranslate"><span class="pre">1</span></code> = “Open door success!”. <code class="docutils literal notranslate"><span class="pre">vns_clientUnlock</span></code>
+&#64; <code class="docutils literal notranslate"><span class="pre">0x000eec04</span></code> on the requesting station sends the <code class="docutils literal notranslate"><span class="pre">0xb4</span></code>-byte <code class="docutils literal notranslate"><span class="pre">0x2001</span></code>
+packet (lockId &#64; <code class="docutils literal notranslate"><span class="pre">+0xa8</span></code>) and waits for the <code class="docutils literal notranslate"><span class="pre">0x1c</span></code>-byte reply. ISAPI’s
+record type is hard-coded <code class="docutils literal notranslate"><span class="pre">5</span></code>; the VisNet handler picks <code class="docutils literal notranslate"><span class="pre">4</span></code>/<code class="docutils literal notranslate"><span class="pre">5</span></code>
+(<code class="docutils literal notranslate"><span class="pre">(devType</span> <span class="pre">&amp;</span> <span class="pre">0xfd)</span> <span class="pre">==</span> <span class="pre">1</span> <span class="pre">→</span> <span class="pre">4</span></code>).</p>
+</section>
+<section id="device-type-gate-the-catch-for-an-indoor-station">
+<h2>5. Device-type gate (the catch for an indoor station)<a class="headerlink" href="#device-type-gate-the-catch-for-an-indoor-station" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorBasic</span></code> checks <code class="docutils literal notranslate"><span class="pre">getDevType()</span></code>
+(<code class="docutils literal notranslate"><span class="pre">FUN_000f7e90</span></code>; 1 outdoor, 2 manage, 3 room, 4 wall, 5 villa,
+6 confirm — <code class="docutils literal notranslate"><span class="pre">isapi/README.md:169</span></code>) <strong>before</strong> method/privilege checks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">devType</span> <span class="pre">∈</span> <span class="pre">{1,4,5}</span></code> → proceed (door units that own a lock).</p></li>
+<li><p>anything else — including <strong>room-type indoor units (3)</strong> →
+<code class="docutils literal notranslate"><span class="pre">0x40000004</span></code> → ISAPI “device not support”. The Metzler VDM10 room
+station therefore rejects this endpoint even though the route is
+registered (gate code verified; whether a given production build
+reports devType 3 is config/board-dependent — <em>inferred</em> VDM10 ==
+room).</p></li>
+</ul>
+<p>On the indoor unit the working door-open paths are instead:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>path</p></th>
+<th class="head"><p>code (verified)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>in-call SIP INFO DTMF <code class="docutils literal notranslate"><span class="pre">application/dtmf-relay</span></code> — lock 1 <code class="docutils literal notranslate"><span class="pre">Signal=#\nDuration=160</span></code>, lock 2 <code class="docutils literal notranslate"><span class="pre">Signal=2</span></code> (then <code class="docutils literal notranslate"><span class="pre">#</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sipcli_unlock_dtmf</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000df6c0</span></code>, <code class="docutils literal notranslate"><span class="pre">net_sipClient_sip_client.c.c:3083</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>VisNet cmd <code class="docutils literal notranslate"><span class="pre">0x2001</span></code> <code class="docutils literal notranslate"><span class="pre">vns_clientUnlock(ip,lockId)</span></code> (monitor-screen unlock)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x000eec04</span></code>; GUI <code class="docutils literal notranslate"><span class="pre">gui_UnlockTouchKeyMessageHandle</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x0026ff64</span></code> (door 1) / <code class="docutils literal notranslate"><span class="pre">_1</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x002701e4</span></code> (door 2) → <code class="docutils literal notranslate"><span class="pre">sipcli_unlock_dtmf(0|1,</span> <span class="pre">lockNo,</span> <span class="pre">devType)</span></code> (<code class="docutils literal notranslate"><span class="pre">gui/comSubDefine.c:288</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>VisNet <code class="docutils literal notranslate"><span class="pre">0x2016</span></code> <code class="docutils literal notranslate"><span class="pre">vns_exUnlock(opType,lockId,doorType,ip)</span></code> — door-side opType 0 → local <code class="docutils literal notranslate"><span class="pre">sipcli_unlock_dtmf</span></code>, 1 → <code class="docutils literal notranslate"><span class="pre">vns_clientUnlock</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x000f0504</span></code>; server case <code class="docutils literal notranslate"><span class="pre">0x2016</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">visNetServer.c.c:5173</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>VisNet <code class="docutils literal notranslate"><span class="pre">0x2017</span></code> <code class="docutils literal notranslate"><span class="pre">AGAIN_UNLOCK</span></code> — compares cfg <code class="docutils literal notranslate"><span class="pre">+0x7c0</span></code>[0x20] unlock-pwd AND <code class="docutils literal notranslate"><span class="pre">+0x7e0</span></code>[0x10] hijack-pwd, then same <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code></p></td>
+<td><p>server case &#64; <code class="docutils literal notranslate"><span class="pre">visNetServer.c.c:5198</span></code>; pwds set via cmd <code class="docutils literal notranslate"><span class="pre">0x2006</span></code> → <code class="docutils literal notranslate"><span class="pre">dpi_register_acs_pwd_info</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000fc084</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>gateway-unlock helper (devNum → door IP → <code class="docutils literal notranslate"><span class="pre">vns_clientUnlock</span></code>), used by Hik-Connect/Ezviz apiId 2 <code class="docutils literal notranslate"><span class="pre">{srcId,channel,lockId}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sipcli_gateway_unlock</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x000dfc88</span></code>; <code class="docutils literal notranslate"><span class="pre">ezviz/third_party.c</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="errors-all-verified-in-dispatcher-parser-executor">
+<h2>6. Errors (all verified in dispatcher/parser/executor)<a class="headerlink" href="#errors-all-verified-in-dispatcher-parser-executor" title="Link to this heading"></a></h2>
+<p>Return codes map to <code class="docutils literal notranslate"><span class="pre">&lt;ResponseStatus&gt;</span></code> in <code class="docutils literal notranslate"><span class="pre">statusCode</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001c47c8</span></code>
+(<code class="docutils literal notranslate"><span class="pre">rest_comm_comm_rest_misc.c.c:156</span></code>): <code class="docutils literal notranslate"><span class="pre">statusCode</span></code> element = <code class="docutils literal notranslate"><span class="pre">ret</span> <span class="pre">&gt;&gt;</span> <span class="pre">0x1c</span></code> (1 ok, 4 “Invalid Operation”, 5 “Invalid XML Format”, 6 “Invalid
+XML Content”), <code class="docutils literal notranslate"><span class="pre">subStatusCode</span></code> from a per-class string table — verified
+entries below.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>condition</p></th>
+<th class="head"><p>ret</p></th>
+<th class="head"><p>statusCode / subStatusCode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">devType</span> <span class="pre">∉</span> <span class="pre">{1,4,5}</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x40000004</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code> Invalid Operation / <code class="docutils literal notranslate"><span class="pre">notSupport</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>method ≠ PUT (≠ GET for <code class="docutils literal notranslate"><span class="pre">/capabilities</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x40000003</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code> / <code class="docutils literal notranslate"><span class="pre">methodNotAllowed</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>privilege check fails</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_privilege</span></code> ret</p></td>
+<td><p>e.g. <code class="docutils literal notranslate"><span class="pre">0x40000001</span></code>/<code class="docutils literal notranslate"><span class="pre">0x40000002</span></code> <code class="docutils literal notranslate"><span class="pre">badAuthorization</span></code>/<code class="docutils literal notranslate"><span class="pre">lowPrivilege</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>null arg / empty body</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x30000004</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">3</span></code> Device Error / <code class="docutils literal notranslate"><span class="pre">NULLpoint</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>XML alloc/parse failure</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x50000001</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">5</span></code> Invalid XML Format / <code class="docutils literal notranslate"><span class="pre">badXmlFormat</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>root tag ≠ <code class="docutils literal notranslate"><span class="pre">RemoteOpenDoor</span></code>, non-integer <code class="docutils literal notranslate"><span class="pre">gateWayIndex</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x60000000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">6</span></code> Invalid XML Content / <code class="docutils literal notranslate"><span class="pre">badXmlContent</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">controlSrc</span></code> &gt; 31 bytes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x40000006</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code> / <code class="docutils literal notranslate"><span class="pre">invalidContent</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">gateWayIndex</span></code> ≠ 1, <code class="docutils literal notranslate"><span class="pre">command</span></code> ≠ <code class="docutils literal notranslate"><span class="pre">unlock</span></code>, empty <code class="docutils literal notranslate"><span class="pre">controlSrc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x40000006</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">4</span></code> / <code class="docutils literal notranslate"><span class="pre">invalidContent</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>success</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x10000000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code> / <code class="docutils literal notranslate"><span class="pre">ok</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="authentication">
+<h2>7. Authentication<a class="headerlink" href="#authentication" title="Link to this heading"></a></h2>
+<p>The HTTP layer is the vendored appweb/REST front end
+(<code class="docutils literal notranslate"><span class="pre">misc/rest_comm_comm_rest_misc.c.c</span></code>): <code class="docutils literal notranslate"><span class="pre">restVerifyUserPasswd</span></code> inspects
+the appweb auth struct and, for <code class="docutils literal notranslate"><span class="pre">pAuth-&gt;type</span> <span class="pre">==</span> <span class="pre">2</span></code>, runs the digest
+verify path against the stored credential — <strong>HTTP Digest</strong> is the
+evidenced scheme. Every PUT dispatcher additionally calls
+<code class="docutils literal notranslate"><span class="pre">check_privilege(ctx,</span> <span class="pre">0x8000)</span></code> (write bit; GET uses <code class="docutils literal notranslate"><span class="pre">0x800000</span></code>).
+Basic auth is <strong>not</strong> evidenced in the recovered code — don’t assume it.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>--digest<span class="w"> </span>-u<span class="w"> </span>admin:<span class="s1">'&lt;PASSWORD&gt;'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s1">'Content-Type: application/xml'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--data-binary<span class="w"> </span>@-<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="s1">'http://&lt;DOOR_UNIT&gt;/ISAPI/VideoIntercom/remoteOpenDoor'</span><span class="w"> </span><span class="s">&lt;&lt;'XML'</span>
+<span class="s">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="s">&lt;RemoteOpenDoor&gt;</span>
+<span class="s">  &lt;gateWayIndex&gt;1&lt;/gateWayIndex&gt;</span>
+<span class="s">  &lt;command&gt;unlock&lt;/command&gt;</span>
+<span class="s">  &lt;controlSrc&gt;remote-http&lt;/controlSrc&gt;</span>
+<span class="s">&lt;/RemoteOpenDoor&gt;</span>
+<span class="s">XML</span>
+</pre></div>
+</div>
+<p>Target a door-type unit for a real unlock; on a room-type VDM10 expect
+<code class="docutils literal notranslate"><span class="pre">statusCode</span> <span class="pre">4</span> <span class="pre">/</span> <span class="pre">subStatusCode</span> <span class="pre">notSupport</span></code> (§5/§6). <code class="docutils literal notranslate"><span class="pre">curl</span> <span class="pre">-v</span></code> shows a
+<code class="docutils literal notranslate"><span class="pre">401</span></code> + <code class="docutils literal notranslate"><span class="pre">WWW-Authenticate:</span> <span class="pre">Digest</span></code> challenge → resend.</p>
+<blockquote>
+<div><p><strong>Verified live (2026-11-19):</strong> <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/ISAPI/Streaming/channels/101/picture</span></code>
+on the outdoor station rejects HTTP Basic with <code class="docutils literal notranslate"><span class="pre">401</span></code>; with the Digest
+challenge answered it returns <code class="docutils literal notranslate"><span class="pre">200</span></code> + the JPEG frame (<code class="docutils literal notranslate"><span class="pre">admin</span></code> creds) —
+confirms the digest-only path on a second route family.</p>
+</div></blockquote>
+</section>
+<section id="unknowns-not-established">
+<h2>8. Unknowns / not established<a class="headerlink" href="#unknowns-not-established" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Final actuation.</strong> The ISAPI→<code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code> chain ends in (a) an
+open-door record upload/DB insert and (b) a <em>zeroed</em> 12-byte nudge on
+<code class="docutils literal notranslate"><span class="pre">/ioOutEventMsgQ</span></code> whose consumer only acts on msg types 2–0xc (type 0
+= no-op). Either the decompiler dropped a payload copy or actuation
+runs elsewhere (door-side firmware difference, alarm linkage, or a
+path not recovered in this indoor build). The VisNet <code class="docutils literal notranslate"><span class="pre">0x2001</span></code> path is
+proven to physically open the door — the peer replies “Open door
+success!” — but the exact GPIO/relay write is not pinned down here;
+the only <code class="docutils literal notranslate"><span class="pre">ddm_set_alarm_out_status</span></code> callers recovered are the
+ioOutEvent cases 0xa–0xc and boardtest.</p></li>
+<li><p><strong>Lock type 1 / password.</strong> <code class="docutils literal notranslate"><span class="pre">isapiExecuteRemoteOpenDoor</span></code> case 1 needs
+<code class="docutils literal notranslate"><span class="pre">+0x30</span></code> password which no XML tag fills; no caller in this build was
+found that populates it (the SDK-side <code class="docutils literal notranslate"><span class="pre">netClientRemoteControlGateWay</span></code>
+only exercises the lockType-0 shape). Its post-validation behavior is
+unrecovered — it returns success without observable action.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO/outputs/...</span></code> as an unlock.</strong> The IO subtree
+exposes port config and <code class="docutils literal notranslate"><span class="pre">openDoorBtn</span></code>/<code class="docutils literal notranslate"><span class="pre">magneticStatus</span></code> useTypes
+(<code class="docutils literal notranslate"><span class="pre">io.c</span></code>), but no trigger/action child row was found under
+<code class="docutils literal notranslate"><span class="pre">outputs/&lt;id&gt;</span></code> (only <code class="docutils literal notranslate"><span class="pre">capabilities</span></code>) — not a verified unlock path.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">RemoteControlDoor</span></code> convention.</strong> Neither
+<code class="docutils literal notranslate"><span class="pre">AccessControl/RemoteControl</span></code> (the <code class="docutils literal notranslate"><span class="pre">AccessControl</span></code> node’s children
+are <code class="docutils literal notranslate"><span class="pre">DeployInfo/Device/Card/Door</span></code> only; <code class="docutils literal notranslate"><span class="pre">Door</span></code> → <code class="docutils literal notranslate"><span class="pre">param</span></code> → DoorParam)
+nor the <code class="docutils literal notranslate"><span class="pre">&lt;RemoteControlDoor&gt;</span></code> root exists in this build’s URI table —
+the common Hikvision door API is absent.</p></li>
+<li><p><strong>Second <code class="docutils literal notranslate"><span class="pre">/ISAPI</span></code> tree.</strong> A duplicate marker suggests a second
+registration; whether it adds routes wasn’t fully walked.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">controlSrc</span></code> semantics.</strong> Copied verbatim into the open-door record
+(<code class="docutils literal notranslate"><span class="pre">snprintf</span></code>, ≤31 chars); any protocol meaning of the string itself is
+unestablished.</p></li>
+<li><p><strong>Whether a VDM10 variant reports devType 4/5.</strong> If a wall/villa
+variant of this hardware runs the same build, the endpoint would
+accept the PUT there; unverified per-device.</p></li>
+</ul>
+</section>
+<section id="function-index">
+<h2>9. Function index<a class="headerlink" href="#function-index" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>addr</p></th>
+<th class="head"><p>name</p></th>
+<th class="head"><p>file</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x001ced58</span></code> (entry <code class="docutils literal notranslate"><span class="pre">0x1ced50</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorBasic</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/videointercom.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x001cef84</span></code> (entry <code class="docutils literal notranslate"><span class="pre">0x1cef7c</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorCapBasic</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/videointercom.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x001d2324</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiParseTagRemoteOpenDoor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/videointercom_do.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x001d2538</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiExecuteRemoteOpenDoor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/videointercom_do.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x001d2868</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiAddRemoteOpenDoorCapToXml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi/videointercom_do.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x001085f0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_visNetServer.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x000c9b84</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">notifySdkUploadOpenRecord</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sdkService_sdkUpload.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x000fbf84</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">db_opendoor_insert</span></code> (db table 7)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/dataManagement_database_db_api.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x000afa48</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">alarmUpTask</span></code> (0x8fc-record mq consumer)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sdkService_netFuncs.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x00108650</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui_oversee_door_handle_msg_unlock_proc</span></code> (<code class="docutils literal notranslate"><span class="pre">talkBackIoOutEventTask</span></code>, <code class="docutils literal notranslate"><span class="pre">/ioOutEventMsgQ</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/event_ioEvent_talkBackIoEvent.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x00051918</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ddm_set_alarm_out_status</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/interface_kernel_ddm_interface.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x000ac474</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">netClientRemoteControlGateWay</span></code> (binary SDK twin)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sdkService_netFuncs.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x000eec04</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vns_clientUnlock</span></code> (VisNet <code class="docutils literal notranslate"><span class="pre">0x2001</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_visNetServer.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x000f0504</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vns_exUnlock</span></code> (VisNet <code class="docutils literal notranslate"><span class="pre">0x2016</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_visNetServer.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x000fc084</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dpi_register_acs_pwd_info</span></code> (cmd <code class="docutils literal notranslate"><span class="pre">0x2006</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/dataManagement_database_db_api.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x000df6c0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sipcli_unlock_dtmf</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_sip_client.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x000dfc88</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sipcli_gateway_unlock</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_sip_client.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x0026ff64</span></code> / <code class="docutils literal notranslate"><span class="pre">0x002701e4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui_UnlockTouchKeyMessageHandle[_1]</span></code> (door 1/2)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui/comSubDefine.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x000f7e90</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">getDevType</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code> (<code class="docutils literal notranslate"><span class="pre">FUN_</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x000f9ce0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">devTypeFromNum</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x001c47c8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">statusCode</span></code> (<code class="docutils literal notranslate"><span class="pre">&lt;ResponseStatus&gt;</span></code> builder)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/rest_comm_comm_rest_misc.c.c</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x001c5410</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">restVerifyUserPasswd</span></code> (digest verify)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/rest_comm_comm_rest_misc.c.c</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>URI rows</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI</span></code> <code class="docutils literal notranslate"><span class="pre">0x756d34</span></code> · <code class="docutils literal notranslate"><span class="pre">VideoIntercom</span></code> <code class="docutils literal notranslate"><span class="pre">0x756924</span></code> · <code class="docutils literal notranslate"><span class="pre">remoteOpenDoor</span></code> <code class="docutils literal notranslate"><span class="pre">0x75bb34</span></code> · <code class="docutils literal notranslate"><span class="pre">capabilities</span></code> <code class="docutils literal notranslate"><span class="pre">0x75b174</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hicore</span></code> file <code class="docutils literal notranslate"><span class="pre">0x746d34/0x746924/0x74bb34/0x74b174</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hikconnect.html" class="btn btn-neutral float-left" title="Hik-Connect / EZVIZ cloud channel — registration and call-state pushes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="isapi-endpoints.html" class="btn btn-neutral float-right" title="ISAPI endpoints registered by hicore (VDM10 indoor, fw 2.0.24)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

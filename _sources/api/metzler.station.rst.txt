@@ -1,0 +1,26 @@
+metzler.station package
+=======================
+
+.. automodule:: metzler.station
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   metzler.station.bridge
+   metzler.station.call
+   metzler.station.core
+   metzler.station.door_unlock
+   metzler.station.ha_answer
+   metzler.station.ha_media
+   metzler.station.inbound
+   metzler.station.local_answer
+   metzler.station.outbound
+   metzler.station.registration
+   metzler.station.station
+   metzler.station.teardown

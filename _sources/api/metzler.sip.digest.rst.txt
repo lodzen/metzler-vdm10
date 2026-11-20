@@ -1,0 +1,7 @@
+metzler.sip.digest module
+=========================
+
+.. automodule:: metzler.sip.digest
+   :members:
+   :show-inheritance:
+   :undoc-members:

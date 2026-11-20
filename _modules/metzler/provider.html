@@ -1,0 +1,1057 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler.provider &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metzler.provider</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metzler.provider</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Standard-SIP trunk to a hosted provider (sip.linphone.org) or a PBX (Asterisk)."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleNamespace</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.media.srtp</span><span class="w"> </span><span class="kn">import</span> <span class="n">SrtpSession</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.sip.digest</span><span class="w"> </span><span class="kn">import</span> <span class="n">digest_response</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.sip.message</span><span class="w"> </span><span class="kn">import</span> <span class="n">UA</span><span class="p">,</span> <span class="n">Packet</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">call_id</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">uri_of</span><span class="p">,</span> <span class="n">userpart</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"indoor"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SipProvider">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SipProvider</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Standard-SIP trunk to a hosted provider (e.g. sip.linphone.org).</span>
+
+<span class="sd">    Everything the public-SIP side needs lives here so the station only ever</span>
+<span class="sd">    delegates: REGISTER (digest auth, NAT learn via the echoed Via), one</span>
+<span class="sd">    outbound INVITE leg per bridged Call, and ACK/CANCEL/BYE for that leg.</span>
+
+<span class="sd">    Packet flow:</span>
+<span class="sd">        station listener  -&gt;  is_reg_response()  -&gt; reg_queue (REGISTER replies)</span>
+<span class="sd">                          -&gt;  calls[Call-ID]     -&gt; handle_response() (INVITE replies)</span>
+<span class="sd">        on_invite bridge  -&gt;  invite(call)   (offer built by offer_sdp())</span>
+<span class="sd">        provider 200 OK   -&gt;  station.provider_answered() -&gt; ack()</span>
+<span class="sd">        teardown          -&gt;  cancel() / bye()</span>
+
+<span class="sd">    The provider object sends on the station's UDP socket (shared source port)</span>
+<span class="sd">    via the `st` back-reference; it owns no sockets of its own."""</span>
+
+    <span class="n">FORK_TTL</span> <span class="o">=</span> <span class="mi">600</span>  <span class="c1"># s a forked-back Call-ID stays recognisable in own_ids</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span> <span class="o">=</span> <span class="n">st</span><span class="p">,</span> <span class="n">o</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">"provider"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span> <span class="o">=</span> <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">sip_host</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">sip_port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg_call_id</span> <span class="o">=</span> <span class="n">call_id</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg_cseq</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reg_queue</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_ip</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Via received= learned from the proxy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_port</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Via rport= (our NAT'ed source port)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># provider-leg Call-ID -&gt; Call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">own_ids</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Call-ID we originated -&gt; added-at (loop guard)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proxy_ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">sip_host</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">proxy_ip</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># SIP identity: the account name, or - for a credential-less PBX trunk</span>
+        <span class="c1"># (e.g. Asterisk with IP auth) - the station's own extension number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">sip_user</span> <span class="ow">or</span> <span class="n">o</span><span class="o">.</span><span class="n">username</span>
+        <span class="c1"># station number -&gt; display name (--sip-names) for _from_header {name}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"="</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">sip_names</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">","</span><span class="p">))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">}</span>
+
+<div class="viewcode-block" id="SipProvider.needs_register">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.needs_register">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">needs_register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""hosted providers need REGISTER; an IP-authenticated PBX trunk does not"""</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_pass</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -- identity -------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SipProvider.sdp_ip">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.sdp_ip">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sdp_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""address we advertise in provider-leg SDP/Contact (public if known)"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_ip</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span></div>
+
+
+<div class="viewcode-block" id="SipProvider.sdp_port">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.sdp_port">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sdp_port</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_port</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">bind_port</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_base</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">frm</span><span class="p">,</span> <span class="n">br</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Packet</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">status_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2"> SIP/2.0"</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"SIP/2.0/UDP </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">;rport;branch=</span><span class="si">{</span><span class="n">br</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">branch</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Max-Forwards"</span><span class="p">,</span> <span class="s2">"70"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"From"</span><span class="p">,</span> <span class="n">frm</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"User-Agent"</span><span class="p">,</span> <span class="n">UA</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+<div class="viewcode-block" id="SipProvider.owns">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.owns">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">owns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call_id</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""did we ever originate this Call-ID? (forked-call loop guard - kept</span>
+<span class="sd">        a while after the call ends so late fork retransmits still don't look</span>
+<span class="sd">        like new calls; lazily pruned so it cannot grow forever)"""</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">ts</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">own_ids</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">ts</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">FORK_TTL</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">own_ids</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">call_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">own_ids</span></div>
+
+
+<div class="viewcode-block" id="SipProvider.is_provider_addr">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.is_provider_addr">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_provider_addr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""request came from the provider proxy/PBX (not from an intercom</span>
+<span class="sd">        station); ip+port, so a PBX sharing a host with other SIP gear works"""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">addr</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proxy_ip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="SipProvider.is_reg_response">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.is_reg_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_reg_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_call_id</span></div>
+
+
+    <span class="c1"># -- REGISTER -------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_pkt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span>
+            <span class="s2">"REGISTER"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="si">}</span><span class="s2">&gt;;tag=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">local_tag</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_call_id</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reg_cseq</span><span class="si">}</span><span class="s2"> REGISTER"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Expires"</span><span class="p">,</span> <span class="s2">"600"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Authorization"</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+<div class="viewcode-block" id="SipProvider.register_loop">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.register_loop">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""keeps the account registered: REGISTER -&gt; 401 digest retry -&gt; 200.</span>
+<span class="sd">        Every response's Via carries received=/rport= = our public identity."""</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_register_once</span><span class="p">()</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> register failed: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">240</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_once</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""one REGISTER round: unauthed -&gt; &lt;=2 digest retries -&gt; 200."""</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>  <span class="c1"># drain stale replies</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reg_queue</span><span class="o">.</span><span class="n">get_nowait</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_register_pkt</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wait_reply</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> register timed out (next retry in 30s)"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_learn_public</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"SIP/2.0 2"</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mark_registered</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">"SIP/2.0 401"</span><span class="p">,</span> <span class="s2">"SIP/2.0 407"</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> auth failed (check sip password)"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reg_cseq</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_register_pkt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reg_auth</span><span class="p">(</span><span class="n">resp</span><span class="p">)),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">"SIP/2\.0 [456]"</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_line</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2"> register rejected: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_line</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wait_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deadline</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reg_queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()))</span>
+        <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reg_auth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="n">hdr</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"WWW-Authenticate"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Proxy-Authenticate"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">digest_response</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="s2">"REGISTER"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_pass</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mark_registered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">"</span><span class="si">%s</span><span class="s2"> REGISTERED at </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> as </span><span class="si">%s</span><span class="s2">@</span><span class="si">%s</span><span class="s2"> (public </span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_ip</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">public_port</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">registered</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="SipProvider.unregister">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.unregister">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_register_pkt</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Expires"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_learn_public</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""NAT detection without STUN: the proxy echoes our Via back with</span>
+<span class="sd">        received=&lt;ip&gt;/rport=&lt;port&gt; - that is our public identity for SDP."""</span>
+        <span class="n">via</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"received=([0-9.]+)"</span><span class="p">,</span> <span class="n">via</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_ip</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"rport=(\d+)"</span><span class="p">,</span> <span class="n">via</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">public_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># -- outbound INVITE leg --------------------------------------------------</span>
+
+<div class="viewcode-block" id="SipProvider.offer_sdp">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.offer_sdp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">offer_sdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""provider leg offer: PCMU audio (intercom calls) or audio + H264</span>
+<span class="sd">        video (door calls). With --sip-srtp each m= line is RTP/SAVP carrying</span>
+<span class="sd">        its own SDES key; the media objects keep the matching SrtpSession."""</span>
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"intercom"</span><span class="p">:</span>
+            <span class="n">streams</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"audio"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">media</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">video</span><span class="p">:</span>  <span class="c1"># door call: door's RTSP H264</span>
+                <span class="n">streams</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">"video"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">media</span><span class="o">.</span><span class="n">video</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">streams</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"audio"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">audio</span><span class="p">),</span> <span class="p">(</span><span class="s2">"video"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">video</span><span class="p">)]</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdp_ip</span><span class="p">()</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"v=0</span><span class="se">\r\n</span><span class="s2">o=- 0 0 IN IP4 </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">s=Talk session</span><span class="se">\r\n</span><span class="s2">c=IN IP4 </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">t=0 0</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="k">for</span> <span class="n">kind</span><span class="p">,</span> <span class="n">media</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">:</span>
+            <span class="n">media</span><span class="o">.</span><span class="n">srtp</span> <span class="o">=</span> <span class="n">SrtpSession</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_srtp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_plain</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">body</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_block</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">media</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">body</span></div>
+
+
+<div class="viewcode-block" id="SipProvider.answer_sdp">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.answer_sdp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">answer_sdp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offer</span><span class="p">,</span> <span class="n">media</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""200 OK body for an inbound provider call: accept the first audio</span>
+<span class="sd">        m= line (SRTP when the offer was SAVP and we bound a session),</span>
+<span class="sd">        reject every other stream (port 0, offered proto kept)"""</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdp_ip</span><span class="p">()</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"v=0</span><span class="se">\r\n</span><span class="s2">o=- 0 0 IN IP4 </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">s=Talk session</span><span class="se">\r\n</span><span class="s2">c=IN IP4 </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">t=0 0</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="n">answered</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">offer</span><span class="p">[</span><span class="s2">"media"</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">[</span><span class="s2">"type"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"audio"</span> <span class="ow">and</span> <span class="n">m</span><span class="p">[</span><span class="s2">"port"</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">answered</span><span class="p">:</span>
+                <span class="n">body</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_media_block</span><span class="p">(</span><span class="s2">"audio"</span><span class="p">,</span> <span class="n">media</span><span class="p">)</span>
+                <span class="n">answered</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">body</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"m=</span><span class="si">{</span><span class="n">m</span><span class="p">[</span><span class="s1">'type'</span><span class="p">]</span><span class="si">}</span><span class="s2"> 0 </span><span class="si">{</span><span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'proto'</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'RTP/AVP'</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="s1">'formats'</span><span class="p">])</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'0'</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="n">body</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_media_block</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">media</span><span class="p">):</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">media</span><span class="o">.</span><span class="n">rtp_port</span>
+        <span class="n">proto</span> <span class="o">=</span> <span class="s2">"RTP/SAVP"</span> <span class="k">if</span> <span class="n">media</span><span class="o">.</span><span class="n">srtp</span> <span class="k">else</span> <span class="s2">"RTP/AVP"</span>
+        <span class="n">crypto</span> <span class="o">=</span> <span class="n">media</span><span class="o">.</span><span class="n">srtp</span><span class="o">.</span><span class="n">crypto_attr</span><span class="p">()</span> <span class="k">if</span> <span class="n">media</span><span class="o">.</span><span class="n">srtp</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"audio"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"m=audio </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s2"> 0 101</span><span class="se">\r\n</span><span class="si">{</span><span class="n">crypto</span><span class="si">}</span><span class="s2">"</span>
+                <span class="s2">"a=rtpmap:0 PCMU/8000</span><span class="se">\r\n</span><span class="s2">a=rtpmap:101 telephone-event/8000</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="s2">"a=fmtp:101 0-16</span><span class="se">\r\n</span><span class="s2">a=sendrecv</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"m=video </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">proto</span><span class="si">}</span><span class="s2"> 96</span><span class="se">\r\n</span><span class="si">{</span><span class="n">crypto</span><span class="si">}</span><span class="s2">a=rtpmap:96 H264/90000</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"a=fmtp:96 packetization-mode=1;profile-level-id=4D001E</span><span class="se">\r\n</span><span class="s2">a=sendrecv</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="SipProvider.bind_srtp">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.bind_srtp">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bind_srtp</span><span class="p">(</span><span class="n">media</span><span class="p">,</span> <span class="n">answer_media</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""take the peer's key from its answered m= line; a plain RTP/AVP</span>
+<span class="sd">        answer drops SRTP for that stream. Returns 'srtp'|'rtp' for logging."""</span>
+        <span class="k">if</span> <span class="n">media</span><span class="o">.</span><span class="n">srtp</span> <span class="ow">and</span> <span class="n">answer_media</span> <span class="ow">and</span> <span class="n">media</span><span class="o">.</span><span class="n">srtp</span><span class="o">.</span><span class="n">accept_answer</span><span class="p">(</span><span class="n">answer_media</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">"srtp"</span>
+        <span class="n">media</span><span class="o">.</span><span class="n">srtp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="s2">"rtp"</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_caller_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""the calling station's --sip-names entry, else its number"""</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">userpart</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span> <span class="k">if</span> <span class="n">call</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_from_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""From for the provider INVITE leg: --sip-from sets the DISPLAY NAME</span>
+<span class="sd">        ({num} = calling station's number, {name} = its --sip-names entry)</span>
+<span class="sd">        while the URI stays our account - providers answer 403 for a foreign</span>
+<span class="sd">        From user. A full 'Name &lt;sip:u@h&gt;' or 'u@h' spec is sent verbatim</span>
+<span class="sd">        (for trunks that allow arbitrary caller IDs)."""</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_from</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">userpart</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span> <span class="k">if</span> <span class="n">call</span> <span class="k">else</span> <span class="s2">""</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="si">{num}</span><span class="s2">"</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"</span><span class="si">{name}</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"&lt;"</span> <span class="ow">in</span> <span class="n">spec</span> <span class="ow">or</span> <span class="s2">"sip:"</span> <span class="ow">in</span> <span class="n">spec</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">spec</span><span class="si">}</span><span class="s2">;tag=</span><span class="si">{</span><span class="n">tag</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">if</span> <span class="s2">"@"</span> <span class="ow">in</span> <span class="n">spec</span><span class="p">:</span>
+            <span class="n">user</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">dom</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"@"</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s1">" &lt;sip:</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="n">dom</span><span class="si">}</span><span class="s1">&gt;;tag=</span><span class="si">{</span><span class="n">tag</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">spec</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" &lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="si">}</span><span class="s1">&gt;;tag=</span><span class="si">{</span><span class="n">tag</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+
+<div class="viewcode-block" id="SipProvider.invite">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.invite">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">invite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""send the outbound INVITE for a bridged call; registers the leg so</span>
+<span class="sd">        listener() can route its replies via calls[prov_call_id]"""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="p">[</span><span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">own_ids</span><span class="p">[</span><span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_invite_pkt</span><span class="p">(</span><span class="n">call</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">"bridging"</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_invite_pkt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auth_name</span><span class="o">=</span><span class="s2">"Authorization"</span><span class="p">):</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_target</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_branch</span> <span class="o">=</span> <span class="n">branch</span><span class="p">()</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_cseq</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="s2">"INVITE"</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_header</span><span class="p">(</span><span class="n">call</span><span class="p">),</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_branch</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sdp_ip</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sdp_port</span><span class="p">()</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">prov_cseq</span><span class="si">}</span><span class="s2"> INVITE"</span><span class="p">)</span>
+        <span class="n">subj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caller_name</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subj</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Subject"</span><span class="p">,</span> <span class="n">subj</span><span class="p">)</span>  <span class="c1"># linphone renders the subject too</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Allow"</span><span class="p">,</span> <span class="s2">"INVITE, ACK, CANCEL, BYE, REFER, INFO, OPTIONS, MESSAGE"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"application/sdp"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">auth_name</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">offer_sdp</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_from</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">)</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_uri</span> <span class="o">=</span> <span class="n">uri</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ack_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""a non-2xx final response to INVITE must be ACK'ed (same branch,</span>
+<span class="sd">        same CSeq number) or the proxy retransmits it ~7 times"""</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="s2">"ACK"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_uri</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_target</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">),</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_branch</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"To"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">prov_cseq</span><span class="si">}</span><span class="s2"> ACK"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SipProvider.handle_response">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.handle_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""dispatch one response on the provider INVITE leg"""</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_learn_public</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="mi">407</span><span class="p">):</span>  <span class="c1"># digest challenge</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ack_failure</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>  <span class="c1"># stop the retransmits</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">prov_auths</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_auths</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"provider INVITE auth failed - busy to indoor caller"</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">"fail"</span>
+            <span class="c1"># 407 needs Proxy-Authorization (header + challenge); 401 uses Authorization</span>
+            <span class="n">hdr</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Proxy-Authenticate"</span> <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">407</span> <span class="k">else</span> <span class="s2">"WWW-Authenticate"</span><span class="p">)</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="n">digest_response</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="s2">"INVITE"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_pass</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">"Proxy-Authorization"</span> <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">407</span> <span class="k">else</span> <span class="s2">"Authorization"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_invite_pkt</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="c1"># 18x carrying SDP = early media: the callee's media address is</span>
+            <span class="c1"># known, door video can start flowing before the answer</span>
+            <span class="k">return</span> <span class="s2">"early"</span> <span class="k">if</span> <span class="s2">"m="</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">body</span> <span class="k">else</span> <span class="s2">"ringing"</span>
+        <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"answered"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ack_failure</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>  <span class="c1"># &gt;=300 final: ACK to stop retransmits</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">488</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_srtp</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_plain</span><span class="p">:</span>
+            <span class="c1"># peer without SRTP support (e.g. a stock Asterisk) - re-offer plain RTP once</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"provider refused the SRTP offer (488) - retrying with plain RTP"</span><span class="p">)</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">prov_plain</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_invite_pkt</span><span class="p">(</span><span class="n">call</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">return</span> <span class="s2">"fail"</span></div>
+
+
+<div class="viewcode-block" id="SipProvider.ack">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.ack">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""ACK the provider 200 OK; To/From echo the response, target = its Contact"""</span>
+        <span class="n">to</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"To"</span><span class="p">)</span>
+        <span class="n">contact</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_target</span><span class="si">}</span><span class="s2">&gt;"</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">uri_of</span><span class="p">(</span><span class="n">contact</span><span class="p">)</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_to</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_uri</span> <span class="o">=</span> <span class="n">to</span><span class="p">,</span> <span class="n">uri</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="s2">"ACK"</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">contact</span><span class="p">())</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="s2">"1 ACK"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -- leg teardown ---------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_leg_pkt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">cseq</span><span class="p">):</span>
+        <span class="n">uri</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_uri</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_target</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_from</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_to</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"BYE"</span> <span class="ow">and</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_to</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="n">cseq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+<div class="viewcode-block" id="SipProvider.cancel">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.cancel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""CANCEL only matches the INVITE transaction when it echoes the live</span>
+<span class="sd">        INVITE's Via branch and CSeq number (RFC 3261 9.1); a fresh branch is</span>
+<span class="sd">        a new transaction the proxy doesn't know - 481, app keeps ringing"""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_target</span>  <span class="c1"># must equal the INVITE's RURI</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="s2">"CANCEL"</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_from</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_branch</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">prov_cseq</span><span class="si">}</span><span class="s2"> CANCEL"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SipProvider.bye">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.SipProvider.bye">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bye</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_leg_pkt</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="s2">"BYE"</span><span class="p">,</span> <span class="s2">"2 BYE"</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FritzTrunk">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.FritzTrunk">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FritzTrunk</span><span class="p">(</span><span class="n">SipProvider</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""A second SIP account on the same socket: --fritz makes the station</span>
+<span class="sd">    REGISTER as an IP phone at a Fritz!Box. Inbound fritz calls bridge to</span>
+<span class="sd">    --inbound-target like provider app calls. Every bridged call ALSO rings</span>
+<span class="sd">    --fritz-call-button in parallel with the provider app (first answer wins).</span>
+
+<span class="sd">    The racing leg keeps its own state in call.fritz_leg - the call's</span>
+<span class="sd">    prov_* fields belong to the provider leg while both race; the winner</span>
+<span class="sd">    gets promoted into them."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="n">fo</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">o</span><span class="p">))</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">sip_host</span><span class="p">,</span> <span class="n">fo</span><span class="o">.</span><span class="n">sip_port</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">fritz_host</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">fritz_port</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">sip_domain</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">fritz_domain</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">sip_user</span><span class="p">,</span> <span class="n">fo</span><span class="o">.</span><span class="n">sip_pass</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">fritz_user</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">fritz_pass</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">sip_target</span><span class="p">,</span> <span class="n">fo</span><span class="o">.</span><span class="n">sip_from</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span> <span class="s2">""</span>
+        <span class="n">fo</span><span class="o">.</span><span class="n">sip_srtp</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Fritz!Box IP phones talk plain RTP</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">fo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="s2">"fritz"</span>
+
+    <span class="c1"># -- racing fritzfon leg (state: call.fritz_leg dict) --------------------</span>
+
+<div class="viewcode-block" id="FritzTrunk.invite">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.FritzTrunk.invite">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">invite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""ring --fritz-call-button in parallel with the provider leg; the box</span>
+<span class="sd">        forks this back at our registered contact, so the Call-ID goes into</span>
+<span class="sd">        own_ids like a provider leg's"""</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"cid"</span><span class="p">:</span> <span class="n">call_id</span><span class="p">(),</span>
+            <span class="s2">"cseq"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">"branch"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"from"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"uri"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">fritz_target</span><span class="p">,</span>
+            <span class="s2">"auths"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">leg</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="p">[</span><span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">own_ids</span><span class="p">[</span><span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fritz_invite_pkt</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">leg</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fritz_invite_pkt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">leg</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auth_name</span><span class="o">=</span><span class="s2">"Authorization"</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""audio-only RTP/AVP offer for the fritzfon (no video, no SRTP);</span>
+<span class="sd">        From user stays the account, display name + Subject carry the</span>
+<span class="sd">        calling station like on the provider leg"""</span>
+        <span class="n">leg</span><span class="p">[</span><span class="s2">"cseq"</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">leg</span><span class="p">[</span><span class="s2">"branch"</span><span class="p">]</span> <span class="o">=</span> <span class="n">branch</span><span class="p">()</span>
+        <span class="n">num</span> <span class="o">=</span> <span class="n">userpart</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span>
+            <span class="s2">"INVITE"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"uri"</span><span class="p">],</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">" &lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_domain</span><span class="si">}</span><span class="s1">&gt;;tag=</span><span class="si">{</span><span class="n">tag</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"branch"</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sdp_ip</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">sdp_port</span><span class="p">()</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">leg</span><span class="p">[</span><span class="s1">'uri'</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">])</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">leg</span><span class="p">[</span><span class="s1">'cseq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> INVITE"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Subject"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="s2">"application/sdp"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">auth_name</span><span class="p">,</span> <span class="n">auth</span><span class="p">)</span>
+        <span class="n">media</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">media</span> <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"intercom"</span> <span class="k">else</span> <span class="n">call</span><span class="o">.</span><span class="n">audio</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sdp_ip</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"v=0</span><span class="se">\r\n</span><span class="s2">o=- 0 0 IN IP4 </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">s=Talk session</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"c=IN IP4 </span><span class="si">{</span><span class="n">ip</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">t=0 0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"m=audio </span><span class="si">{</span><span class="n">media</span><span class="o">.</span><span class="n">rtp_port</span><span class="si">}</span><span class="s2"> RTP/AVP 0 101</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"a=rtpmap:0 PCMU/8000</span><span class="se">\r\n</span><span class="s2">a=rtpmap:101 telephone-event/8000</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"a=fmtp:101 0-16</span><span class="se">\r\n</span><span class="s2">a=sendrecv</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="p">)</span>
+        <span class="n">leg</span><span class="p">[</span><span class="s2">"from"</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ack_leg_failure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">leg</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""non-2xx final responses need an ACK on the same branch"""</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="s2">"ACK"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"uri"</span><span class="p">],</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">),</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"branch"</span><span class="p">])</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"To"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">])</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">leg</span><span class="p">[</span><span class="s1">'cseq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> ACK"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FritzTrunk.handle_response">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.FritzTrunk.handle_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""dispatch one response on the racing fritz leg (early media is</span>
+<span class="sd">        ignored - a fritzfon rings, it does not stream to the door early)"""</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">leg</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="mi">407</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ack_leg_failure</span><span class="p">(</span><span class="n">leg</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+            <span class="n">leg</span><span class="p">[</span><span class="s2">"auths"</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"auths"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"fritz INVITE auth failed"</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s2">"fail"</span>
+            <span class="n">hdr</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Proxy-Authenticate"</span> <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">407</span> <span class="k">else</span> <span class="s2">"WWW-Authenticate"</span><span class="p">)</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="n">digest_response</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="s2">"INVITE"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"uri"</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_pass</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">"Proxy-Authorization"</span> <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">407</span> <span class="k">else</span> <span class="s2">"Authorization"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fritz_invite_pkt</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">leg</span><span class="p">,</span> <span class="n">auth</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">"auth"</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"ringing"</span>
+        <span class="k">if</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"answered"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ack_leg_failure</span><span class="p">(</span><span class="n">leg</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">"fail"</span></div>
+
+
+<div class="viewcode-block" id="FritzTrunk.cancel_leg">
+<a class="viewcode-back" href="../../api/metzler.provider.html#metzler.FritzTrunk.cancel_leg">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cancel_leg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""CANCEL the still-racing fritz leg (echoes its branch/CSeq like the</span>
+<span class="sd">        provider CANCEL) and drop it from the routing dict"""</span>
+        <span class="n">leg</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">leg</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">(</span><span class="s2">"CANCEL"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"uri"</span><span class="p">],</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"from"</span><span class="p">],</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"branch"</span><span class="p">])</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;</span><span class="si">{</span><span class="n">leg</span><span class="p">[</span><span class="s1">'uri'</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">])</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">leg</span><span class="p">[</span><span class="s1">'cseq'</span><span class="p">]</span><span class="si">}</span><span class="s2"> CANCEL"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">st</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">proxy</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

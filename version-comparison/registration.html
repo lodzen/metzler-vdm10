@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registration — V2.0.24 vs V2.2.100 &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Protocol / message-format deltas — V2.0.24 vs V2.2.100" href="protocol-changes.html" />
+    <link rel="prev" title="Firmware version comparison — V2.0.24 vs V2.2.100" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Registration — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#side-by-side">1. Side-by-side</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#request-response-packet-comparison">2. Request/response packet comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-breaks-must-change-for-a-sip-1-0-era-client">3. What breaks / must change for a SIP-1.0-era client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#explicitly-open-from-vdm10-2-0-analysis-registration-md">4. Explicitly open (from <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Registration — V2.0.24 vs V2.2.100</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/version-comparison/registration.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="registration-v2-0-24-vs-v2-2-100">
+<h1>Registration — V2.0.24 vs V2.2.100<a class="headerlink" href="#registration-v2-0-24-vs-v2-2-100" title="Link to this heading"></a></h1>
+<p>The single most important difference between the two builds: the local
+registrar (<code class="docutils literal notranslate"><span class="pre">:5065</span></code>) was <strong>rewritten in C++</strong> and registration now has a
+configuration-dependent <strong>mandatory Digest-auth gate</strong>, a strict XML parser,
+and an encrypted key blob in the 200 OK. Everything below is static-analysis
+output; the definitive new-side report is
+<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code> and this doc condenses it against the
+old tree (<code class="docutils literal notranslate"><span class="pre">docs/firmware/intercom-registration.md</span></code>).</p>
+<section id="side-by-side">
+<h2>1. Side-by-side<a class="headerlink" href="#side-by-side" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>V2.0.24 (old)</p></th>
+<th class="head"><p>V2.2.100 (new)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Registrar implementation</p></td>
+<td><p>C, own kamailio-style parser: <code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000d8dcc</span></code>, <code class="docutils literal notranslate"><span class="pre">parse_message</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000d7b40</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/{registrar,msg_parser,parse_*}.c</span></code></p></td>
+<td><p>C++ <code class="docutils literal notranslate"><span class="pre">sipsvrLib</span></code>: <code class="docutils literal notranslate"><span class="pre">service_sip_t</span></code> class + osip + TinyXML + <code class="docutils literal notranslate"><span class="pre">std::string</span></code>; <code class="docutils literal notranslate"><span class="pre">sip_server_register_device</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code> in <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/sip/server/registrar.c</span></code> (raw <code class="docutils literal notranslate"><span class="pre">decompiled/.._.._sipsvr_service_sip.cpp.c</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Registrar port</p></td>
+<td><p>UDP <strong>5065</strong>, <code class="docutils literal notranslate"><span class="pre">sip_udpServerInit</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000da6f0</span></code></p></td>
+<td><p>UDP <strong>5065</strong> — numeric <code class="docutils literal notranslate"><span class="pre">0x13c9</span></code> used when configured port is 0, <code class="docutils literal notranslate"><span class="pre">sip_start_server_control_thread</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0011c0c4</span></code> (<code class="docutils literal notranslate"><span class="pre">sip/server/server_control.c</span></code>); ASCII <code class="docutils literal notranslate"><span class="pre">5065</span></code> is gone from the binary but the port is not (<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code>, INVENTORY literal scan)</p></td>
+</tr>
+<tr class="row-even"><td><p>Registration identity</p></td>
+<td><p><strong>To-URI user</strong> → <code class="docutils literal notranslate"><span class="pre">call_num</span></code>, <code class="docutils literal notranslate"><span class="pre">extract_aor</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000d77a4</span></code>; must be exactly 11 chars else status <code class="docutils literal notranslate"><span class="pre">0x1a</span></code></p></td>
+<td><p><strong>From-URI username</strong> — <code class="docutils literal notranslate"><span class="pre">request+0x7c→+4→+4</span></code>, <code class="docutils literal notranslate"><span class="pre">registrar.c</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code>. A client that puts the same user in From and To sees no difference; one that doesn’t will be keyed differently</p></td>
+</tr>
+<tr class="row-odd"><td><p>Authentication</p></td>
+<td><p><strong>Effectively absent/cosmetic</strong>: <code class="docutils literal notranslate"><span class="pre">send_reply</span></code>’s status table can emit <code class="docutils literal notranslate"><span class="pre">401</span></code>, but no digest verification or <code class="docutils literal notranslate"><span class="pre">WWW-Authenticate</span></code> generation exists in the decompiled <code class="docutils literal notranslate"><span class="pre">net/sipServer</span></code> — challenge origin unverified (<code class="docutils literal notranslate"><span class="pre">docs/firmware/intercom-registration.md</span></code> §2/§13)</p></td>
+<td><p><strong>Mandatory when auth mode on</strong>: getter <code class="docutils literal notranslate"><span class="pre">sip_config_get_auth_mode</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230a30</span></code> ==1 and Expires&gt;0 → start <code class="docutils literal notranslate"><span class="pre">401</span></code>, scan <code class="docutils literal notranslate"><span class="pre">Authorization</span></code> headers for quoted configured realm, verify MD5 → <code class="docutils literal notranslate"><span class="pre">200</span></code>/<code class="docutils literal notranslate"><span class="pre">403</span></code> (<code class="docutils literal notranslate"><span class="pre">0x193</span></code>); no match → stays <code class="docutils literal notranslate"><span class="pre">401</span></code> (<code class="docutils literal notranslate"><span class="pre">registrar.c</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code>; verifier <code class="docutils literal notranslate"><span class="pre">sip_verify_register_digest_authorization</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0011b468</span></code>, <code class="docutils literal notranslate"><span class="pre">sip/server/credentials.c</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Digest formula</p></td>
+<td><p>Client side only: <code class="docutils literal notranslate"><span class="pre">eXosip_add_authentication_info(user,</span> <span class="pre">authuser,</span> <span class="pre">passwd,</span> <span class="pre">&quot;MD5&quot;,</span> <span class="pre">NULL)</span></code></p></td>
+<td><p>RFC no-qop MD5: <code class="docutils literal notranslate"><span class="pre">HA1=MD5(user:realm:pw)</span></code>, <code class="docutils literal notranslate"><span class="pre">HA2=MD5(method:uri)</span></code>, <code class="docutils literal notranslate"><span class="pre">resp=MD5(HA1:nonce:HA2)</span></code> — <code class="docutils literal notranslate"><span class="pre">sipsvr_digest_ha1_hash</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00237014</span></code>, <code class="docutils literal notranslate"><span class="pre">sipsvr_digest_response_hash</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002371f0</span></code> (<code class="docutils literal notranslate"><span class="pre">sip/server/persistence.c</span></code>); challenge ctor <code class="docutils literal notranslate"><span class="pre">sip_build_digest_challenge</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0022af50</span></code>, realm <code class="docutils literal notranslate"><span class="pre">&quot;Hikvision&quot;</span></code>, nonce, opaque, <code class="docutils literal notranslate"><span class="pre">algorithm=MD5</span></code>. Verifier requires Authorization-username == From-username and all fields present; empty password = reject, not bypass. <strong>No working md5-sess</strong> — the branch compares literal <code class="docutils literal notranslate"><span class="pre">MD5</span></code> vs <code class="docutils literal notranslate"><span class="pre">md5-sess</span></code> which is always false. No issued-nonce check seen (bounded observation)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Credential selection</p></td>
+<td><p>single shared secret used by the client (<code class="docutils literal notranslate"><span class="pre">eXosip_add_authentication_info</span></code>)</p></td>
+<td><p><strong>Per-number</strong>: <code class="docutils literal notranslate"><span class="pre">sip_lookup_registration_password</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00119bb8</span></code> — first 11 bytes match own number <code class="docutils literal notranslate"><span class="pre">cfg+0x2d354</span></code> → regPassword <code class="docutils literal notranslate"><span class="pre">cfg+0x35a14</span></code> (≤32 B); any other user → SQL <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">sip_num</span> <span class="pre">=</span> <span class="pre">'&lt;user&gt;'</span></code>, password at row <code class="docutils literal notranslate"><span class="pre">+0x98</span></code> (≤32 B). An extension registers against <em>its own</em> provisioned password, not the station’s regPassword</p></td>
+</tr>
+<tr class="row-even"><td><p>regXML in request</p></td>
+<td><p>Optional — dev_type/serial/MAC/name <strong>scraped by <code class="docutils literal notranslate"><span class="pre">strstr</span></code></strong> out of the raw body; malformed XML still registered</p></td>
+<td><p><strong>Required fields</strong>: TinyXML parse (<code class="docutils literal notranslate"><span class="pre">sip_parse_registration_xml_identity</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002300e8</span></code>, <code class="docutils literal notranslate"><span class="pre">sip/server/registration_xml.c</span></code>); missing body/root/<code class="docutils literal notranslate"><span class="pre">regDevSerial</span></code>/<code class="docutils literal notranslate"><span class="pre">regDevMacAddr</span></code> or null text → fail. <code class="docutils literal notranslate"><span class="pre">regDevName</span></code>/<code class="docutils literal notranslate"><span class="pre">floorNum</span></code> conditional (device-mode / cfg flag). Root name not compared to <code class="docutils literal notranslate"><span class="pre">regXML</span></code> but conventional root is appropriate</p></td>
+</tr>
+<tr class="row-odd"><td><p>XML strictness</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">strstr</span></code> byte scrape — anything containing the substrings “parses”</p></td>
+<td><p>TinyXML DOM parse — malformed XML (<code class="docutils literal notranslate"><span class="pre">&amp;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> in text) is a hard failure</p></td>
+</tr>
+<tr class="row-even"><td><p>Response shape</p></td>
+<td><p>Stateless <code class="docutils literal notranslate"><span class="pre">send_reply</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000d8cd0</span></code> to src port <strong>5060</strong>; status→code table &#64;<code class="docutils literal notranslate"><span class="pre">0x00a6c084</span></code> (400/401/500/503/410/200); Via <code class="docutils literal notranslate"><span class="pre">;received=</span></code>+<code class="docutils literal notranslate"><span class="pre">;rport=5060</span></code>, To <code class="docutils literal notranslate"><span class="pre">;tag=</span></code> = CRC16-CCITT over {callid,cseq,from-uri} seed <code class="docutils literal notranslate"><span class="pre">b57ecd32…</span></code> (<code class="docutils literal notranslate"><span class="pre">build_res_buf_from_sip_req</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000d7fa8</span></code>). Bare 200, no body</p></td>
+<td><p>osip-built response <code class="docutils literal notranslate"><span class="pre">sip_server_build_response_from_request</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0022a4c4</span></code> (<code class="docutils literal notranslate"><span class="pre">sip/server/reply.c</span></code>): To/From/Via/Call-ID/CSeq clones, <strong>random to-tag</strong> (<code class="docutils literal notranslate"><span class="pre">osip_build_random_number</span></code>), <code class="docutils literal notranslate"><span class="pre">Expires</span></code> echoed for REGISTER, <code class="docutils literal notranslate"><span class="pre">Date</span></code> header when available (<code class="docutils literal notranslate"><span class="pre">sip_sdk_query_reply_timestamp</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00225608</span></code>), config-header (field40). On 200+Expires&gt;0 an XML <strong>body</strong> is attached</p></td>
+</tr>
+<tr class="row-odd"><td><p>Response body</p></td>
+<td><p>none</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;regXML&gt;&lt;version&gt;V2.0.0&lt;/version&gt;&lt;random&gt;…&lt;/random&gt;&lt;isSummerTime&gt;0&lt;/isSummerTime&gt;&lt;/regXML&gt;</span></code> (template literal &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code>). <code class="docutils literal notranslate"><span class="pre">random</span></code> = base64 of 16-byte random AES-128-CBC(IV=0) under PBKDF2(secret,5000 iters,no salt,16 B) where secret = <code class="docutils literal notranslate"><span class="pre">snprintf(&quot;%s_%s&quot;,</span> <span class="pre">username,</span> <span class="pre">password)</span></code> — <code class="docutils literal notranslate"><span class="pre">sip_generate_registration_key_base64</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00119d74</span></code>, <code class="docutils literal notranslate"><span class="pre">sip_load_or_generate_registration_random</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0011abe4</span></code> (cached in DB row +0x100 hex/+0x140 ts, else <code class="docutils literal notranslate"><span class="pre">/dev/urandom</span></code>); stored to DB row +0xc0 (<code class="docutils literal notranslate"><span class="pre">sip_store_registration_key_in_database</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0011a108</span></code>). It’s a <strong>key for later encrypted signaling</strong>, not a request challenge</p></td>
+</tr>
+<tr class="row-even"><td><p>Compat-mode 410 gate</p></td>
+<td><p>Subordinate registrar required matching site prefix; type-3 ROOM refused on analog systems (<code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> step 4); status table contains <code class="docutils literal notranslate"><span class="pre">410</span> <span class="pre">Sip</span> <span class="pre">Gone</span></code> but the trigger wasn’t fully mapped</p></td>
+<td><p>Explicit: when auth getter==0 (compat) <strong>and</strong> registrar device type==1 <strong>and</strong> peer class !=1 → compare site fields (byte1 type / halfword2 floor / byte4 unit) of local vs peer number → mismatch → <code class="docutils literal notranslate"><span class="pre">0x19a</span></code> (410) (<code class="docutils literal notranslate"><span class="pre">registrar.c</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code>; numbering &#64;<code class="docutils literal notranslate"><span class="pre">0x0023b194</span></code>). In auth mode the classification is logged, not gated</p></td>
+</tr>
+<tr class="row-odd"><td><p>Unregister (Expires 0)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Expires==0</span></code> → <code class="docutils literal notranslate"><span class="pre">db_reginfo_del</span> <span class="pre">where</span> <span class="pre">serial_no='&lt;s&gt;'</span> <span class="pre">or</span> <span class="pre">dev_ip='&lt;src&gt;'</span></code> + map/ACS cleanup → 200. <strong>Bodyless works</strong> — strstr scrape tolerates it</p></td>
+<td><p><strong>Bodyless breaks</strong>: XML body is parsed <em>before</em> Expires is read, so an empty-body unregister takes the early exit (internal status <code class="docutils literal notranslate"><span class="pre">0x194</span></code>, no response built). Caller <code class="docutils literal notranslate"><span class="pre">sip_server_parse_and_dispatch_datagram</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00228744</span></code> then serializes the <em>original request</em> and worker <code class="docutils literal notranslate"><span class="pre">sip_server_process_packet_work_item</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00227fb4</span></code> handles that — likely a timeout or a reflected REGISTER, <strong>not</strong> a proven wire 404. With a body present: <code class="docutils literal notranslate"><span class="pre">sip_device_apply_unregistration</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0023aec8</span></code> + <code class="docutils literal notranslate"><span class="pre">sip_addressbook_erase_device</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Numbering</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">FFF</span> <span class="pre">UU</span> <span class="pre">RRR</span> <span class="pre">II</span></code> via <code class="docutils literal notranslate"><span class="pre">sscanf(&quot;%01d%03d%02d%03d%02d&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">srv_splitDevNum</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000f9418</span></code> / <code class="docutils literal notranslate"><span class="pre">devTypeFromNum</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000f9ce0</span></code>; <code class="docutils literal notranslate"><span class="pre">unit!=0</span> <span class="pre">&amp;&amp;</span> <span class="pre">room==0</span></code> → <strong>type 1</strong> (door)</p></td>
+<td><p>Same split and same type-1 rule (<code class="docutils literal notranslate"><span class="pre">device_descriptor_out[4]!=0</span> <span class="pre">&amp;&amp;</span> <span class="pre">u16&#64;+6==0</span> <span class="pre">→</span> <span class="pre">1</span></code>), <code class="docutils literal notranslate"><span class="pre">sip_classify_and_split_device_number</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0023b194</span></code> (<code class="docutils literal notranslate"><span class="pre">sip/server/numbering.c</span></code>). The branch selector is <code class="docutils literal notranslate"><span class="pre">sip_config_get_local_devtype</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230ac8</span></code> (config+0x30, initialized from <code class="docutils literal notranslate"><span class="pre">sipDevSDK_get_local_devtype()</span></code>; renamed pass23 from <code class="docutils literal notranslate"><span class="pre">sip_config_get_numbering_scheme</span></code>): local devtype 10/0xb picks a <em>branch</em>, not number length — both format strings are the identical <code class="docutils literal notranslate"><span class="pre">%01d%03d%02d%03d%02d</span></code> (E5 literal resolution)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Extension range</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1000000000N</span></code> (prefix <code class="docutils literal notranslate"><span class="pre">strncmp(...,&quot;1000000000&quot;,10)</span></code>), idx <code class="docutils literal notranslate"><span class="pre">01–05</span></code>, <code class="docutils literal notranslate"><span class="pre">idx&gt;5</span></code> rejected by <code class="docutils literal notranslate"><span class="pre">sip_callLongNum</span></code>; door-call fan-out max <strong>5</strong> dev_reg rows (<code class="docutils literal notranslate"><span class="pre">talkBackExtensionPro</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000e4ad8</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100000000</span></code>+idx prefix (9-char compares); capacity now verified: <code class="docutils literal notranslate"><span class="pre">db_channel_limit</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000a1d94</span></code>/<code class="docutils literal notranslate"><span class="pre">dev_tbl_count_q</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000a1e14</span></code> return <strong>5</strong> when <code class="docutils literal notranslate"><span class="pre">vis_num_layout_q()==0</span></code>, else <strong>16</strong> (<code class="docutils literal notranslate"><span class="pre">0x10</span></code>); <code class="docutils literal notranslate"><span class="pre">db_find_free_extension_channel</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000415f8</span></code> allocates the smallest free channel <code class="docutils literal notranslate"><span class="pre">1..limit</span></code>. The <code class="docutils literal notranslate"><span class="pre">0x10</span></code>/<code class="docutils literal notranslate"><span class="pre">0x11</span></code> constants in <code class="docutils literal notranslate"><span class="pre">call_out.c</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0013e774</span></code> are a separate session/msg-slot table (slots 0–16), not the extension cap</p></td>
+</tr>
+<tr class="row-even"><td><p>dev_reg semantics</p></td>
+<td><p>Flat 0xb0-byte row keyed by <code class="docutils literal notranslate"><span class="pre">call_num</span></code>; dedup: same serial <em>or</em> dev_ip → replace; same num + different serial+IP + same dev_type → <strong>reject</strong>; <code class="docutils literal notranslate"><span class="pre">dpi_register_dev_reg_info</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000fc4a0</span></code>; <code class="docutils literal notranslate"><span class="pre">reg_time</span></code> text expiry; <code class="docutils literal notranslate"><span class="pre">db_acspwd_gc</span></code> sweep</p></td>
+<td><p>In-memory C++ <strong>address book</strong> (<code class="docutils literal notranslate"><span class="pre">sip_addressbook_*</span></code>: <code class="docutils literal notranslate"><span class="pre">find_exact_number</span></code>, <code class="docutils literal notranslate"><span class="pre">add_device</span></code>, <code class="docutils literal notranslate"><span class="pre">resolve_destination</span></code>, <code class="docutils literal notranslate"><span class="pre">erase_device</span></code>; <code class="docutils literal notranslate"><span class="pre">std::map</span></code>/rb-tree, <code class="docutils literal notranslate"><span class="pre">sip/server/addressbook.c</span></code>, <code class="docutils literal notranslate"><span class="pre">service_mgr.c</span></code>) keyed by From username + sqlite persistence (<code class="docutils literal notranslate"><span class="pre">dpi_register_device_registration_information</span></code>, <code class="docutils literal notranslate"><span class="pre">rp_*</span></code> flush &#64;<code class="docutils literal notranslate"><span class="pre">0x00234a10</span></code>, <code class="docutils literal notranslate"><span class="pre">sip/server/persistence.c</span></code>; tables <code class="docutils literal notranslate"><span class="pre">room_extension_net_info</span></code> w/ <code class="docutils literal notranslate"><span class="pre">sip_num</span></code>,<code class="docutils literal notranslate"><span class="pre">sip_pwd</span></code>, <code class="docutils literal notranslate"><span class="pre">gatewayv6</span></code>; row +0x98 pwd, +0xc0 key, +0x100 random, +0x140 ts). Insertion of an unknown number does <strong>not</strong> provision a credential</p></td>
+</tr>
+<tr class="row-odd"><td><p>Post-register side effects</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vns_registrarSyncHook</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000f1490</span></code> → TCP :8102 cmd <code class="docutils literal notranslate"><span class="pre">0x2033</span></code> push of dev_reg table (0x420 packet) to <code class="docutils literal notranslate"><span class="pre">1000000000</span></code>-devices; <code class="docutils literal notranslate"><span class="pre">sip_insertCenterRecord</span></code> seeds <code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vns_registrar_sync_hook</span></code> still called from the server-control queue (<code class="docutils literal notranslate"><span class="pre">sip/server/server_control.c</span></code> &#64;~<code class="docutils literal notranslate"><span class="pre">0x0011b0xx</span></code>); <code class="docutils literal notranslate"><span class="pre">register_extension_device_by_ip</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00146904</span></code> sends the <code class="docutils literal notranslate"><span class="pre">0x2033</span></code> push as a fixed <strong>0x14f0-byte</strong> signed visNet frame (be32 count <code class="docutils literal notranslate"><span class="pre">&#64;+0xac</span></code> + ≤16 records ×0x144 <code class="docutils literal notranslate"><span class="pre">&#64;+0xb0</span></code>) → receiver <code class="docutils literal notranslate"><span class="pre">synchronize_visnet_extension_room_information</span></code>/<code class="docutils literal notranslate"><span class="pre">visNetServExRoomInfoSync</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0001b7f4</span></code> → <code class="docutils literal notranslate"><span class="pre">dpi_update_call_record_for_name</span></code>; <code class="docutils literal notranslate"><span class="pre">sip_insert_local_manager_registration</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0011aebc</span></code> seeds the manager row; <code class="docutils literal notranslate"><span class="pre">sipsvr_forward_if_online</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230cd0</span></code> post-register; <code class="docutils literal notranslate"><span class="pre">sip_notify_device_registration_change</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00225d14</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="request-response-packet-comparison">
+<h2>2. Request/response packet comparison<a class="headerlink" href="#request-response-packet-comparison" title="Link to this heading"></a></h2>
+<p>V1 REGISTER (builder <code class="docutils literal notranslate"><span class="pre">_client_handle_register</span></code>/<code class="docutils literal notranslate"><span class="pre">sipcli_register</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000e05e0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/registration.c</span></code>): <code class="docutils literal notranslate"><span class="pre">REGISTER</span> <span class="pre">sip:&lt;registrar&gt;:5065</span></code>,
+<code class="docutils literal notranslate"><span class="pre">From:</span> <span class="pre">&quot;name&quot;&lt;sip:&lt;num&gt;&#64;&lt;localip&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Expires:</span> <span class="pre">900</span></code> (kinds 1/3/8),
+<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">text/xml</span></code>, <code class="docutils literal notranslate"><span class="pre">User-Agent:</span> <span class="pre">eXosip/3.6.0</span></code>, body =
+<code class="docutils literal notranslate"><span class="pre">xml_getRegInfoXml</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000eb2e4</span></code> — serial+MAC always, <code class="docutils literal notranslate"><span class="pre">&lt;sipNum&gt;</span></code>+<code class="docutils literal notranslate"><span class="pre">&lt;floorNum&gt;</span></code>
+on kind 1, <code class="docutils literal notranslate"><span class="pre">&lt;regDevName&gt;</span></code> on kind 8, <strong>no <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> emitted by this build</strong>.</p>
+<p>V2 REGISTER (builder <code class="docutils literal notranslate"><span class="pre">cli_send_regist</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00130c50</span></code>,
+<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/sip/client/registration.c</span></code>): roles 1/2/8/9/0xa;
+<code class="docutils literal notranslate"><span class="pre">eXosip_register_build_initial_register</span></code> + <code class="docutils literal notranslate"><span class="pre">eXosip_add_authentication_info</span> <span class="pre">(user,</span> <span class="pre">authuser,</span> <span class="pre">cfg+0x35a14,</span> <span class="pre">&quot;MD5&quot;,</span> <span class="pre">0)</span></code>; registrar default port <code class="docutils literal notranslate"><span class="pre">0x13c9</span></code>;
+body = <code class="docutils literal notranslate"><span class="pre">sip_xml_build_registration_identity</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001216ac</span></code>
+(<code class="docutils literal notranslate"><span class="pre">sip/client/xml_messages.c</span></code>) — <code class="docutils literal notranslate"><span class="pre">&lt;regXML&gt;</span></code> root, <strong><code class="docutils literal notranslate"><span class="pre">&lt;version&gt;V2.0.0&lt;/version&gt;</span></code></strong>
+now emitted, <code class="docutils literal notranslate"><span class="pre">regDevName</span></code> (role 8), <code class="docutils literal notranslate"><span class="pre">regDevSerial</span></code>, <code class="docutils literal notranslate"><span class="pre">regDevMacAddr</span></code>,
+<code class="docutils literal notranslate"><span class="pre">floorNum</span></code> (roles 1/0xa). UA <code class="docutils literal notranslate"><span class="pre">HKVS/2.0.0</span></code> (<code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00143340</span></code> →
+<code class="docutils literal notranslate"><span class="pre">eXosip_set_user_agent</span></code>).</p>
+<p>V2 response processing (<code class="docutils literal notranslate"><span class="pre">cli_reg_resp_proc</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001318cc</span></code>): parses
+<code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;random&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Date</span></code> header; the client then decrypts the key with
+the same <code class="docutils literal notranslate"><span class="pre">%s_%s</span></code> secret / AES-128-CBC / PBKDF2 construction
+(<code class="docutils literal notranslate"><span class="pre">sip_client_decrypt_credential_registration_key</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0012b724</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sip/client/registration_keys.c</span></code>) — the blob is consumed by the peer, it is
+not decorative.</p>
+</section>
+<section id="what-breaks-must-change-for-a-sip-1-0-era-client">
+<h2>3. What breaks / must change for a SIP-1.0-era client<a class="headerlink" href="#what-breaks-must-change-for-a-sip-1-0-era-client" title="Link to this heading"></a></h2>
+<p>Cross-referenced to <code class="docutils literal notranslate"><span class="pre">src/metzler/station/registration.py</span></code> and
+<code class="docutils literal notranslate"><span class="pre">src/metzler/sip/digest.py</span></code> (current simulator).</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>Check</p></th>
+<th class="head"><p>Sim status</p></th>
+<th class="head"><p>Required action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><strong>From-URI user = identity</strong></p></td>
+<td><p>OK — sim puts the same <code class="docutils literal notranslate"><span class="pre">username</span></code> in From and To (<code class="docutils literal notranslate"><span class="pre">registration.py:52-53</span></code>)</p></td>
+<td><p>none; keep both headers equal</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p><strong>Digest mandatory when auth mode on</strong></p></td>
+<td><p>OK — 401/407 → MD5 retry (<code class="docutils literal notranslate"><span class="pre">registration.py:89-94</span></code>); <code class="docutils literal notranslate"><span class="pre">digest.py:20-44</span></code> implements the exact no-qop formula and preserves <code class="docutils literal notranslate"><span class="pre">opaque</span></code>; synthetic challenge verified (<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/simulator-digest-check.json</span></code>)</p></td>
+<td><p>none for the formula; ensure the device is in the mode you expect (see <code class="docutils literal notranslate"><span class="pre">config-and-gates.md</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p><strong>Realm must match</strong></p></td>
+<td><p>OK — realm copied verbatim from <code class="docutils literal notranslate"><span class="pre">WWW-Authenticate</span></code></p></td>
+<td><p>none</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><strong>Per-number password</strong></p></td>
+<td><p>gap — sim sends one <code class="docutils literal notranslate"><span class="pre">--password</span></code> for its number</p></td>
+<td><p>provision <em>that extension’s</em> SIP password via the device’s management workflow (writer not traced — do not invent an endpoint) and use it; do <strong>not</strong> register the main station’s own number as a workaround</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p><strong>XML must be well-formed</strong></p></td>
+<td><p>gap — <code class="docutils literal notranslate"><span class="pre">reg_xml()</span></code> interpolates serial/name/MAC <strong>without escaping</strong> (<code class="docutils literal notranslate"><span class="pre">registration.py:36-43</span></code>); <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>/<code class="docutils literal notranslate"><span class="pre">&lt;</span></code> breaks TinyXML</p></td>
+<td><p>XML-escape text values</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p><strong>Unregister needs the body</strong></p></td>
+<td><p>gap — <code class="docutils literal notranslate"><span class="pre">Expires:</span> <span class="pre">0</span></code> sends empty body (<code class="docutils literal notranslate"><span class="pre">registration.py:62</span></code>), V2 parses body <em>first</em> → early exit, binding likely stays stale, wire result is timeout/reflected request rather than a clean status</p></td>
+<td><p>send the same <code class="docutils literal notranslate"><span class="pre">&lt;regXML&gt;</span></code> body on unregister</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p><strong>Do not assume an error status on the wire</strong></p></td>
+<td><p>n/a</p></td>
+<td><p>an XML failure sets internal <code class="docutils literal notranslate"><span class="pre">0x194</span></code> but <em>no response object is built</em>; a timeout or echoed request is the plausible wire result — verify with a capture before diagnosing</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p><strong>Response body ignorable for REGISTER itself</strong></p></td>
+<td><p>OK — sim ignores 200 body (<code class="docutils literal notranslate"><span class="pre">registration.py:95-103</span></code>); acceptance is already decided</p></td>
+<td><p>none for registration; <strong>later</strong> SIP2.0 MESSAGE/encrypted signaling needs the <code class="docutils literal notranslate"><span class="pre">random</span></code>+key (PBKDF2(<code class="docutils literal notranslate"><span class="pre">%s_%s</span></code>,5000)/AES-128-CBC/base64) — registration success is not proof calls work</p></td>
+</tr>
+<tr class="row-even"><td><p>9</p></td>
+<td><p><strong>Number shape vs 410 gate</strong></p></td>
+<td><p>depends on config</p></td>
+<td><p>in compat mode a non-type-1 peer registering at a type-1 indoor is rejected <code class="docutils literal notranslate"><span class="pre">410</span></code> when site fields differ; a <code class="docutils literal notranslate"><span class="pre">TFFFUU000II</span></code> number (UU≠0, RRR=0) classifies type 1 and bypasses the gate</p></td>
+</tr>
+<tr class="row-odd"><td><p>10</p></td>
+<td><p><strong>Port</strong></p></td>
+<td><p>OK — registrar still UDP 5065 default</p></td>
+<td><p>none</p></td>
+</tr>
+<tr class="row-even"><td><p>11</p></td>
+<td><p><strong>Expected flows</strong></p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">401→200</span></code> healthy; <code class="docutils literal notranslate"><span class="pre">401→403</span></code> = wrong password <em>for that number</em>; repeated <code class="docutils literal notranslate"><span class="pre">401</span></code> = realm/Authorization mismatch; <code class="docutils literal notranslate"><span class="pre">410</span></code> = compat-gate site mismatch; timeout = XML/config/transport — see diagnostic table in <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="explicitly-open-from-vdm10-2-0-analysis-registration-md">
+<h2>4. Explicitly open (from <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code>)<a class="headerlink" href="#explicitly-open-from-vdm10-2-0-analysis-registration-md" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Factory default of the auth/SIP-version byte (<code class="docutils literal notranslate"><span class="pre">cfg+0x35e8d</span></code>) — <strong>unknown</strong>;
+do not claim SIP2.0-or-auth is default.</p></li>
+<li><p>Peer-password provisioning UI/API writer — not traced.</p></li>
+<li><p>Exact wire behavior of the early XML/From-null exits — needs a capture.</p></li>
+<li><p>Encrypted SIP2.0 MESSAGE and call interoperability — out of scope of the
+registration verdict.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-left" title="Firmware version comparison — V2.0.24 vs V2.2.100" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="protocol-changes.html" class="btn btn-neutral float-right" title="Protocol / message-format deltas — V2.0.24 vs V2.2.100" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

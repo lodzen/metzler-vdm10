@@ -1,0 +1,17 @@
+metzler.sip package
+===================
+
+.. automodule:: metzler.sip
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   metzler.sip.digest
+   metzler.sip.message
+   metzler.sip.sdp

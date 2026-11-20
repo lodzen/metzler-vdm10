@@ -1,0 +1,287 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100) &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Firmware version comparison — V2.0.24 vs V2.2.100" href="../version-comparison/README.html" />
+    <link rel="prev" title="Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)" href="doorbell-pairing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#architecture">1. Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#token-machinery-ezviz-ezviz-app-sub-c-ezviz-app-third-party-c-ezviz-app-base-c">2. Token machinery (<code class="docutils literal notranslate"><span class="pre">ezviz/ezviz_app_sub.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_app_third_party.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_app_base.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#alarm-shadow-v3">3. Alarm &amp; shadow_v3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#binding-qr">4. Binding &amp; QR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#p2p-talk-preview">5. P2P / talk / preview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unverified-open-items">6. Unverified / open items</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware-v2/hikconnect.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hik-connect-ezviz-cloud-channel-firmware-internals-v2-2-100">
+<h1>Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)<a class="headerlink" href="#hik-connect-ezviz-cloud-channel-firmware-internals-v2-2-100" title="Link to this heading"></a></h1>
+<p>How <code class="docutils literal notranslate"><span class="pre">hicore</span></code> V2.2.100 talks to the Hik-Connect / EZVIZ cloud — the V2
+counterpart of <a class="reference internal" href="../firmware/hikconnect.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">../firmware/hikconnect.md</span></code></span></a>.
+Evidence: <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/ezviz/</span></code> (<code class="docutils literal notranslate"><span class="pre">ezviz_app_*.c</span></code>,
+<code class="docutils literal notranslate"><span class="pre">alarm_*.c</span></code>, <code class="docutils literal notranslate"><span class="pre">p2p_*.c</span></code>, <code class="docutils literal notranslate"><span class="pre">cloud_*.c</span></code>, <code class="docutils literal notranslate"><span class="pre">kernel*.c</span></code>) plus
+<code class="docutils literal notranslate"><span class="pre">isapi/isapi_secur_isapi_secur.c</span></code> and <code class="docutils literal notranslate"><span class="pre">gui/src_gui_civilset.c</span></code>.</p>
+<section id="architecture">
+<h2>1. Architecture<a class="headerlink" href="#architecture" title="Link to this heading"></a></h2>
+<p>Same layering as v1: app code registers per-domain callbacks on a
+statically-linked ezDevSDK subcore; one framed channel to DAS reached via
+LBS, then multiplexed domains (base, preview, talk, third-party, alarm,
+kernel-extend). Notable V2 additions: a dedicated <strong>token machinery</strong>
+(bind/unlock/query tokens), a <strong><code class="docutils literal notranslate"><span class="pre">shadow_v3</span></code></strong> alarm domain family, and
+p2pv3.</p>
+</section>
+<section id="token-machinery-ezviz-ezviz-app-sub-c-ezviz-app-third-party-c-ezviz-app-base-c">
+<h2>2. Token machinery (<code class="docutils literal notranslate"><span class="pre">ezviz/ezviz_app_sub.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_app_third_party.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_app_base.c</span></code>)<a class="headerlink" href="#token-machinery-ezviz-ezviz-app-sub-c-ezviz-app-third-party-c-ezviz-app-base-c" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Address</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_query_bind_token</span></code></p></td>
+<td><p>0x0071fe70</p></td>
+<td><p>bind-token query/rsp — pairing token exchange for account binding</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_querytoken_rsp</span></code></p></td>
+<td><p>0x00714390</p></td>
+<td><p>generic token response handling</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_pu2_open_get_token_rsp</span></code></p></td>
+<td><p>0x006cb894</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pu2open</span></code> transfer token response</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_wait_get_secretkey_rsp</span></code></p></td>
+<td><p>0x0077b328</p></td>
+<td><p>waits for the <code class="docutils literal notranslate"><span class="pre">secretkey</span></code> response on the trans-protocol channel (self-identified via log string <code class="docutils literal notranslate"><span class="pre">wait_get_secretkey_rsp</span> <span class="pre">platform</span> <span class="pre">return</span> <span class="pre">error</span></code>); the response carries an embedded <strong>RSA-1024</strong> key used to encrypt session material upstream</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_sdk_device_token_set</span></code> / <code class="docutils literal notranslate"><span class="pre">ezviz_sdk_query_device_token</span></code></p></td>
+<td><p>0x00697cc0 / 0x00698728</p></td>
+<td><p>store/read the device token handed to the SDK</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezapp_thirdparty_get_token</span></code> / <code class="docutils literal notranslate"><span class="pre">ezapp_thirdparty_set_token_time</span></code> / <code class="docutils literal notranslate"><span class="pre">ezapp_thirdparty_set_token_lasttime</span></code></p></td>
+<td><p>0x006919d4 / 0x00691a78 / 0x00691ae8</p></td>
+<td><p>third-party-domain token get + lifetime bookkeeping</p></td>
+</tr>
+</tbody>
+</table>
+<p>An <strong>unlock token</strong> path exists alongside the SIP-side
+<code class="docutils literal notranslate"><span class="pre">cli_unlock_token_req_q</span></code> (<code class="docutils literal notranslate"><span class="pre">doorbell-pairing.md</span></code> §5): remote unlock from the
+app rides the third-party domain into <code class="docutils literal notranslate"><span class="pre">ezviz_send_msg_to_dev</span></code>
+&#64;0x006d6fec → local SIP/lock functions — the exact unlock-token field flow
+is <strong>unverified</strong> end-to-end.</p>
+</section>
+<section id="alarm-shadow-v3">
+<h2>3. Alarm &amp; shadow_v3<a class="headerlink" href="#alarm-shadow-v3" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ezviz_register_alarm_shadow_v3_domain</span></code> &#64;0x006afca0 and the batch
+<code class="docutils literal notranslate"><span class="pre">ezviz_register_alarm_shadow_v3_domains</span></code> &#64;0x006affa8 /
+<code class="docutils literal notranslate"><span class="pre">ezviz_unregister_alarm_shadow_v3_domain</span></code> &#64;0x006afc04
+(<code class="docutils literal notranslate"><span class="pre">ezviz/alarm_runtime.c</span></code>) plus <code class="docutils literal notranslate"><span class="pre">ezviz_basefun_register_shadow_v3</span></code>
+&#64;0x0070bc74 and <code class="docutils literal notranslate"><span class="pre">shadow_v3_extend_data_route_cb</span></code> &#64;0x0072e990
+(<code class="docutils literal notranslate"><span class="pre">ezviz_app_sub.c</span></code>) — the v3 property/alarm “shadow” channel: JSON
+<code class="docutils literal notranslate"><span class="pre">{BusiID,Type,Value}</span></code>-family payloads built/parsed by the large
+<code class="docutils literal notranslate"><span class="pre">ezviz/alarm_json.c</span></code> builder/parser set (~50 typed alarm JSON builders:
+defence status/plans, human/car detect, light linkage, custom voice,
+loiter, mute, mic volume…). Alarm upload: <code class="docutils literal notranslate"><span class="pre">ezviz_send_alarm_req</span></code>
+&#64;0x006b9334, <code class="docutils literal notranslate"><span class="pre">alarm_send_msg_to_platform</span></code> &#64;0x006c46fc,
+<code class="docutils literal notranslate"><span class="pre">ezviz_make_json_report</span></code> &#64;0x006c6448, <code class="docutils literal notranslate"><span class="pre">alarm_intelligent_app_req</span></code>
+&#64;0x006b1ef8, <code class="docutils literal notranslate"><span class="pre">alarm_target_lib_req</span></code> &#64;0x006b2570, <code class="docutils literal notranslate"><span class="pre">alm_human_detect</span></code>/
+<code class="docutils literal notranslate"><span class="pre">alm_human_filter</span></code>/<code class="docutils literal notranslate"><span class="pre">alm_switch_enable</span></code>/<code class="docutils literal notranslate"><span class="pre">alarm_light</span></code>
+&#64;0x006b49b4/0x006b6bf8/0x006b6cfc/0x006b7784, <code class="docutils literal notranslate"><span class="pre">ezviz_tiny_video_pic_push</span></code>
+&#64;0x006c83ac + <code class="docutils literal notranslate"><span class="pre">ezviz_make_tiny_video_pic_http_post_msg</span></code> &#64;0x006c72e8
+(alarm JPEG over HTTP POST).</p>
+</section>
+<section id="binding-qr">
+<h2>4. Binding &amp; QR<a class="headerlink" href="#binding-qr" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>QR payload generation lives in the civilset GUI (<code class="docutils literal notranslate"><span class="pre">gui/src_gui_civilset.c</span></code>,
+<code class="docutils literal notranslate"><span class="pre">gui/mailboxverifi.c</span></code> — <code class="docutils literal notranslate"><span class="pre">QRstr</span></code>/verification-code references); as in v1
+the QR string carries the cloud-binding URL + operator code —
+<strong>unverified</strong> in detail for V2.</p></li>
+<li><p>Bind token exchange: <code class="docutils literal notranslate"><span class="pre">ezviz_query_bind_token</span></code> &#64;0x0071fe70 (above).</p></li>
+<li><p>OEM/Guards selection: the paramLib/Guards-vs-OEM host selection pattern
+exists as in v1 (ys7/ezvizlife domain table); the V2 function-level
+mapping is <strong>unverified</strong> — only the token/shadow layer was traced.</p></li>
+<li><p>ISAPI-over-cloud + session crypto: <code class="docutils literal notranslate"><span class="pre">isapi_msg</span></code> &#64;0x006ce6a8,
+<code class="docutils literal notranslate"><span class="pre">ezviz_send_isapi_msg</span></code> &#64;0x006cacd0 (HCNetSDK-style tunnel). Device-side
+ISAPI auth: <code class="docutils literal notranslate"><span class="pre">handle_isapi_security_challenge_request</span></code> &#64;0x002fff7c →
+<code class="docutils literal notranslate"><span class="pre">isapi_sdk_srv_gen_challenge</span></code>, <code class="docutils literal notranslate"><span class="pre">handle_isapi_security_session_login_request</span></code>
+&#64;0x00304a58, <code class="docutils literal notranslate"><span class="pre">isapi_security_credential_hash</span></code> (SHA256(user+salted
+challenge) → lowercase hex) and <code class="docutils literal notranslate"><span class="pre">sec_hmac_sha256</span></code> &#64;0x00302888
+(<code class="docutils literal notranslate"><span class="pre">isapi/isapi_secur_isapi_secur.c</span></code>) — <strong>the challenge/SEP flow is ISAPI,
+not SIP</strong>; SIP2.0’s <code class="docutils literal notranslate"><span class="pre">&lt;random&gt;</span></code>/key machinery is a separate SIP-side path.</p></li>
+</ul>
+</section>
+<section id="p2p-talk-preview">
+<h2>5. P2P / talk / preview<a class="headerlink" href="#p2p-talk-preview" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ezviz_p2pv3</span></code> &#64;0x006d7c84 + <code class="docutils literal notranslate"><span class="pre">p2p_talk_recv_thr</span></code> &#64;0x006d7fb0 +
+<code class="docutils literal notranslate"><span class="pre">p2p_workers.c</span></code> (<code class="docutils literal notranslate"><span class="pre">p2p_join_worker_threads</span></code> &#64;0x00747944) — P2P v3 NAT
+traversal/punch workers (<code class="docutils literal notranslate"><span class="pre">ezviz/p2p_format.c</span></code>, <code class="docutils literal notranslate"><span class="pre">p2p_errors.c</span></code>).</p></li>
+<li><p>Talk: <code class="docutils literal notranslate"><span class="pre">ezviz_ez_dev_sdk_talk_init</span></code> &#64;0x006d1540,
+<code class="docutils literal notranslate"><span class="pre">ezviz_ez_dev_talk_set_client_type</span></code> &#64;0x006d1a74,
+<code class="docutils literal notranslate"><span class="pre">ezviz_ez_dev_talk_authority_handle</span></code> &#64;0x006d1f54,
+<code class="docutils literal notranslate"><span class="pre">ezviz_start_talk_req_imp_v3</span></code> &#64;0x006d2520 /
+<code class="docutils literal notranslate"><span class="pre">ezviz_stop_talk_req_imp_v3</span></code> &#64;0x006d282c, TTS header senders
+<code class="docutils literal notranslate"><span class="pre">ezviz_send_tts_header{,_v3}</span></code> &#64;0x006d2c50/0x006d2adc,
+<code class="docutils literal notranslate"><span class="pre">talk_area_req</span></code> &#64;0x006d6578, talkbuf ring &#64;0x006d7714..</p></li>
+<li><p>Preview: <code class="docutils literal notranslate"><span class="pre">ezDevSDK_preview_init</span></code> &#64;0x006d89b0 / <code class="docutils literal notranslate"><span class="pre">fini</span></code> &#64;0x006d8d38,
+<code class="docutils literal notranslate"><span class="pre">ezviz_ez_dev_sdk_preview_send</span></code> &#64;0x006d8e70,
+<code class="docutils literal notranslate"><span class="pre">preview_client_stream_ctrl_pre_process</span></code> &#64;0x006d9594, <code class="docutils literal notranslate"><span class="pre">pv_msg2_send</span></code>/
+<code class="docutils literal notranslate"><span class="pre">pv_msg8_send</span></code>, <code class="docutils literal notranslate"><span class="pre">pv_response_result</span></code> — app-view live stream; gated by
+<code class="docutils literal notranslate"><span class="pre">cli_vistalk_busy_get</span></code>/<code class="docutils literal notranslate"><span class="pre">cli_vistalk_mode_get</span></code> (<code class="docutils literal notranslate"><span class="pre">mode==2</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ezviz_app_stream.c</span></code>) so an in-progress local SIP call blocks/adapts the
+cloud preview.</p></li>
+<li><p>Call pushes: <code class="docutils literal notranslate"><span class="pre">ezviz_thirdparty</span></code> &#64;0x006cc3c0 +
+<code class="docutils literal notranslate"><span class="pre">tpr_ext_msg_proc</span></code> &#64;0x006cfc4c + <code class="docutils literal notranslate"><span class="pre">ezviz_thirdparty_extend_event</span></code>
+&#64;0x006cfd98 — third-party-domain call signalling (apiId-family);
+<code class="docutils literal notranslate"><span class="pre">ezviz_call_forwarding</span></code>/<code class="docutils literal notranslate"><span class="pre">ezviz_app_call_forwarding.c</span></code> for the
+call-forward feature; <code class="docutils literal notranslate"><span class="pre">ezviz_app_leave_message.c</span></code> +
+<code class="docutils literal notranslate"><span class="pre">leave_message_recv_cmd</span></code> &#64;0x006a1de0 for leave-message.</p></li>
+</ul>
+</section>
+<section id="unverified-open-items">
+<h2>6. Unverified / open items<a class="headerlink" href="#unverified-open-items" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Exact <code class="docutils literal notranslate"><span class="pre">secretkey</span></code> RSA-1024 usage (encrypts what field upstream).</p></li>
+<li><p>Whether the v1 0xE9ACBA9E ezdev frame + MD5 trailer is unchanged —
+transport internals largely live in the external SDK subcore here.</p></li>
+<li><p>Token lifetime policy; Guards/OEM host table contents in V2.</p></li>
+<li><p>Which alarm JSON types actually fire on this build’s sensors.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="doorbell-pairing.html" class="btn btn-neutral float-left" title="Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../version-comparison/README.html" class="btn btn-neutral float-right" title="Firmware version comparison — V2.0.24 vs V2.2.100" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

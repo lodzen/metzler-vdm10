@@ -1,0 +1,7 @@
+metzler.config module
+=====================
+
+.. automodule:: metzler.config
+   :members:
+   :show-inheritance:
+   :undoc-members:

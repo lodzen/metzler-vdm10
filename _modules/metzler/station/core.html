@@ -1,0 +1,1122 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler.station.core &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metzler.station.core</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metzler.station.core</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""The station's SIP endpoint: socket, RTSP server, packet helpers, the</span>
+<span class="sd">receive loop and request routing, run/shutdown."""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">ClassVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.media.rtsp_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">RtspServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.provider</span><span class="w"> </span><span class="kn">import</span> <span class="n">FritzTrunk</span><span class="p">,</span> <span class="n">SipProvider</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.sip.message</span><span class="w"> </span><span class="kn">import</span> <span class="n">UA</span><span class="p">,</span> <span class="n">Packet</span><span class="p">,</span> <span class="n">branch</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">uri_of</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.sip.sdp</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_sdp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">metzler.station.door_unlock</span><span class="w"> </span><span class="kn">import</span> <span class="n">isapi_open_door</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"indoor"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="StationCore">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">StationCore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The station's SIP endpoint: socket, RTSP server, packet helpers, the</span>
+<span class="sd">    receive loop and request routing, run/shutdown."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">o</span> <span class="o">=</span> <span class="n">o</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">server_port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">"0.0.0.0"</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">listen_port</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expires</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">expires</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_registrations</span><span class="p">()</span>  <span class="c1"># self.regs + self.registered (primary ext)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># intercom/door-side Call-ID -&gt; Call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ended_invites</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># ended Call-ID -&gt; (final resp, ts); retransmit answers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_calls</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># our outbound Call-ID -&gt; dict</span>
+        <span class="c1"># vdm10-ha hook: callable(str, Call) | None - ring/answered/ended events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">call_events</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="s2">"call_events"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>  <span class="c1"># set by shutdown() to wake the daemon loops</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># spawned by start_threads(), joined by shutdown()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_tag</span> <span class="o">=</span> <span class="n">tag</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">local_mode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">local_audio</span> <span class="ow">or</span> <span class="n">o</span><span class="o">.</span><span class="n">local_mic</span> <span class="ow">or</span> <span class="n">o</span><span class="o">.</span><span class="n">local_tone</span> <span class="ow">or</span> <span class="n">o</span><span class="o">.</span><span class="n">video_player</span><span class="p">)</span>
+        <span class="c1"># standard-SIP trunk to the provider (None in local headset mode)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">SipProvider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">sip_host</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mode</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="c1"># --fritz: second, inbound-only trunk - REGISTERs as an IP phone at a</span>
+        <span class="c1"># Fritz!Box; its calls reach us on this same socket, told apart from</span>
+        <span class="c1"># intercom/provider traffic by the sender's address (is_provider_addr)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span> <span class="o">=</span> <span class="n">FritzTrunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">o</span><span class="o">.</span><span class="n">fritz</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mode</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># the intercom RTSP server is needed in BOTH modes: local (headset mic)</span>
+        <span class="c1"># and provider (the caller pulls :554 to receive the SIP peer's audio)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span> <span class="o">=</span> <span class="n">RtspServer</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"intercom RTSP server listening on </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">"</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">rtsp_port</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"cannot bind RTSP :</span><span class="si">%d</span><span class="s2"> (</span><span class="si">%s</span><span class="s2">) - caller can't pull our stream"</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">rtsp_port</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StationCore.send">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.send">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">pkt</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Content-Length"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pkt</span><span class="o">.</span><span class="n">body</span><span class="p">)),</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"&gt;&gt; </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">addr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="StationCore.via">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.via">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">via</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"SIP/2.0/UDP </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">;rport;branch=</span><span class="si">{</span><span class="n">branch</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+<div class="viewcode-block" id="StationCore.contact">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.contact">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">contact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">&gt;"</span></div>
+
+
+<div class="viewcode-block" id="StationCore.base_request">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.base_request">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">base_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">to_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frm_uri</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Packet</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">status_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2"> SIP/2.0"</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">via</span><span class="p">())</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Max-Forwards"</span><span class="p">,</span> <span class="s2">"70"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contact</span><span class="p">())</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">to_uri</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">server_port</span><span class="si">}</span><span class="s2">&gt;"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+            <span class="s2">"From"</span><span class="p">,</span>
+            <span class="n">frm_uri</span>
+            <span class="ow">or</span> <span class="sa">f</span><span class="s1">'"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">"&lt;sip:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">username</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">server</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">server_port</span><span class="si">}</span><span class="s1">&gt;;tag=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">local_tag</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"User-Agent"</span><span class="p">,</span> <span class="n">UA</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Allow"</span><span class="p">,</span> <span class="s2">"INVITE, ACK, CANCEL, BYE, REFER, INFO, OPTIONS, MESSAGE"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="StationCore.in_dialog_response">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.in_dialog_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">in_dialog_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">ctype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_to_tag</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Packet</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">status_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SIP/2.0 </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">get_all</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">):</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">req</span><span class="o">.</span><span class="n">get_all</span><span class="p">(</span><span class="s2">"Record-Route"</span><span class="p">):</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Record-Route"</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="n">to</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"To"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">extra_to_tag</span> <span class="ow">and</span> <span class="s2">"tag="</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to</span><span class="p">:</span>
+            <span class="n">to</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">";tag=</span><span class="si">{</span><span class="n">extra_to_tag</span><span class="si">}</span><span class="s2">"</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"From"</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="n">req</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Contact"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contact</span><span class="p">())</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"User-Agent"</span><span class="p">,</span> <span class="n">UA</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ctype</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Content-Type"</span><span class="p">,</span> <span class="n">ctype</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">body</span>
+        <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="StationCore.reply">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.reply">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""answer call.invite and remember the response - a retransmitted</span>
+<span class="sd">        INVITE gets it resent (see _retransmitted_invite)"""</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">last_resp</span> <span class="o">=</span> <span class="n">pkt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fire_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""call_events hook (vdm10-ha): a listener bug must never kill call handling"""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_events</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">call_events</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">call</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"call_events </span><span class="si">%s</span><span class="s2"> hook failed"</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""stop the call and drop it from self.calls; its final response is</span>
+<span class="sd">        kept ~64s (INVITE client transaction lifetime) so a late retransmit</span>
+<span class="sd">        still gets answered instead of spawning a ghost call"""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fire_event</span><span class="p">(</span><span class="s2">"ended"</span><span class="p">,</span> <span class="n">call</span><span class="p">)</span>  <span class="c1"># before stop(): listeners see the pre-end state</span>
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">last_resp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ended_invites</span><span class="p">[</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">last_resp</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StationCore.ended_resp">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.ended_resp">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ended_resp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""the final response of a just-ended call, or None; lazily prunes"""</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">old</span> <span class="ow">in</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_invites</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">ts</span> <span class="o">&gt;</span> <span class="mi">64</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_invites</span><span class="p">[</span><span class="n">old</span><span class="p">]</span>
+        <span class="n">ent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_invites</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">ent</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+    <span class="n">RING_TIMEOUT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">120</span>  <span class="c1"># s a call may ring before the janitor ends it</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reaper_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""safety net for callers that die without CANCEL/BYE (station crash,</span>
+<span class="sd">        network drop): a call still not established after RING_TIMEOUT is torn</span>
+<span class="sd">        down - 408 to the caller (clears the registrar's busy flag), CANCEL on</span>
+<span class="sd">        the live legs, media stopped. Established calls are never reaped."""</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reap_once</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reap_once</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">now</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">call</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">"established"</span> <span class="ow">or</span> <span class="n">now</span> <span class="o">-</span> <span class="n">call</span><span class="o">.</span><span class="n">created</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RING_TIMEOUT</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"reaping stale call </span><span class="si">%s</span><span class="s2"> (state </span><span class="si">%s</span><span class="s2">, age </span><span class="si">%d</span><span class="s2">s)"</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">now</span> <span class="o">-</span> <span class="n">call</span><span class="o">.</span><span class="n">created</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reply</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="p">,</span> <span class="s2">"408 Request Timeout"</span><span class="p">,</span> <span class="n">extra_to_tag</span><span class="o">=</span><span class="n">call</span><span class="o">.</span><span class="n">to_tag</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end_provider_leg</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">end_reason</span> <span class="o">=</span> <span class="s2">"timeout"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_close_call</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">out</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_calls</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"ts"</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">RING_TIMEOUT</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"reaping stale outbound call to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">out</span><span class="p">[</span><span class="s2">"num"</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bye_outbound</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+
+    <span class="c1"># request method -&gt; handler name; ACK needs no action (our 200s are not retransmitted)</span>
+    <span class="n">REQUEST_HANDLERS</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">"OPTIONS"</span><span class="p">:</span> <span class="s2">"on_options"</span><span class="p">,</span>
+        <span class="s2">"MESSAGE"</span><span class="p">:</span> <span class="s2">"on_message"</span><span class="p">,</span>
+        <span class="s2">"INVITE"</span><span class="p">:</span> <span class="s2">"on_invite"</span><span class="p">,</span>
+        <span class="s2">"CANCEL"</span><span class="p">:</span> <span class="s2">"on_cancel"</span><span class="p">,</span>
+        <span class="s2">"BYE"</span><span class="p">:</span> <span class="s2">"on_bye"</span><span class="p">,</span>
+        <span class="s2">"INFO"</span><span class="p">:</span> <span class="s2">"on_info"</span><span class="p">,</span>
+        <span class="s2">"ACK"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="StationCore.listener">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.listener">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">listener</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span> <span class="ow">or</span> <span class="n">addr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># shutdown(SHUT_RDWR) wakes recvfrom empty</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_datagram</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationCore.handle_datagram">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.handle_datagram">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_datagram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""parse one UDP datagram and route it (REGISTER replies go to the</span>
+<span class="sd">        waiting registration loops, everything else to its handler)"""</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pkt</span> <span class="o">=</span> <span class="n">Packet</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"unparseable from </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"&lt;&lt; </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="se">\n</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">addr</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">text</span><span class="p">)</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span>
+        <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"SIP/2.0"</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_reg_response</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+            <span class="k">return</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">"on_response"</span> <span class="k">if</span> <span class="n">sl</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"SIP/2.0"</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">REQUEST_HANDLERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sl</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">" "</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)(</span><span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># keep the rx loop alive on any handler bug</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">"error handling </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">sl</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationCore.on_options">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.on_options">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="s2">"200 OK"</span><span class="p">),</span> <span class="n">addr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationCore.on_message">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.on_message">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"MESSAGE from </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">body</span><span class="p">[:</span><span class="mi">300</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="s2">"200 OK"</span><span class="p">),</span> <span class="n">addr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="StationCore.on_info">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.on_info">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""SIP INFO: dtmf-relay bodies on a trunk leg feed the door-unlock</span>
+<span class="sd">        sequence detector (Signal=&lt;d&gt;); intercom-leg INFO is just acked"""</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+        <span class="n">call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trunk_call</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"Signal=([0-9A-Da-d#*])"</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">call</span> <span class="ow">and</span> <span class="n">m</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dtmf_digit</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"INFO body: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">body</span><span class="p">[:</span><span class="mi">200</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="s2">"200 OK"</span><span class="p">),</span> <span class="n">addr</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_trunk_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""bridge call owning a provider- or fritz-leg Call-ID"""</span>
+        <span class="k">for</span> <span class="n">trunk</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">trunk</span><span class="p">:</span>
+                <span class="n">call</span> <span class="o">=</span> <span class="n">trunk</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">call</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">call</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">DTMF_SEQ_WINDOW</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1"># seconds between digits before the buffer resets</span>
+    <span class="n">UNLOCK_COOLDOWN</span> <span class="o">=</span> <span class="mf">3.0</span>  <span class="c1"># seconds before the same call may unlock again</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dtmf_digit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">d</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""one decoded DTMF digit from the answered trunk leg (SIP INFO or</span>
+<span class="sd">        RFC4733): buffer the sequence; '#&lt;n&gt;' unlocks door n via ISAPI"""</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"DTMF digit </span><span class="si">%r</span><span class="s2"> on call </span><span class="si">%s</span><span class="s2"> (state </span><span class="si">%s</span><span class="s2">, buf </span><span class="si">%r</span><span class="s2">)"</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">dtmf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">"established"</span> <span class="ow">or</span> <span class="n">call</span><span class="o">.</span><span class="n">inbound</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">call</span><span class="o">.</span><span class="n">dtmf_ts</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">DTMF_SEQ_WINDOW</span><span class="p">:</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">dtmf</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">dtmf</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">dtmf_ts</span> <span class="o">=</span> <span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">dtmf</span> <span class="o">+</span> <span class="n">d</span><span class="p">)[</span><span class="o">-</span><span class="mi">8</span><span class="p">:],</span> <span class="n">now</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">"#([12])$"</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">dtmf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">door</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">dtmf</span> <span class="o">=</span> <span class="s2">""</span>
+        <span class="k">if</span> <span class="n">now</span> <span class="o">-</span> <span class="n">call</span><span class="o">.</span><span class="n">unlock_ts</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNLOCK_COOLDOWN</span><span class="p">:</span>  <span class="c1"># RFC2833 + INFO both sent by the phone</span>
+            <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"DTMF unlock ignored (cooldown, duplicate transport)"</span><span class="p">)</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">unlock_ts</span> <span class="o">=</span> <span class="n">now</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"DTMF unlock request: door </span><span class="si">%d</span><span class="s2"> (call </span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span> <span class="n">door</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unlock_door</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">door</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spawn</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">fn</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="StationCore.unlock_door">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.unlock_door">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unlock_door</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">door</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""open door n: ISAPI PUT on the outdoor station (the SDP address of</span>
+<span class="sd">        the door that is calling us)"""</span>
+        <span class="n">host</span> <span class="o">=</span> <span class="n">parse_sdp</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">body</span><span class="p">)[</span><span class="s2">"ip"</span><span class="p">]</span>
+        <span class="n">pw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">door_isapi_pass</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">password</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">host</span> <span class="ow">and</span> <span class="n">pw</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"door unlock: no outdoor station address/password configured"</span><span class="p">)</span>
+        <span class="n">isapi_open_door</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">door_isapi_user</span><span class="p">,</span> <span class="n">pw</span><span class="p">,</span> <span class="n">door</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">door_isapi_port</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_dispatch_reg_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""a REGISTER reply: hand it to whichever registration loop is</span>
+<span class="sd">        waiting (intercom ext(s), provider, fritz) - matched by Call-ID"""</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">is_reg_response</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">reg_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">trunk</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">trunk</span> <span class="ow">and</span> <span class="n">trunk</span><span class="o">.</span><span class="n">is_reg_response</span><span class="p">(</span><span class="n">pkt</span><span class="p">):</span>
+                <span class="n">trunk</span><span class="o">.</span><span class="n">reg_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">pkt</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_out_invite_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""response on an outbound intercom leg; a bridged app call gets the</span>
+<span class="sd">        intercom's ringing and its final result forwarded"""</span>
+        <span class="n">cid</span><span class="p">,</span> <span class="n">code</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">call</span> <span class="o">=</span> <span class="n">out</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"bridged"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">183</span><span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"outbound call </span><span class="si">%s</span><span class="s2"> ringing"</span><span class="p">,</span> <span class="n">out</span><span class="p">[</span><span class="s2">"num"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">call</span><span class="p">:</span>  <span class="c1"># the app hears the intercom ring</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reply</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="p">,</span> <span class="s2">"180 Ringing"</span><span class="p">,</span> <span class="n">extra_to_tag</span><span class="o">=</span><span class="n">call</span><span class="o">.</span><span class="n">to_tag</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out_answered</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">code</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"outbound call to </span><span class="si">%s</span><span class="s2"> failed: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">out</span><span class="p">[</span><span class="s2">"num"</span><span class="p">],</span> <span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ack_dead_final</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>  <span class="c1"># else the registrar retransmits ~30s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">out_calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">call</span><span class="p">:</span>  <span class="c1"># callee busy/gone -&gt; tell the app</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reply</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="p">[</span><span class="mi">8</span><span class="p">:],</span> <span class="n">extra_to_tag</span><span class="o">=</span><span class="n">call</span><span class="o">.</span><span class="n">to_tag</span><span class="p">))</span>
+                <span class="n">call</span><span class="o">.</span><span class="n">end_reason</span> <span class="o">=</span> <span class="s2">"rejected"</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_close_call</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StationCore.on_response">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.on_response">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+        <span class="n">cseq</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"response </span><span class="si">%s</span><span class="s2"> (CSeq </span><span class="si">%s</span><span class="s2">, Call-ID </span><span class="si">%s</span><span class="s2">)"</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="p">,</span> <span class="n">cseq</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_calls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">out</span> <span class="ow">and</span> <span class="s2">"INVITE"</span> <span class="ow">in</span> <span class="n">cseq</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_invite_response</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="n">call</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">call</span> <span class="ow">and</span> <span class="s2">"INVITE"</span> <span class="ow">in</span> <span class="n">cseq</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provider_invite_response</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span> <span class="ow">and</span> <span class="s2">"INVITE"</span> <span class="ow">in</span> <span class="n">cseq</span> <span class="ow">and</span> <span class="n">cid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">calls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fritz_invite_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">calls</span><span class="p">[</span><span class="n">cid</span><span class="p">],</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">"INVITE"</span> <span class="ow">in</span> <span class="n">cseq</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ack_dead_final</span><span class="p">(</span><span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>  <span class="c1"># leg already torn down - still ACK</span></div>
+
+
+    <span class="c1"># explicit user rejections (decline on a ringing device) - unlike timeouts</span>
+    <span class="c1"># or transport failures these kill the whole race, not just that leg</span>
+    <span class="n">DECLINE_CODES</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">frozenset</span><span class="p">]</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">((</span><span class="mi">486</span><span class="p">,</span> <span class="mi">603</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ack_dead_final</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pkt</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""a final response on an INVITE transaction we already dropped (a</span>
+<span class="sd">        racing leg CANCELLed or declined earlier): it still needs the</span>
+<span class="sd">        transaction ACK - our Via sits at the bottom of the response's list,</span>
+<span class="sd">        so its branch is the last branch= - or the peer retransmits ~30s"""</span>
+        <span class="n">cseq</span><span class="p">,</span> <span class="n">to</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"To"</span><span class="p">)</span>
+        <span class="n">branches</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">"branch=([^;\s,]+)"</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">to</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">branches</span> <span class="ow">or</span> <span class="s2">"INVITE"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cseq</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Packet</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">status_line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"ACK </span><span class="si">{</span><span class="n">uri_of</span><span class="p">(</span><span class="n">to</span><span class="p">)</span><span class="si">}</span><span class="s2"> SIP/2.0"</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"SIP/2.0/UDP </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">;rport;branch=</span><span class="si">{</span><span class="n">branches</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Max-Forwards"</span><span class="p">,</span> <span class="s2">"70"</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"To"</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"From"</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"From"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">,</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"CSeq"</span><span class="p">,</span> <span class="n">cseq</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"INVITE"</span><span class="p">,</span> <span class="s2">"ACK"</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"User-Agent"</span><span class="p">,</span> <span class="n">UA</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decline_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""no leg left ringing, or a leg got explicitly declined: CANCEL any</span>
+<span class="sd">        still-racing leg and give the indoor caller the final outcome. A</span>
+<span class="sd">        401/407 challenge is never propagated - the indoor gets a plain 486."""</span>
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">cancel_leg</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="ow">and</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">pkt</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="c1"># the registrar clears its global busy flag only on 408/486/603;</span>
+        <span class="c1"># every other outcome (auth challenges, 488, 5xx) becomes a 486</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="p">[</span><span class="mi">8</span><span class="p">:]</span> <span class="k">if</span> <span class="n">code</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">408</span><span class="p">,</span> <span class="mi">486</span><span class="p">,</span> <span class="mi">603</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"486 Busy Here"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reply</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">extra_to_tag</span><span class="o">=</span><span class="n">call</span><span class="o">.</span><span class="n">to_tag</span><span class="p">))</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">end_reason</span> <span class="o">=</span> <span class="s2">"error"</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_close_call</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_provider_invite_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""response on the provider leg of a bridged call; on door calls a</span>
+<span class="sd">        fritz leg may be racing it - the winner keeps the call, the loser is</span>
+<span class="sd">        CANCELLed"""</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">handle_response</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"answered"</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span><span class="p">:</span>  <span class="c1"># the app won the race</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">cancel_leg</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+                <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider_answered</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"early"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">early_media</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"fail"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DECLINE_CODES</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># fritz still rings - keep waiting</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_decline_call</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fritz_invite_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""response on the racing fritzfon leg of a door call"""</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="n">pkt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Call-ID"</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">handle_response</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"answered"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fritz_won</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s2">"fail"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">prov_alive</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="ow">and</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">prov_alive</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">(</span><span class="n">pkt</span><span class="o">.</span><span class="n">status_line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DECLINE_CODES</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_decline_call</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">pkt</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fritz_won</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""the fritzfon answered a door call first: CANCEL the still-racing</span>
+<span class="sd">        provider leg, promote the fritz leg into the call's SIP-leg fields</span>
+<span class="sd">        (ACK/teardown then work via call.trunk) and take the answered path.</span>
+<span class="sd">        Idempotent - a retransmitted 200 gets re-ACKed only."""</span>
+        <span class="n">leg</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">leg</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">ack</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">cancel</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>  <span class="c1"># prov_* still = the provider leg</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">prov_call_id</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_branch</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_cseq</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_from</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">leg</span><span class="p">[</span><span class="s2">"cid"</span><span class="p">],</span>
+            <span class="n">leg</span><span class="p">[</span><span class="s2">"branch"</span><span class="p">],</span>
+            <span class="n">leg</span><span class="p">[</span><span class="s2">"cseq"</span><span class="p">],</span>
+            <span class="n">leg</span><span class="p">[</span><span class="s2">"from"</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_to</span> <span class="o">=</span> <span class="n">call</span><span class="o">.</span><span class="n">prov_uri</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># filled by ack() from the 200</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">[</span><span class="n">call</span><span class="o">.</span><span class="n">media</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">media</span><span class="p">,</span> <span class="s2">"video"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]</span> <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"intercom"</span> <span class="k">else</span> <span class="p">[</span><span class="n">call</span><span class="o">.</span><span class="n">audio</span><span class="p">,</span> <span class="n">call</span><span class="o">.</span><span class="n">video</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">srtp</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># fritz leg is plain RTP</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">prov_plain</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">provider_media</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># rebind media to the fritz peer</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">trunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">fritz_leg</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provider_answered</span><span class="p">(</span><span class="n">call</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+
+<div class="viewcode-block" id="StationCore.start_threads">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.start_threads">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_threads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""spawn the daemon threads run() manages, WITHOUT installing the</span>
+<span class="sd">        SIGTERM handler or blocking on the main loop - for embedded/library</span>
+<span class="sd">        use (vdm10-ha drives the station from a non-main thread). Includes</span>
+<span class="sd">        the provider/fritz REGISTER loops in non-local mode (they are daemon</span>
+<span class="sd">        threads like the rest; a plain embedded start must not silently</span>
+<span class="sd">        skip the trunks)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">listener</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="o">*</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">register_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regs</span><span class="p">),</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">heartbeat_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_reaper_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">call</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">call_out</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">call</span><span class="p">,),</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mode</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_trunks</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="StationCore.run">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_threads</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">local_mode</span><span class="p">:</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">t</span>
+                <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">need</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="s2">"aplay"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_audio</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">"arecord"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_mic</span><span class="p">),</span>
+                    <span class="p">(</span><span class="s2">"ffplay"</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">video_player</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">need</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">"audio tools missing (</span><span class="si">%s</span><span class="s2">) — install alsa-utils / ffmpeg, or run --list-audio to see devices"</span><span class="p">,</span>
+                    <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">"indoor station sim on </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> -&gt; registrar </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">  [LOCAL headset mode: "</span>
+                <span class="s2">"spk=</span><span class="si">%s</span><span class="s2"> mic=</span><span class="si">%s</span><span class="s2"> tone=</span><span class="si">%s</span><span class="s2"> video=</span><span class="si">%s</span><span class="s2"> dev=</span><span class="si">%s</span><span class="s2">]"</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bind_port</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_audio</span><span class="p">),</span>
+                <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_mic</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_tone</span><span class="p">,</span>
+                <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">video_player</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">alsa_device</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">terminate</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">signal</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">,</span> <span class="n">terminate</span><span class="p">)</span>  <span class="c1"># plain `kill` must unregister too</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_trunks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""provider (+ optional fritz) REGISTER loops and the startup log"""</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># no --sip-host: intercom-only mode (HA embeds this path)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">needs_register</span><span class="p">():</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">register_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"no --sip-user/--sip-pass: trunk mode, provider REGISTER skipped"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">needs_register</span><span class="p">():</span>
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">register_loop</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"indoor station sim on </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> -&gt; registrar </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">, bridge via </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">local_ip</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bind_port</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">server</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">proxy</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">o</span><span class="o">.</span><span class="n">sip_target</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="StationCore.shutdown">
+<a class="viewcode-back" href="../../../api/metzler.station.core.html#metzler.station.core.StationCore.shutdown">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""clean exit: end every call (BYE/CANCEL so the registrar's busy</span>
+<span class="sd">        tracking clears), then Expires=0 to remove our dev_reg row —</span>
+<span class="sd">        leaving stale state marks the whole system busy (486 to the door)"""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out_calls</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bye_outbound</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>  <span class="c1"># wake the daemon loops (reaper/heartbeat/register sleeps)</span>
+        <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end_call_on_shutdown</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calls</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regs</span><span class="p">:</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">needs_register</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">needs_register</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fritz</span><span class="o">.</span><span class="n">unregister</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_threads</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stop_threads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""wake + join every daemon thread shutdown owns. close() alone does NOT</span>
+<span class="sd">        wake a blocked recvfrom/accept on Linux - shutdown(SHUT_RDWR) is what</span>
+<span class="sd">        interrupts the listener/accept threads; the register poll gets a None</span>
+<span class="sd">        sentinel because a Queue.get can't be interrupted."""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sip</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># own accept thread started in __init__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SHUT_RDWR</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span><span class="o">.</span><span class="n">ls</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rtsp</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regs</span><span class="p">:</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">reg_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>  <span class="c1"># sentinel: abort a register_once still blocked on get()</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_end_call_on_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">call</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""established -&gt; BYE the caller; still ringing -&gt; a final response that</span>
+<span class="sd">        clears the registrar's busy state. The provider leg is ended as well."""</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">"established"</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bye_intercom</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># via the :5065 registrar only 408/603/486 clear its global busy flag (487 does not)</span>
+                <span class="n">code</span> <span class="o">=</span> <span class="s2">"486 Busy Here"</span> <span class="k">if</span> <span class="s2">":5065"</span> <span class="ow">in</span> <span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"Via"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"487 Request Terminated"</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dialog_response</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">invite</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">extra_to_tag</span><span class="o">=</span><span class="n">call</span><span class="o">.</span><span class="n">to_tag</span><span class="p">),</span> <span class="n">call</span><span class="o">.</span><span class="n">addr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_end_provider_leg</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">end_reason</span> <span class="o">=</span> <span class="s2">"shutdown"</span>
+        <span class="n">call</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

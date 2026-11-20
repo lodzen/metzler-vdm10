@@ -1,0 +1,1438 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISAPI endpoints registered by hicore (VDM10 indoor, fw 2.0.24) &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Firmware internals — hicore (INDOOR_V2.2.100_build251203)" href="../firmware-v2/README.html" />
+    <link rel="prev" title="Door unlock via ISAPI (HTTP XML) — firmware internals" href="door-unlock-api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-system">/ISAPI/System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-videointercom">/ISAPI/VideoIntercom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-event">/ISAPI/Event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-security">/ISAPI/Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-image">/ISAPI/Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-accesscontrol">/ISAPI/AccessControl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-streaming">/ISAPI/Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-securitycp">/ISAPI/SecurityCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-contentmgmt">/ISAPI/ContentMgmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-smartlock">/ISAPI/SmartLock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isapi-singlesmartlock">/ISAPI/SingleSmartLock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#caveats-unknowns">Caveats / unknowns</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware/isapi-endpoints.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="isapi-endpoints-registered-by-hicore-vdm10-indoor-fw-2-0-24">
+<h1>ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)<a class="headerlink" href="#isapi-endpoints-registered-by-hicore-vdm10-indoor-fw-2-0-24" title="Link to this heading"></a></h1>
+<p>Complete catalog of the HTTP-XML (ISAPI) routes compiled into this unit’s
+<code class="docutils literal notranslate"><span class="pre">hicore</span></code> binary — recovered by walking the URI routing table in <code class="docutils literal notranslate"><span class="pre">.data</span></code>
+(the <code class="docutils literal notranslate"><span class="pre">hicore</span></code> ELF from the unpacked rootfs — re-derivable from the <code class="docutils literal notranslate"><span class="pre">.dav</span></code>,
+see <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code>), not from generic Hikvision
+documentation. Reproduce with <code class="docutils literal notranslate"><span class="pre">tools/dump_isapi_table.py</span></code>.</p>
+<p>Table format (verified): each route is a <code class="docutils literal notranslate"><span class="pre">0x68</span></code>-byte record
+<code class="docutils literal notranslate"><span class="pre">{name*</span> <span class="pre">&#64;+0,</span> <span class="pre">handler*</span> <span class="pre">&#64;+4,</span> <span class="pre">unused</span> <span class="pre">&#64;+8,</span> <span class="pre">childTbl*</span> <span class="pre">&#64;+0xc,</span> <span class="pre">one</span> <span class="pre">&#64;+0x10,</span> <span class="pre">methodFlags</span> <span class="pre">&#64;+0x14,</span> <span class="pre">…zero</span> <span class="pre">pad}</span></code>; rows of a table are contiguous and a
+<code class="docutils literal notranslate"><span class="pre">/&lt;parent&gt;</span></code>-named row terminates it. <code class="docutils literal notranslate"><span class="pre">childTbl</span></code> points at a nested table;
+<code class="docutils literal notranslate"><span class="pre">index</span></code>-named rows are <code class="docutils literal notranslate"><span class="pre">/&lt;id&gt;</span></code> parameterized-segment placeholders — all
+inert in this build (handler <code class="docutils literal notranslate"><span class="pre">0</span></code>, no children): parent dispatchers parse
+numeric ids out of the path themselves.</p>
+<p><strong>methodFlags &#64;+0x14</strong> (inferred): bit0 = GET, bit2 = PUT, bit4 = row has
+a parameterized child table; bit1 = a second write verb († POST or
+DELETE — dispatchers compare the method id in <code class="docutils literal notranslate"><span class="pre">param_2[2]</span></code>, where 1=GET
+and 4=PUT are confirmed). <code class="docutils literal notranslate"><span class="pre">⁺</span></code> = has <code class="docutils literal notranslate"><span class="pre">/index</span></code> child. Nonzero flags on
+handler-less dir rows likely still describe the subtree’s verbs.</p>
+<p>Handler column = registered dispatcher vaddr. Names resolve via
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/names/isapi.tsv</span></code> + <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/*.c</span></code> provenance
+(<code class="docutils literal notranslate"><span class="pre">/*</span> <span class="pre">0x&lt;addr&gt;</span></code>); most handlers are 4-8-byte entry stubs
+(<code class="docutils literal notranslate"><span class="pre">cmp</span> <span class="pre">r1,#0;</span> <span class="pre">movne</span> <span class="pre">r0,#0;</span> <span class="pre">push</span></code>) that fall through to the named body.
+Empty name = no recovered symbol nearby.</p>
+<p><strong>11 groups, 189 rows, 146 dispatcher endpoints</strong>:
+<code class="docutils literal notranslate"><span class="pre">System</span></code>, <code class="docutils literal notranslate"><span class="pre">VideoIntercom</span></code>, <code class="docutils literal notranslate"><span class="pre">Event</span></code>, <code class="docutils literal notranslate"><span class="pre">Security</span></code>, <code class="docutils literal notranslate"><span class="pre">Image</span></code>,
+<code class="docutils literal notranslate"><span class="pre">AccessControl</span></code>, <code class="docutils literal notranslate"><span class="pre">Streaming</span></code>, <code class="docutils literal notranslate"><span class="pre">SecurityCP</span></code>, <code class="docutils literal notranslate"><span class="pre">ContentMgmt</span></code>, <code class="docutils literal notranslate"><span class="pre">SmartLock</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SingleSmartLock</span></code></p>
+<section id="isapi-system">
+<h2>/ISAPI/System<a class="headerlink" href="#isapi-system" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/activate</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2168b4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysActivateBasic</span></code></p></td>
+<td><p>first-boot admin activation</p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21677c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/reboot</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x216e10</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysRebootBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/updateFirmware</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x217d50</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_sysUpgradeBasic</span></code></p></td>
+<td><p>DAV upload upgrade</p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/configurationData</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x217000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysConfigurationDataBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/factoryReset</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x217428</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysFactoryResetBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/deviceInfo</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x217690</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysDeviceInfoBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/upgradeStatus</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x217c20</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysUpgradeStatusBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/time</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21da04</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/time/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21c32c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysTimeCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/time/localTime</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21c9c8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysTimeLocaltimeBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/time/timeZone</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21e32c</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+POST/DEL†+PUT ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/time/ntpServers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21bab4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/time/ntpServers/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21bdd4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x215580</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/interfaces</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x213f84</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkInterfacesBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/interfaces/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/interfaces/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x214094</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkInterfacesCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/ftp</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2149ec</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkFtpBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/ftp/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x214c20</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkFtpCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/mailing</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x215674</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkMailingBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Network/mailing/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x215838</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysNetworkMailingCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x205378</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/AudioIn</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/AudioIn/channels</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/AudioIn/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/AudioOut</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/AudioOut/channels</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Audio/AudioOut/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/TwoWayAudio</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/TwoWayAudio/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/TwoWayAudio/channels</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20330c</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/TwoWayAudio/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/TwoWayAudio/channels/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2037b4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Video</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Video/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1dad6c</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Video/inputs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d9ee4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Video/inputs/channels</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1da07c</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/Video/inputs/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20e71c</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20e2b4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO/inputs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20e580</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO/inputs/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO/outputs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20d7ec</span></code></p></td>
+<td><p></p></td>
+<td><p>IO relay/lock outputs</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/IO/outputs/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/DeviceLanguage</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x217a10</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysLanguageBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/DeviceLanguage/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2178e8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSysLanguageCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/DeviceLanguage/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/DeviceLanguage/channels</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20330c</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/DeviceLanguage/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/DeviceLanguage/channels/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2037b4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/onlineUpgrade</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/onlineUpgrade/server</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x216034</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_srv_online_upgrade_server</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/onlineUpgrade/version</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21612c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_srv_online_upgrade_version</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/onlineUpgrade/upgrade</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x216358</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_srv_online_upgrade</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/onlineUpgrade/judgeVersion</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2164b8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_srv_online_upgrade_judge_ver</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/onlineUpgrade/status</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x21672c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_srv_online_upgrade_status</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/System/firmwareCode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x215da0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_srv_firmware_code_list</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-videointercom">
+<h2>/ISAPI/VideoIntercom<a class="headerlink" href="#isapi-videointercom" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cd924</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/PrivilegePasswordStatus</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cd830</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiPrivilegePasswordStatusBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SystemSwitchCfg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cd4f8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSystemSwitchBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SystemSwitchCfg/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cd708</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSystemTypeCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SystemSwitchCfg/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d1bb0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomIncomingCallLinkageCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SystemSwitchCfg/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/deviceId</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cdf88</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomDeviceIdBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/deviceId/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cddec</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomDeviceIdCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/operationTime</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ce1f0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomOperationTimeBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/operationTime/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ce44c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomOperationTimeCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/relatedDeviceAddress</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ce5c0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRelatedDeviceAddrBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/relatedDeviceAddress/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ce874</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRelatedDeviceAddrCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/passwordAuthentication</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cea04</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomPwdAuthBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/passwordAuthentication/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cebd4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomPwdAuthCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/keyCfg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cf114</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomKeyCfgBasic</span></code></p></td>
+<td><p>touch-key config</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/keyCfg/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/remoteOpenDoor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ced50</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorBasic</span></code></p></td>
+<td><p><strong>gated</strong>: devType∈{1,4,5} — room unit (3) replies <code class="docutils literal notranslate"><span class="pre">notSupport</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/remoteOpenDoor/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cef7c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRemoteOpenDoorCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/ring</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cfa2c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRingBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/ring/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cf8a0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomRingCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/ring/ringID</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/ring/ringID/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+POST/DEL† ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/rooms</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e77d4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeRoomBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/rooms/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e7d50</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeRoomCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+POST/DEL† ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/devices</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1eeda4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeDeviceListBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/devices/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ef6a0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeDeviceCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>POST/DEL†</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/deviceSearch</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ef83c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeSmartDeviceSearchBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/deviceSearch/profile</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1efb1c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeDevSearchExtBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+POST/DEL† ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/scenes</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ea554</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeSceneBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartHome/scenes/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ead2c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartHomeSceneIdBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/QRCodeCfg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d0738</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomSetQR</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/QRCodeInfo</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cda5c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomGetQRInfoBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/scene</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/scene/nowMode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cff5c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomCurrentSceneModeBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/scene/nowMode/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d031c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomCurrentSceneModeCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartLock</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartLock/lockMatched</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1f7cc4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomSmartLockMatchedBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartLock/lockMatched/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1f80e4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomSmartLockMatchedBasicCap</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/SmartLock/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>POST/DEL†</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/OpenDoorLog</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1fd6a0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartLockStateExtBasic</span></code></p></td>
+<td><p>door-open record search</p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/OpenDoorLog/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1fe188</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/callElevator</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d0518</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomCallElevatorBasic</span></code></p></td>
+<td><p>lift control</p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/AnnouncementMessage</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d0928</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomAnnouncementMessageBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/AnnouncementMessage/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d0c2c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomAnnouncementMessageCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/AppKeyConfiguration</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d0db8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomAppKeyConfigurationBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/AppKeyConfiguration/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d1028</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomAppKeyConfigurationCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/alarmUploadCfg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d11f0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomAlarmUploadCfgBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/alarmUploadCfg/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d14d4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomAlarmUploadCfgCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/PlateInfo</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1cdbcc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomPlateInfoBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/Linkage</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/Linkage/IncomingCall</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d1a20</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomIncomingCallLinkageBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/Linkage/IncomingCall/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d1bb0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomIncomingCallLinkageCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/Linkage/IncomingCall/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/Linkage/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/IntercomProtocolType</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d16b0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomSipTypeBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/VideoIntercom/IntercomProtocolType/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1d18dc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomSipTypeCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-event">
+<h2>/ISAPI/Event<a class="headerlink" href="#isapi-event" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x209cd4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiEventCapabilities</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+POST/DEL†+PUT ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/triggers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20a18c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiEventTriggerBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/triggers/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/schedules</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/schedules/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/schedules/motionDetections</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x20ae24</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiMotionDetSchedulesBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Event/schedules/motionDetections/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-security">
+<h2>/ISAPI/Security<a class="headerlink" href="#isapi-security" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c7478</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+POST/DEL†+PUT ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/users</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c7574</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityUsersBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/users/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+POST/DEL†+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/adminAccesses</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c810c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityAdminAccessBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/adminAccesses/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/adminAccesses/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c83a0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityAdminAccessCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+POST/DEL†+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/userCheck</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c8898</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityUserCheckReturn</span></code></p></td>
+<td><p>digest login verification</p></td>
+</tr>
+<tr class="row-odd"><td><p>POST/DEL†+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/challenge</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c7a28</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_getChallenge</span></code></p></td>
+<td><p>RSA challenge for client-side digest</p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/UserPermission</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c8fac</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hikUserPermissionBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/UserPermission/viewerCap</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Security/UserPermission/operatorCap</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-image">
+<h2>/ISAPI/Image<a class="headerlink" href="#isapi-image" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Image/channels</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Image/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Image/channels/channels</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-accesscontrol">
+<h2>/ISAPI/AccessControl<a class="headerlink" href="#isapi-accesscontrol" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/DeployInfo</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e4c30</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiDeployInfoBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/DeployInfo/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e4ac0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiDeployInfoCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/DeployInfo/param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e39ac</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiAcsCtrlDoorParamBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/DeployInfo/param/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Device</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Device/HardWare</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Device/HardWare/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e4508</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Card</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Card/sectorCheck</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e31c4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiAcsCtrlCardSectorCheckBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Card/sectorCheck/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e37d4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiAcsCtrlCardSectorCheckCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Door</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Door/param</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e39ac</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiAcsCtrlDoorParamBasic</span></code></p></td>
+<td><p>no RemoteControl/door — see door-unlock-api.md</p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/AccessControl/Door/param/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-streaming">
+<h2>/ISAPI/Streaming<a class="headerlink" href="#isapi-streaming" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Streaming/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Streaming/channels</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1daea4</span></code></p></td>
+<td><p></p></td>
+<td><p>RTSP channel cfg (ch1/av_stream)</p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Streaming/channels/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-securitycp">
+<h2>/ISAPI/SecurityCP<a class="headerlink" href="#isapi-securitycp" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e01f0</span></code></p></td>
+<td><p></p></td>
+<td><p>whole SecurityCP tree requires <code class="docutils literal notranslate"><span class="pre">g_hwreg+0x2b8</span></code> bit7</p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>POST/DEL†+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/ZoneAssociatedDetectorCfg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e23b0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPZoneAssociatedDetectorCfgBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/ZoneAssociatedDetectorCfg/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e2b50</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/zones</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/zones/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/sceneZoneCfg</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e14cc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPSceneZoneCfgBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/sceneZoneCfg/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e1b28</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPSceneZoneCfgCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+POST/DEL†+PUT ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/zoneConfigList</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e1d10</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPzoneConfigListBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/BasicParam/zoneConfigList/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e1f10</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPzoneConfigListCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET+PUT</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/AlarmControlByPhone</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e0e08</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPAlarmCtrlByPhoneBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SecurityCP/AlarmControlByPhone/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1e12fc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSecurityCPAlarmCtrlByPhoneCapBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-contentmgmt">
+<h2>/ISAPI/ContentMgmt<a class="headerlink" href="#isapi-contentmgmt" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET+POST/DEL†+PUT ⁺</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/ContentMgmt/logSearch</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1c7470</span></code></p></td>
+<td><p></p></td>
+<td><p>const-stub → <code class="docutils literal notranslate"><span class="pre">0xd</span></code> — <strong>registered but disabled</strong> in this build</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-smartlock">
+<h2>/ISAPI/SmartLock<a class="headerlink" href="#isapi-smartlock" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/DetectorMatched</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2023c8</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiIntercomDetectMatchedBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/DetectorMatched/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x2027b4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/Detector</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/Detector/AddDetector</span></code> ▸</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/Detector/AddDetector/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x203174</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/DelUserInfo</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/DelUserInfo/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1ff3e4</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>GET</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/capabilities</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0x1fb96c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapiSmartLockUserInfoExtBasic</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SmartLock/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="isapi-singlesmartlock">
+<h2>/ISAPI/SingleSmartLock<a class="headerlink" href="#isapi-singlesmartlock" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>handler</p></th>
+<th class="head"><p>name (rewrite)</p></th>
+<th class="head"><p>notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/SingleSmartLock/index</span></code></p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="caveats-unknowns">
+<h2>Caveats / unknowns<a class="headerlink" href="#caveats-unknowns" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Method semantics</strong> live inside each dispatcher (<code class="docutils literal notranslate"><span class="pre">param_2[2]</span></code>:
+1=GET, 4=PUT confirmed); the <code class="docutils literal notranslate"><span class="pre">†</span></code> bit1 verb (POST or DELETE) isn’t
+rewritten yet — the flag word is the authoritative allowed-method
+hint per route.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">▸</span></code> = directory nodes; <code class="docutils literal notranslate"><span class="pre">index</span></code> = <code class="docutils literal notranslate"><span class="pre">/&lt;id&gt;</span></code> wildcards, all with
+handler <code class="docutils literal notranslate"><span class="pre">0</span></code> in this build — ids resolve through the parent dispatcher.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/ContentMgmt/logSearch</span></code> registers a 2-instruction stub
+(<code class="docutils literal notranslate"><span class="pre">mov</span> <span class="pre">r0,#0xd;</span> <span class="pre">bx</span> <span class="pre">lr</span></code>) — route exists, functionally disabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/ISAPI/Image/channels</span></code> self-nests (<code class="docutils literal notranslate"><span class="pre">…/channels/channels</span></code>) — genuine
+table self-reference; image endpoints are empty on this headless unit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SmartLock</span></code>/<code class="docutils literal notranslate"><span class="pre">SingleSmartLock</span></code>: mostly directory+capabilities stubs —
+wireless-lock actions largely absent in this build.</p></li>
+<li><p>Two <code class="docutils literal notranslate"><span class="pre">capabilities</span></code> rows sit in the <code class="docutils literal notranslate"><span class="pre">SystemSwitchCfg</span></code> child block —
+the table literally contains both (first match wins at dispatch).</p></li>
+<li><p>The flag bit on handler-less dir rows (<code class="docutils literal notranslate"><span class="pre">Linkage</span></code>, <code class="docutils literal notranslate"><span class="pre">Streaming/index</span></code>,
+<code class="docutils literal notranslate"><span class="pre">BasicParam</span></code>… all <code class="docutils literal notranslate"><span class="pre">GET+PUT</span></code>/<code class="docutils literal notranslate"><span class="pre">GET</span></code>) describes subtree verbs, not a
+callable handler.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="door-unlock-api.html" class="btn btn-neutral float-left" title="Door unlock via ISAPI (HTTP XML) — firmware internals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../firmware-v2/README.html" class="btn btn-neutral float-right" title="Firmware internals — hicore (INDOOR_V2.2.100_build251203)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

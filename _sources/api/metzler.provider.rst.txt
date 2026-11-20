@@ -1,0 +1,7 @@
+metzler.provider module
+=======================
+
+.. automodule:: metzler.provider
+   :members:
+   :show-inheritance:
+   :undoc-members:

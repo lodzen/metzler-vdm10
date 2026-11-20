@@ -1,0 +1,7 @@
+metzler.media.intercom module
+=============================
+
+.. automodule:: metzler.media.intercom
+   :members:
+   :show-inheritance:
+   :undoc-members:

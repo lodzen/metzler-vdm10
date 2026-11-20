@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">metzler</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="metzler">
+<h1>metzler<a class="headerlink" href="#metzler" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="metzler.html">metzler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Call.stop"><code class="docutils literal notranslate"><span class="pre">Call.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.IntercomMedia"><code class="docutils literal notranslate"><span class="pre">IntercomMedia</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.IntercomMedia.mic_frame"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.mic_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.IntercomMedia.on_audio"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.on_audio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.IntercomMedia.on_video"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.on_video()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.IntercomMedia.start"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.IntercomMedia.stop"><code class="docutils literal notranslate"><span class="pre">IntercomMedia.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge.on_packet"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.on_packet()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge.rx_loop"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.rx_loop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge.start"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge.stop"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.stop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.LocalMediaBridge.tx_loop"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge.tx_loop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.Packet"><code class="docutils literal notranslate"><span class="pre">Packet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Packet.get"><code class="docutils literal notranslate"><span class="pre">Packet.get()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Packet.get_all"><code class="docutils literal notranslate"><span class="pre">Packet.get_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Packet.parse"><code class="docutils literal notranslate"><span class="pre">Packet.parse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Packet.set"><code class="docutils literal notranslate"><span class="pre">Packet.set()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.RtpRelay"><code class="docutils literal notranslate"><span class="pre">RtpRelay</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtpRelay.rtp_port"><code class="docutils literal notranslate"><span class="pre">RtpRelay.rtp_port</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtpRelay.run"><code class="docutils literal notranslate"><span class="pre">RtpRelay.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtpRelay.set_peer"><code class="docutils literal notranslate"><span class="pre">RtpRelay.set_peer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtpRelay.stop"><code class="docutils literal notranslate"><span class="pre">RtpRelay.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.RtspPuller"><code class="docutils literal notranslate"><span class="pre">RtspPuller</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtspPuller.run"><code class="docutils literal notranslate"><span class="pre">RtspPuller.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtspPuller.stop"><code class="docutils literal notranslate"><span class="pre">RtspPuller.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtspServer.handle"><code class="docutils literal notranslate"><span class="pre">RtspServer.handle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtspServer.run"><code class="docutils literal notranslate"><span class="pre">RtspServer.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.RtspServer.stream"><code class="docutils literal notranslate"><span class="pre">RtspServer.stream()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.DTMF_CHARS"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.DTMF_CHARS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.mic_frame"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.mic_frame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.on_audio"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.on_audio()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.on_video"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.on_video()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.set_provider"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.set_provider()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.start"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.start()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipIntercomMedia.stop"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia.stop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.SipProvider"><code class="docutils literal notranslate"><span class="pre">SipProvider</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.FORK_TTL"><code class="docutils literal notranslate"><span class="pre">SipProvider.FORK_TTL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.ack"><code class="docutils literal notranslate"><span class="pre">SipProvider.ack()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.answer_sdp"><code class="docutils literal notranslate"><span class="pre">SipProvider.answer_sdp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.bind_srtp"><code class="docutils literal notranslate"><span class="pre">SipProvider.bind_srtp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.bye"><code class="docutils literal notranslate"><span class="pre">SipProvider.bye()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.cancel"><code class="docutils literal notranslate"><span class="pre">SipProvider.cancel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.handle_response"><code class="docutils literal notranslate"><span class="pre">SipProvider.handle_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.invite"><code class="docutils literal notranslate"><span class="pre">SipProvider.invite()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.is_provider_addr"><code class="docutils literal notranslate"><span class="pre">SipProvider.is_provider_addr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.is_reg_response"><code class="docutils literal notranslate"><span class="pre">SipProvider.is_reg_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.needs_register"><code class="docutils literal notranslate"><span class="pre">SipProvider.needs_register()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.offer_sdp"><code class="docutils literal notranslate"><span class="pre">SipProvider.offer_sdp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.owns"><code class="docutils literal notranslate"><span class="pre">SipProvider.owns()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.register_loop"><code class="docutils literal notranslate"><span class="pre">SipProvider.register_loop()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.sdp_ip"><code class="docutils literal notranslate"><span class="pre">SipProvider.sdp_ip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.sdp_port"><code class="docutils literal notranslate"><span class="pre">SipProvider.sdp_port()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SipProvider.unregister"><code class="docutils literal notranslate"><span class="pre">SipProvider.unregister()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.Srtp"><code class="docutils literal notranslate"><span class="pre">Srtp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Srtp.TAG"><code class="docutils literal notranslate"><span class="pre">Srtp.TAG</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Srtp.from_inline"><code class="docutils literal notranslate"><span class="pre">Srtp.from_inline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Srtp.protect"><code class="docutils literal notranslate"><span class="pre">Srtp.protect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.Srtp.unprotect"><code class="docutils literal notranslate"><span class="pre">Srtp.unprotect()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.SrtpSession"><code class="docutils literal notranslate"><span class="pre">SrtpSession</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SrtpSession.accept_answer"><code class="docutils literal notranslate"><span class="pre">SrtpSession.accept_answer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.html#metzler.SrtpSession.crypto_attr"><code class="docutils literal notranslate"><span class="pre">SrtpSession.crypto_attr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.alaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">alaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.answer_policy"><code class="docutils literal notranslate"><span class="pre">answer_policy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.bind_rtp"><code class="docutils literal notranslate"><span class="pre">bind_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.branch"><code class="docutils literal notranslate"><span class="pre">branch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.call_id"><code class="docutils literal notranslate"><span class="pre">call_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.digest_response"><code class="docutils literal notranslate"><span class="pre">digest_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.env_bool"><code class="docutils literal notranslate"><span class="pre">env_bool()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.env_default"><code class="docutils literal notranslate"><span class="pre">env_default()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.finalize_options"><code class="docutils literal notranslate"><span class="pre">finalize_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.is_rtp"><code class="docutils literal notranslate"><span class="pre">is_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.load_env"><code class="docutils literal notranslate"><span class="pre">load_env()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.md5"><code class="docutils literal notranslate"><span class="pre">md5()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.media_addr"><code class="docutils literal notranslate"><span class="pre">media_addr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.parse_sdp"><code class="docutils literal notranslate"><span class="pre">parse_sdp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.pcm_to_ulaw"><code class="docutils literal notranslate"><span class="pre">pcm_to_ulaw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.sdp_answer_firmware"><code class="docutils literal notranslate"><span class="pre">sdp_answer_firmware()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.sdp_answer_talkback"><code class="docutils literal notranslate"><span class="pre">sdp_answer_talkback()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.set_rtp_range"><code class="docutils literal notranslate"><span class="pre">set_rtp_range()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.sip_uri"><code class="docutils literal notranslate"><span class="pre">sip_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.srtp_available"><code class="docutils literal notranslate"><span class="pre">srtp_available()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.tag"><code class="docutils literal notranslate"><span class="pre">tag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#metzler.ulaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">ulaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.media.html">metzler.media package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.media.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.sip.html">metzler.sip package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.sip.html#submodules">Submodules</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.station.html">metzler.station package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.html#metzler.station.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.html#metzler.station.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.station.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="metzler.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="metzler.cli.html">metzler.cli module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.cli.html#metzler.cli.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.cli.html#metzler.cli.finalize_options"><code class="docutils literal notranslate"><span class="pre">finalize_options()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.cli.html#metzler.cli.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.config.html">metzler.config module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.config.html#metzler.config.answer_policy"><code class="docutils literal notranslate"><span class="pre">answer_policy()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.config.html#metzler.config.env_bool"><code class="docutils literal notranslate"><span class="pre">env_bool()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.config.html#metzler.config.env_default"><code class="docutils literal notranslate"><span class="pre">env_default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.config.html#metzler.config.load_env"><code class="docutils literal notranslate"><span class="pre">load_env()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.discovery.html">metzler.discovery module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.discover"><code class="docutils literal notranslate"><span class="pre">discover()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.docker_detected"><code class="docutils literal notranslate"><span class="pre">docker_detected()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.free_extension"><code class="docutils literal notranslate"><span class="pre">free_extension()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.is_vdm10_host"><code class="docutils literal notranslate"><span class="pre">is_vdm10_host()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.is_vdm10_outdoor"><code class="docutils literal notranslate"><span class="pre">is_vdm10_outdoor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.local_ip_for"><code class="docutils literal notranslate"><span class="pre">local_ip_for()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.provider_status"><code class="docutils literal notranslate"><span class="pre">provider_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.register_status"><code class="docutils literal notranslate"><span class="pre">register_status()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.registrar_probe"><code class="docutils literal notranslate"><span class="pre">registrar_probe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.sadp_probe"><code class="docutils literal notranslate"><span class="pre">sadp_probe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.scan_extension_slots"><code class="docutils literal notranslate"><span class="pre">scan_extension_slots()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.subnet_of"><code class="docutils literal notranslate"><span class="pre">subnet_of()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.discovery.html#metzler.discovery.tcp_candidates"><code class="docutils literal notranslate"><span class="pre">tcp_candidates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="metzler.provider.html">metzler.provider module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="metzler.provider.html#metzler.provider.FritzTrunk"><code class="docutils literal notranslate"><span class="pre">FritzTrunk</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="metzler.provider.html#metzler.provider.SipProvider"><code class="docutils literal notranslate"><span class="pre">SipProvider</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

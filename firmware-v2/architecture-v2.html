@@ -1,0 +1,345 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V2 architecture — how the SIP stack differs structurally &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)" href="intercom-registration.html" />
+    <link rel="prev" title="Firmware internals — hicore (INDOOR_V2.2.100_build251203)" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">V2 architecture — how the SIP stack differs structurally</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#server-side-sipsvrlib-module-map">1. Server side — sipsvrLib module map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sipdevsdk-callback-table-api">2. sipDevSDK callback table &amp; API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#config-layout-sipsvrlib-config-t-sipsvr-config-load-defaults-0x0023bd98">3. Config layout (sipsvrLib <code class="docutils literal notranslate"><span class="pre">config_t</span></code>, <code class="docutils literal notranslate"><span class="pre">sipsvr_config_load_defaults</span></code> &#64;0x0023bd98)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#client-side-what-stayed">4. Client side — what stayed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-management-adjacent-crypto">5. Key-management &amp; adjacent crypto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#structural-deltas-vs-v1-summary">6. Structural deltas vs v1 (summary)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">V2 architecture — how the SIP stack differs structurally</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware-v2/architecture-v2.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="v2-architecture-how-the-sip-stack-differs-structurally">
+<h1>V2 architecture — how the SIP stack differs structurally<a class="headerlink" href="#v2-architecture-how-the-sip-stack-differs-structurally" title="Link to this heading"></a></h1>
+<p>V2.2.100 replaces the v1 C <code class="docutils literal notranslate"><span class="pre">net/sipServer</span></code> registrar (own parser, stateless
+replies, <code class="docutils literal notranslate"><span class="pre">strstr</span></code> body scraping) with a <strong>C++ sipsvrLib</strong> — an embedded
+service library of <code class="docutils literal notranslate"><span class="pre">service_sip_t</span></code> objects threaded onto worker pools,
+fronted by a <code class="docutils literal notranslate"><span class="pre">sipDevSDK_*</span></code> callback API. The eXosip client leg (:5060) is
+kept and extended. Sources: <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/sip/server/</span></code> (raw:
+<code class="docutils literal notranslate"><span class="pre">decompiled/.._.._sipsvr_service_sip.cpp.c</span></code>, <code class="docutils literal notranslate"><span class="pre">.._.._sipsvr_device.cpp.c</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.._.._sipsvr_application.cpp.c</span></code>, <code class="docutils literal notranslate"><span class="pre">net_sipServer_sipsvr.c.c</span></code>).</p>
+<section id="server-side-sipsvrlib-module-map">
+<h2>1. Server side — sipsvrLib module map<a class="headerlink" href="#server-side-sipsvrlib-module-map" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Code (address anchors)</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>UDP workers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transport.c</span></code>: <code class="docutils literal notranslate"><span class="pre">sip_server_initialize_udp_workers</span></code> &#64;0x00226da0, <code class="docutils literal notranslate"><span class="pre">sip_receiver_thread_entry</span></code> &#64;0x00226b24, <code class="docutils literal notranslate"><span class="pre">sip_sender_thread_entry</span></code> &#64;0x00227760, <code class="docutils literal notranslate"><span class="pre">sip_server_receive_and_queue_datagrams</span></code> &#64;0x00227d40, <code class="docutils literal notranslate"><span class="pre">sip_server_enqueue_outgoing_packet</span></code> &#64;0x00227bf4, <code class="docutils literal notranslate"><span class="pre">sip_server_drain_send_queue</span></code> &#64;0x00227790, <code class="docutils literal notranslate"><span class="pre">sip_server_stop_and_release_workers</span></code> &#64;0x00227444</p></td>
+<td><p>recv→queue→work→send pools; buffer pool <code class="docutils literal notranslate"><span class="pre">sipsvr_bufpool_*</span></code> + <code class="docutils literal notranslate"><span class="pre">sipsvr_msg_buffer_alloc/free</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Work dispatch</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dispatch.c</span></code>: <code class="docutils literal notranslate"><span class="pre">sip_server_process_packet_work_item</span></code> &#64;0x00227fb4 (work_routine), <code class="docutils literal notranslate"><span class="pre">sip_server_parse_and_dispatch_datagram</span></code> &#64;0x00228744, <code class="docutils literal notranslate"><span class="pre">sip_server_dispatch_method</span></code> &#64;0x00228d68, <code class="docutils literal notranslate"><span class="pre">svc_sip_packet_buf_recycle</span></code> &#64;0x0022f1dc, <code class="docutils literal notranslate"><span class="pre">sip_release_packet_work_item</span></code> &#64;0x00230098</p></td>
+<td><p>osip parse → method strcmp → per-method route; dispatch actions: −1 drop, 0 reply, 1 broadcast to online devices, 2 forward</p></td>
+</tr>
+<tr class="row-even"><td><p>Method handlers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">registrar.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_server_register_device</span></code> &#64;0x002291b8; <code class="docutils literal notranslate"><span class="pre">proxy.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_server_route_invite</span></code> &#64;0x0022b780 / <code class="docutils literal notranslate"><span class="pre">route_ack</span></code> &#64;0x0022cfb4 / <code class="docutils literal notranslate"><span class="pre">route_message</span></code> &#64;0x0022dc6c / <code class="docutils literal notranslate"><span class="pre">route_bye_or_cancel</span></code> &#64;0x0022f20c / <code class="docutils literal notranslate"><span class="pre">route_response</span></code> &#64;0x0022d598</p></td>
+<td><p>REGISTER + proxy forwarding with Via/Record-Route/R-URI/From rewrites</p></td>
+</tr>
+<tr class="row-odd"><td><p>Replies</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reply.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_server_build_response_from_request</span></code> &#64;0x0022a4c4; <code class="docutils literal notranslate"><span class="pre">credentials.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_build_digest_challenge</span></code> &#64;0x0022af50</p></td>
+<td><p>cloned-header responses, tag/Expires/Server, Digest challenges</p></td>
+</tr>
+<tr class="row-even"><td><p>Device model</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">device.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_device_record_construct</span></code> &#64;0x0021efbc / <code class="docutils literal notranslate"><span class="pre">apply_registration</span></code> &#64;0x0023ace0 / <code class="docutils literal notranslate"><span class="pre">apply_unregistration</span></code> &#64;0x0023aec8 / <code class="docutils literal notranslate"><span class="pre">mark_online</span></code> &#64;0x0021f32c / <code class="docutils literal notranslate"><span class="pre">mark_idle</span></code> &#64;0x00230d2c / <code class="docutils literal notranslate"><span class="pre">is_online</span></code> &#64;0x00230ddc / <code class="docutils literal notranslate"><span class="pre">decrement_expiry</span></code> &#64;0x0021f68c; <code class="docutils literal notranslate"><span class="pre">addressbook.c</span></code> <code class="docutils literal notranslate"><span class="pre">add</span></code> &#64;0x0021dea8 <code class="docutils literal notranslate"><span class="pre">find</span></code> &#64;0x002310a4 <code class="docutils literal notranslate"><span class="pre">resolve</span></code> &#64;0x002311a0 <code class="docutils literal notranslate"><span class="pre">erase</span></code> &#64;0x0021e080 <code class="docutils literal notranslate"><span class="pre">load_registrations</span></code> &#64;0x0021d590 <code class="docutils literal notranslate"><span class="pre">expire_heartbeats</span></code> &#64;0x0021c82c <code class="docutils literal notranslate"><span class="pre">get_or_refresh_manager</span></code> &#64;0x0021e4f0; <code class="docutils literal notranslate"><span class="pre">address_book.c</span></code> list/map helpers</p></td>
+<td><p>in-memory C++ device records (std::string fields) in a locked addressbook; expiry worker</p></td>
+</tr>
+<tr class="row-odd"><td><p>Persistence</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persistence.c</span></code> <code class="docutils literal notranslate"><span class="pre">rp_track_device_change</span></code> &#64;0x00234624, <code class="docutils literal notranslate"><span class="pre">sip_registration_persistence_flush_events</span></code> &#64;0x00234a10 (<code class="docutils literal notranslate"><span class="pre">rp_work</span></code>), <code class="docutils literal notranslate"><span class="pre">rp_dev_fields_upsert</span></code> &#64;0x0023481c, <code class="docutils literal notranslate"><span class="pre">rp_find_q</span></code>/<code class="docutils literal notranslate"><span class="pre">rp_show_q</span></code>, rwlock set, <code class="docutils literal notranslate"><span class="pre">sipsvr_digest_ha1_hash</span></code> &#64;0x00237014 / <code class="docutils literal notranslate"><span class="pre">sipsvr_digest_response_hash</span></code> &#64;0x002371f0</p></td>
+<td><p>dev_reg DB write-through + HA1/response helpers</p></td>
+</tr>
+<tr class="row-even"><td><p>App/service shell</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">application.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_application_initialize</span></code> &#64;0x0021b430 / <code class="docutils literal notranslate"><span class="pre">start_services</span></code> &#64;0x0021b8f8 / <code class="docutils literal notranslate"><span class="pre">stop</span></code>/<code class="docutils literal notranslate"><span class="pre">schedule_restart</span></code>; <code class="docutils literal notranslate"><span class="pre">service_mgr.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_service_manager_create_services</span></code> &#64;0x002325c0 (+std::map tree helpers); <code class="docutils literal notranslate"><span class="pre">server_control.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_server_control_queue_loop</span></code> &#64;0x0011b070, <code class="docutils literal notranslate"><span class="pre">sip_dispatch_sdk_server_event</span></code> &#64;0x0011bb7c, <code class="docutils literal notranslate"><span class="pre">sip_start_server_control_thread</span></code> &#64;0x0011c0c4; <code class="docutils literal notranslate"><span class="pre">multi_thread_work.c</span></code>, <code class="docutils literal notranslate"><span class="pre">work_thread.c</span></code>, <code class="docutils literal notranslate"><span class="pre">threading.c</span></code></p></td>
+<td><p>singleton app + service_mgr + control mq</p></td>
+</tr>
+<tr class="row-odd"><td><p>XML/crypto helpers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">registration_xml.c</span></code> TinyXML doc/element wrappers; <code class="docutils literal notranslate"><span class="pre">md5.c</span></code> <code class="docutils literal notranslate"><span class="pre">sip_md5_*</span></code> (0x0022b6xx region); <code class="docutils literal notranslate"><span class="pre">server/md5.c</span></code></p></td>
+<td><p>TinyXML (not strstr) for regXML; osip MD5 reuse</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sipdevsdk-callback-table-api">
+<h2>2. sipDevSDK callback table &amp; API<a class="headerlink" href="#sipdevsdk-callback-table-api" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">sip_start_server_control_thread</span></code> &#64;0x0011c0c4 installs a 6-word callback
+block and a 0x24 config block into <code class="docutils literal notranslate"><span class="pre">sipsvr_service_start_wrapper</span></code>
+&#64;0x0021af18 → <code class="docutils literal notranslate"><span class="pre">sip_application_initialize</span></code>. The SDK-facing API surface
+(self-identified <code class="docutils literal notranslate"><span class="pre">sipDevSDK_*</span></code> names) lives in <code class="docutils literal notranslate"><span class="pre">sdk_callbacks.c</span></code>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">get_local_devtype</span></code> &#64;0x00224870, <code class="docutils literal notranslate"><span class="pre">is_dev_maindoor</span></code> &#64;0x002249e8,
+<code class="docutils literal notranslate"><span class="pre">get_Manager_center</span></code> &#64;0x00224c78, <code class="docutils literal notranslate"><span class="pre">get_dev_LongNum</span></code> &#64;0x00224fc0,
+<code class="docutils literal notranslate"><span class="pre">get_Room_LongNum</span></code> &#64;0x002252c0, <code class="docutils literal notranslate"><span class="pre">get_register_list</span></code> &#64;0x00225490,
+<code class="docutils literal notranslate"><span class="pre">get_reply_time</span></code> &#64;0x00225608, <code class="docutils literal notranslate"><span class="pre">get_reg_sip_password</span></code> &#64;0x00225828,
+<code class="docutils literal notranslate"><span class="pre">get_reg_sip_random</span></code> &#64;0x00225950, <code class="docutils literal notranslate"><span class="pre">get_reg_sip_key</span></code> &#64;0x00225a34,
+<code class="docutils literal notranslate"><span class="pre">save_reg_sip_key</span></code> &#64;0x00225b84, <code class="docutils literal notranslate"><span class="pre">send_register_to_dev</span></code> &#64;0x00225d14,
+<code class="docutils literal notranslate"><span class="pre">send_authentication_to_dev</span></code> &#64;0x002260a8, <code class="docutils literal notranslate"><span class="pre">sipsvr_status_to_dev</span></code>
+&#64;0x002263cc, <code class="docutils literal notranslate"><span class="pre">cb_get_reg_password</span></code> &#64;0x0011a058,
+<code class="docutils literal notranslate"><span class="pre">cb_get_runtime_info</span></code> &#64;0x0011a2ac (selector 0–7: own num / dev kind /
+registrar ip / room addr / ext list / numbering / time-DST / cli flag),
+<code class="docutils literal notranslate"><span class="pre">cb_recv_sipsvr_msg</span></code> &#64;0x0011bb7c. The sipsvrLib never touches the cfg blob
+or DB directly — it calls back through these.</p>
+</section>
+<section id="config-layout-sipsvrlib-config-t-sipsvr-config-load-defaults-0x0023bd98">
+<h2>3. Config layout (sipsvrLib <code class="docutils literal notranslate"><span class="pre">config_t</span></code>, <code class="docutils literal notranslate"><span class="pre">sipsvr_config_load_defaults</span></code> &#64;0x0023bd98)<a class="headerlink" href="#config-layout-sipsvrlib-config-t-sipsvr-config-load-defaults-0x0023bd98" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Off</p></th>
+<th class="head"><p>Field</p></th>
+<th class="head"><p>Source/default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>+0x18</p></td>
+<td><p>listen port</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">net_util_aux_q(1)</span></code> else <code class="docutils literal notranslate"><span class="pre">0x13c9</span></code> (5065)</p></td>
+</tr>
+<tr class="row-odd"><td><p>+0x1c</p></td>
+<td><p>numbering scheme</p></td>
+<td><p><strong>10</strong> (app)</p></td>
+</tr>
+<tr class="row-even"><td><p>+0x20</p></td>
+<td><p>body-skip/XML gate</p></td>
+<td><p>0 (always parse)</p></td>
+</tr>
+<tr class="row-odd"><td><p>+0x24</p></td>
+<td><p>auth mode (SIP2.0 digest)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vis_aux_f_q()==0</span></code> — prior work ties the getter to <code class="docutils literal notranslate"><span class="pre">cfg+0x35e8d</span></code> (SIP1.0/SIP2.0 byte)</p></td>
+</tr>
+<tr class="row-even"><td><p>+0x28</p></td>
+<td><p>floorNum/type-1 flag</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_sdk_attr5_flag_get</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>+0x2c</p></td>
+<td><p>IPv6 mode</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg_dev_get()!=0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>+0x30</p></td>
+<td><p>device kind</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_sdk_query_local_device_type</span></code> (==1 → indoor/type-1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>+0x34</p></td>
+<td><p>realm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;Hikvision&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>+0x40 / +0x44 / +0x54</p></td>
+<td><p>labels</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sipServer</span></code> / <code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code> / <code class="docutils literal notranslate"><span class="pre">MainDevice</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>+0x50 / +0x58</p></td>
+<td><p>timers</p></td>
+<td><p>600 / 900</p></td>
+</tr>
+</tbody>
+</table>
+<p>Device cfg offsets consumed via callbacks: <code class="docutils literal notranslate"><span class="pre">cfg+0x2d354</span></code> devLongNum,
+<code class="docutils literal notranslate"><span class="pre">cfg+0x35a14</span></code> regPassword, <code class="docutils literal notranslate"><span class="pre">cfg+0x120</span></code> display name, <code class="docutils literal notranslate"><span class="pre">cfg+0x5fd0</span></code>/<code class="docutils literal notranslate"><span class="pre">0x5fe8</span></code>/
+<code class="docutils literal notranslate"><span class="pre">0x601c</span></code>/<code class="docutils literal notranslate"><span class="pre">0x6034</span></code> peer IP blocks, <code class="docutils literal notranslate"><span class="pre">cfg+0x34fac</span></code>/<code class="docutils literal notranslate"><span class="pre">0x34fcc</span></code>/<code class="docutils literal notranslate"><span class="pre">0x34fec</span></code>/
+<code class="docutils literal notranslate"><span class="pre">0x35000</span></code>/<code class="docutils literal notranslate"><span class="pre">0x35040</span></code>/<code class="docutils literal notranslate"><span class="pre">0x350ce</span></code> door-account block, <code class="docutils literal notranslate"><span class="pre">cfg+0x6018</span></code> doorType.</p>
+</section>
+<section id="client-side-what-stayed">
+<h2>4. Client side — what stayed<a class="headerlink" href="#client-side-what-stayed" title="Link to this heading"></a></h2>
+<p>eXosip leg: <code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code> &#64;0x00143340 (:5060, <code class="docutils literal notranslate"><span class="pre">HKVS/2.0.0</span></code> UA) +
+<code class="docutils literal notranslate"><span class="pre">cli_regist_task</span></code>/<code class="docutils literal notranslate"><span class="pre">cli_heartbeat_task</span></code>/<code class="docutils literal notranslate"><span class="pre">cli_send_msg_v2</span></code> — MESSAGEs now go
+to <strong>:5065</strong> with digest auth and a response-flag wait (vs v1 fire-and-forget
+:5065/:5060 unauthenticated). SIP2.0 additions vs v1: <code class="docutils literal notranslate"><span class="pre">&lt;random&gt;</span></code> key
+machinery (registration_keys.c), <code class="docutils literal notranslate"><span class="pre">a=version:</span></code> SDP tag + INVITE digest,
+fast_regist mq, v2 XML (<code class="docutils literal notranslate"><span class="pre">*_v2</span></code> builders/parsers in <code class="docutils literal notranslate"><span class="pre">sip/xml_proc.c</span></code>).</p>
+</section>
+<section id="key-management-adjacent-crypto">
+<h2>5. Key-management &amp; adjacent crypto<a class="headerlink" href="#key-management-adjacent-crypto" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">system/key_manage.c</span></code> — <code class="docutils literal notranslate"><span class="pre">init_security_encrypt_key</span></code> &#64;0x00381af8,
+<code class="docutils literal notranslate"><span class="pre">get_secure_encrypt_key</span></code> &#64;0x003802d8, <code class="docutils literal notranslate"><span class="pre">get_module_key</span></code> &#64;0x00381bbc,
+<code class="docutils literal notranslate"><span class="pre">genarate_work_key</span></code> &#64;0x0037eaf4, <code class="docutils literal notranslate"><span class="pre">key_base64_{en,de}code</span></code>
+&#64;0x00383588/0x00383778, <code class="docutils literal notranslate"><span class="pre">app_data_{en,de}crypt</span></code> &#64;0x0037e7cc/0x0037e8e8 —
+the dev_key_manage-style key store the reg-key helpers sit next to.</p></li>
+<li><p>ISAPI side: <code class="docutils literal notranslate"><span class="pre">isapi_security_credential_hash</span></code> + <code class="docutils literal notranslate"><span class="pre">sec_hmac_sha256</span></code>
+&#64;0x00302888 + <code class="docutils literal notranslate"><span class="pre">handle_isapi_security_challenge_request</span></code> &#64;0x002fff7c /
+<code class="docutils literal notranslate"><span class="pre">handle_isapi_security_session_login_request</span></code> &#64;0x00304a58 —
+SHA256 challenge/session auth is <strong>ISAPI</strong>, not SIP.</p></li>
+<li><p>Presence (not analyzed): <code class="docutils literal notranslate"><span class="pre">smartlock/</span></code> (client_api/protocol/radio/
+packet_codec/dispatch_thread), <code class="docutils literal notranslate"><span class="pre">misc/event_zigbee_rex_zigbee_application.c</span></code>,
+ONVIF-adjacent code in <code class="docutils literal notranslate"><span class="pre">misc/</span></code>/<code class="docutils literal notranslate"><span class="pre">net/</span></code> — <strong>unverified</strong> depth.</p></li>
+</ul>
+</section>
+<section id="structural-deltas-vs-v1-summary">
+<h2>6. Structural deltas vs v1 (summary)<a class="headerlink" href="#structural-deltas-vs-v1-summary" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>v1 (V2.0.24)</p></th>
+<th class="head"><p>v2 (V2.2.100)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>C <code class="docutils literal notranslate"><span class="pre">net/sipServer</span></code> parser, <code class="docutils literal notranslate"><span class="pre">strstr</span></code> body scrape, stateless <code class="docutils literal notranslate"><span class="pre">sendto</span></code> replies, hard-coded :5060 reply port</p></td>
+<td><p>C++ <code class="docutils literal notranslate"><span class="pre">service_sip_t</span></code> worker pools, osip parse, Via <code class="docutils literal notranslate"><span class="pre">received</span></code>/<code class="docutils literal notranslate"><span class="pre">rport</span></code> fix, response cloned from request</p></td>
+</tr>
+<tr class="row-odd"><td><p>To-URI AOR identity</p></td>
+<td><p><strong>From-URI username</strong> identity</p></td>
+</tr>
+<tr class="row-even"><td><p>No digest generation found</p></td>
+<td><p>Full Digest gate (challenge + verify), config-gated (SIP1.0/SIP2.0 byte <code class="docutils literal notranslate"><span class="pre">cfg+0x35e8d</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>dev_reg 0xb0 rows via <code class="docutils literal notranslate"><span class="pre">dpi_*</span></code> SQL</p></td>
+<td><p>in-memory C++ records + <code class="docutils literal notranslate"><span class="pre">rp_*</span></code> persistence events → same <code class="docutils literal notranslate"><span class="pre">dpi_*</span></code>/<code class="docutils literal notranslate"><span class="pre">db_query</span></code> SQL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">g_callBusy</span></code> flag</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_device_is_online</span></code> + <code class="docutils literal notranslate"><span class="pre">cli_vistalk_*</span></code> state</p></td>
+</tr>
+<tr class="row-odd"><td><p>eXosip/3.6.0 UA</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HKVS/2.0.0</span></code> UA</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&lt;regXML&gt;</span></code> request/<code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> absent</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> only in <strong>response</strong> (+ <code class="docutils literal notranslate"><span class="pre">&lt;random&gt;</span></code> AES/PBKDF2 key, <code class="docutils literal notranslate"><span class="pre">&lt;isSummerTime&gt;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>MESSAGE fire-and-forget</p></td>
+<td><p>MESSAGE → :5065 + digest + channel-table response wait</p></td>
+</tr>
+<tr class="row-even"><td><p>header-only SDP</p></td>
+<td><p>same, + <code class="docutils literal notranslate"><span class="pre">a=version:V2.0.0</span></code> gate; 0xb keeps real RTP/AVP SDP w/ wider codec table</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-left" title="Firmware internals — hicore (INDOOR_V2.2.100_build251203)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intercom-registration.html" class="btn btn-neutral float-right" title="Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

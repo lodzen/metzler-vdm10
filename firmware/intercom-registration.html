@@ -1,0 +1,1204 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intercom registration &amp; private-SIP communication — firmware internals &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Doorbell call flow — firmware internals" href="door-call-flow.html" />
+    <link rel="prev" title="Firmware internals — hicore (INDOOR_V2.0.24_build230608)" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Intercom registration &amp; private-SIP communication — firmware internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#two-sip-stacks-three-ports">1. Two SIP stacks, three ports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#register-packet-shape-vdm10-1-0-sip-client-registration-c">2. REGISTER — packet shape (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/registration.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#registrar-pipeline-sip-registermode-0x000d8dcc-vdm10-1-0-sip-server-registrar-c">3. Registrar pipeline — <code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> &#64;0x000d8dcc (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/registrar.c</span></code>)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dev-reg-dedup-dpi-register-dev-reg-info-0x000fc4a0-misc-datamanagement-database-db-api-c-c">dev_reg dedup — <code class="docutils literal notranslate"><span class="pre">dpi_register_dev_reg_info</span></code> &#64;0x000fc4a0 (<code class="docutils literal notranslate"><span class="pre">misc/dataManagement_database_db_api.c.c</span></code>)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#verified-live-2025-11-19-lan-10-0-0-0-24-registrar-5065">Verified live (2025-11-19, LAN 10.0.0.0/24, registrar <code class="docutils literal notranslate"><span class="pre">…:5065</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#numbering-t-fff-uu-rrr-ii-vdm10-1-0-sip-server-registrar-c-header-misc-util-common-visutil-c-c">4. Numbering — <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">FFF</span> <span class="pre">UU</span> <span class="pre">RRR</span> <span class="pre">II</span></code> (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/registrar.c</span></code> header + <code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#timing-re-register-and-heartbeat">5. Timing — re-REGISTER and heartbeat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#heartbeat-message-and-the-sipcmd-virtual-aor">6. Heartbeat MESSAGE and the <code class="docutils literal notranslate"><span class="pre">sipCmd</span></code> virtual AOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#options-keepalive">7. OPTIONS keepalive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#post-register-visnet-sync-tcp-8102">8. Post-register visNet sync — TCP :8102</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#message-info-vocabulary-vdm10-1-0-sip-xml-proc-c-client-call-out-c">9. MESSAGE/INFO vocabulary (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/xml_proc.c</span></code>, <code class="docutils literal notranslate"><span class="pre">client/call_out.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#busy-flag-extension-routing-vdm10-1-0-sip-server-sipserver-c-client-uas-calls-c">10. Busy flag, extension routing (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/sipServer.c</span></code>, <code class="docutils literal notranslate"><span class="pre">client/uas_calls.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence-register-heartbeat-unregister">11. Sequence — register, heartbeat, unregister</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-functions">12. Key functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#marked-unverified">13. Marked unverified</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Intercom registration &amp; private-SIP communication — firmware internals</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware/intercom-registration.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="intercom-registration-private-sip-communication-firmware-internals">
+<h1>Intercom registration &amp; private-SIP communication — firmware internals<a class="headerlink" href="#intercom-registration-private-sip-communication-firmware-internals" title="Link to this heading"></a></h1>
+<p>How <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (Metzler VTH 2.0.24, rebranded Hikvision indoor station) registers
+as an indoor-station/extension, keeps the binding alive, and resolves peers —
+i.e. the device side of the “private SIP” layer. The wire-level description of
+the same dialect is in <a class="reference internal" href="../protocol.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">../protocol.md</span></code></span></a>; this doc is what the
+firmware actually executes.</p>
+<p>Sources: <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/{README.md,xml_proc.c}</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/*</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/*</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/visnet/visnet_server.c</span></code>,
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/misc/{net_sipClient_sip_client.c.c,net_sipServer_registrar.c.c,</span> <span class="pre">dataManagement_database_db_api.c.c,util_common_visUtil.c.c,grouped.c}</span></code>,
+plus <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §3/4/5/8/9 (verified-live facts).</p>
+<section id="two-sip-stacks-three-ports">
+<h2>1. Two SIP stacks, three ports<a class="headerlink" href="#two-sip-stacks-three-ports" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Role</p></th>
+<th class="head"><p>Code</p></th>
+<th class="head"><p>Port</p></th>
+<th class="head"><p>Stack</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SIP client (UAC+UAS)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">net/sipClient/sip_client.c</span></code> — <code class="docutils literal notranslate"><span class="pre">task_sipClient_UAS</span></code> &#64;0x000e8318</p></td>
+<td><p>UDP <strong>5060</strong></p></td>
+<td><p>vendored eXosip2/osip2 (<code class="docutils literal notranslate"><span class="pre">misc/libeXosip2.so</span></code>, <code class="docutils literal notranslate"><span class="pre">eXosip_listen_addr(...,0x13c4,...)</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Local registrar/forwarder</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">net/sipServer/*</span></code> — <code class="docutils literal notranslate"><span class="pre">task_sipServer</span></code> &#64;0x000db51c</p></td>
+<td><p>UDP <strong>5065</strong></p></td>
+<td><p>own kamailio-style parser (<code class="docutils literal notranslate"><span class="pre">srv_parseMsg</span></code> &#64;0x000cd3f4), stateless replies</p></td>
+</tr>
+<tr class="row-even"><td><p>visNet sync channel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">net/sipClient/visNetServer.c</span></code></p></td>
+<td><p>TCP <strong>8102</strong></p></td>
+<td><p>proprietary framed protocol, nonce+signature</p></td>
+</tr>
+</tbody>
+</table>
+<p>Client worker tasks spawned by <code class="docutils literal notranslate"><span class="pre">sip_taskUas</span></code> init (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/ack_tail.c</span></code>):
+<code class="docutils literal notranslate"><span class="pre">RegistCtrl</span></code> (0xe0dc4) or <code class="docutils literal notranslate"><span class="pre">voip_regist_task</span></code> (0xe1a04) depending on
+<code class="docutils literal notranslate"><span class="pre">cfgTalkbackFlag</span></code>, <code class="docutils literal notranslate"><span class="pre">SipSessionCtrl</span></code> (0xe56e4), <code class="docutils literal notranslate"><span class="pre">HeartBeat</span></code> (0xe28dc, only when
+<code class="docutils literal notranslate"><span class="pre">cfgTalkbackFlag()==0</span> <span class="pre">&amp;&amp;</span> <span class="pre">!netDualNic()</span></code>), <code class="docutils literal notranslate"><span class="pre">NewCall01/02</span></code>, <code class="docutils literal notranslate"><span class="pre">AlarmProc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PasswdProc</span></code>, <code class="docutils literal notranslate"><span class="pre">ringBack</span></code>. <code class="docutils literal notranslate"><span class="pre">task_sipServer</span></code> runs on every device, but
+<code class="docutils literal notranslate"><span class="pre">sip_udpProcRule</span></code> is only applied when <code class="docutils literal notranslate"><span class="pre">FUN_000f86b0()==1</span></code> (main-room box),
+and <code class="docutils literal notranslate"><span class="pre">sip_insertCenterRecord</span></code> seeds the <code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code> row only when
+<code class="docutils literal notranslate"><span class="pre">FUN_000f86b0()!=0</span></code> (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/sipServer.c</span></code>).</p>
+</section>
+<section id="register-packet-shape-vdm10-1-0-sip-client-registration-c">
+<h2>2. REGISTER — packet shape (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/registration.c</span></code>)<a class="headerlink" href="#register-packet-shape-vdm10-1-0-sip-client-registration-c" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">_client_handle_register</span></code> (<code class="docutils literal notranslate"><span class="pre">FUN_000e05e0</span></code>, a.k.a. <code class="docutils literal notranslate"><span class="pre">sipcli_register</span></code>) builds the
+REGISTER per <code class="docutils literal notranslate"><span class="pre">kind</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">kind</span></code></p></th>
+<th class="head"><p>Purpose</p></th>
+<th class="head"><p>R-URI / port</p></th>
+<th class="head"><p>Expires</p></th>
+<th class="head"><p>regXML fields</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1, 3</p></td>
+<td><p>normal register to our registrar</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip:&lt;registrar-ip&gt;:5065</span></code></p></td>
+<td><p><strong>900</strong></p></td>
+<td><p>kind 1 → <code class="docutils literal notranslate"><span class="pre">&lt;sipNum&gt;</span></code>+<code class="docutils literal notranslate"><span class="pre">&lt;floorNum&gt;</span></code> (indoor) / <code class="docutils literal notranslate"><span class="pre">&lt;floorNum&gt;</span></code> (other); kind 3 → serial+MAC only</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>name update</p></td>
+<td><p>same</p></td>
+<td><p>900</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">+</span> <span class="pre">&lt;regDevName&gt;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>9</p></td>
+<td><p>“Pre-Regist” — inner device → door</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip:&lt;cfg</span> <span class="pre">proxy</span> <span class="pre">ip&gt;:&lt;cfg+0x35040</span> <span class="pre">port&gt;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x350ce</span></code> <strong>minutes</strong> × 60</p></td>
+<td><p>serial+MAC only</p></td>
+</tr>
+</tbody>
+</table>
+<p>Header formats seen in the builder: <code class="docutils literal notranslate"><span class="pre">From</span> <span class="pre">=</span> <span class="pre">&quot;sip:&lt;devLongNum&gt;&#64;&lt;localip&gt;&quot;</span></code>,
+To/proxy among <code class="docutils literal notranslate"><span class="pre">sip:%s&#64;%s</span></code>, <code class="docutils literal notranslate"><span class="pre">sip:1000000000%1d&#64;%s</span></code>, <code class="docutils literal notranslate"><span class="pre">%s&lt;sip:%s&#64;%s&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sip:%s&#64;%s:%d</span></code>, <code class="docutils literal notranslate"><span class="pre">sip:username&#64;%s:%d</span></code>; <code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">text/xml</span></code>;
+<code class="docutils literal notranslate"><span class="pre">User-Agent:</span> <span class="pre">eXosip/3.6.0</span></code>. Body always comes from
+<code class="docutils literal notranslate"><span class="pre">_sip_xml_get_reg_info_xml</span></code> (<code class="docutils literal notranslate"><span class="pre">xml_getRegInfoXml</span></code> &#64;0x000eb2e4,
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/xml_proc.c</span></code>) — the <code class="docutils literal notranslate"><span class="pre">kind</span></code> is passed straight through as the
+builder’s mode selector:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;regXML&gt;</span>
+<span class="w">  </span><span class="nt">&lt;regDevSerial&gt;</span>Q……<span class="nt">&lt;/regDevSerial&gt;</span><span class="w">      </span><span class="cm">&lt;!-- g_serial_no @0x00a11435, always --&gt;</span>
+<span class="w">  </span><span class="nt">&lt;regDevMacAddr&gt;</span>xx:xx:xx:xx:xx:xx<span class="nt">&lt;/regDevMacAddr&gt;</span><span class="w">   </span><span class="cm">&lt;!-- always --&gt;</span>
+<span class="w">  </span><span class="nt">&lt;sipNum&gt;</span>10000000001<span class="nt">&lt;/sipNum&gt;</span><span class="w">          </span><span class="cm">&lt;!-- kind==1 &amp;&amp; indoor: own devLongNum (cfg+0x34fcc) --&gt;</span>
+<span class="w">  </span><span class="nt">&lt;floorNum&gt;</span>3<span class="nt">&lt;/floorNum&gt;</span><span class="w">                </span><span class="cm">&lt;!-- kind==1: cfg+0x2d330/100 (type-2 sys) or u16@cfg+0x2d336 --&gt;</span>
+<span class="w">  </span><span class="nt">&lt;regDevName&gt;</span>Room<span class="w"> </span>2<span class="nt">&lt;/regDevName&gt;</span><span class="w">       </span><span class="cm">&lt;!-- kind==8: cfg+0x120 --&gt;</span>
+<span class="nt">&lt;/regXML&gt;</span>
+</pre></div>
+</div>
+<p>(The <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> element from <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §4 is <em>not</em> emitted by this build’s
+builder — unverified where it came from.)</p>
+<p>Digest: <code class="docutils literal notranslate"><span class="pre">eXosip_add_authentication_info(user,</span> <span class="pre">authuser,</span> <span class="pre">passwd,</span> <span class="pre">&quot;MD5&quot;,</span> <span class="pre">NULL)</span></code>
+before send; a <code class="docutils literal notranslate"><span class="pre">401</span></code>/<code class="docutils literal notranslate"><span class="pre">407</span></code> is resent automatically by <code class="docutils literal notranslate"><span class="pre">eXosip_automatic_action</span></code>
+(REGISTER_FAILURE path) or, for MESSAGEs, by <code class="docutils literal notranslate"><span class="pre">eXosip_default_action</span></code> after
+re-adding auth info (<code class="docutils literal notranslate"><span class="pre">ack_tail.c</span></code> ev 12/31). Wire challenge observed:
+<code class="docutils literal notranslate"><span class="pre">WWW-Authenticate:</span> <span class="pre">Digest</span> <span class="pre">realm=&quot;Hikvision&quot;,</span> <span class="pre">nonce,</span> <span class="pre">opaque</span></code> — <strong>MD5 only</strong>.
+The <code class="docutils literal notranslate"><span class="pre">401</span></code> can be emitted by <code class="docutils literal notranslate"><span class="pre">send_reply</span></code>’s status table (below), but <strong>no
+digest verification or <code class="docutils literal notranslate"><span class="pre">WWW-Authenticate</span></code> generation exists anywhere in the
+decompiled <code class="docutils literal notranslate"><span class="pre">net/sipServer</span></code> code</strong> — the challenge origin is unverified
+(the <code class="docutils literal notranslate"><span class="pre">&quot;Hikvision&quot;</span></code> rodata string exists at ~0x62e7a2; its SIP-side consumer
+was not located — possibly in the undecompiled <code class="docutils literal notranslate"><span class="pre">srv_parseMsg</span></code>/<code class="docutils literal notranslate"><span class="pre">srv_forwardRequest</span></code>
+path or the vendored eXosip).</p>
+</section>
+<section id="registrar-pipeline-sip-registermode-0x000d8dcc-vdm10-1-0-sip-server-registrar-c">
+<h2>3. Registrar pipeline — <code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> &#64;0x000d8dcc (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/registrar.c</span></code>)<a class="headerlink" href="#registrar-pipeline-sip-registermode-0x000d8dcc-vdm10-1-0-sip-server-registrar-c" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">sip_receiveMsg</span></code> (0x000db23c) → <code class="docutils literal notranslate"><span class="pre">sip_parseMsg</span></code> → <code class="docutils literal notranslate"><span class="pre">sip_udpProcRule</span></code> → REGISTER:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">parse_message</span></code> (0x000d7b40): To, Call-ID, CSeq required; Expires parses
+(<code class="docutils literal notranslate"><span class="pre">parse_expires</span></code> &#64;0x000cd9f4, digit accumulator); every Contact hf parses.
+Failures set <code class="docutils literal notranslate"><span class="pre">g_reg_status</span></code> &#64;0x00a6c080 (0xe..0x13).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extract_aor</span></code> (0x000d77a4): To-URI user part, %-unescaped → <code class="docutils literal notranslate"><span class="pre">call_num</span></code>.
+<code class="docutils literal notranslate"><span class="pre">extract_host</span></code> (0x000d79e0) likewise demands an 11-char From user elsewhere.</p></li>
+<li><p>Record fill — <strong>0xb0-byte dev_reg row</strong>: <code class="docutils literal notranslate"><span class="pre">+0x04</span> <span class="pre">call_num[0x14]</span></code> (the AOR,
+must be exactly 11 chars else status 0x1a), <code class="docutils literal notranslate"><span class="pre">+0x18</span> <span class="pre">dev_ip[0x10]</span></code> (source IP,
+<em>not</em> the Contact), <code class="docutils literal notranslate"><span class="pre">+0x28</span> <span class="pre">reg_time[0x20]</span></code> (now+Expires as text),
+<code class="docutils literal notranslate"><span class="pre">+0x48</span> <span class="pre">dev_type</span></code>, <code class="docutils literal notranslate"><span class="pre">+0x4c</span> <span class="pre">serial_no[0x30]</span></code>, <code class="docutils literal notranslate"><span class="pre">+0x7c</span> <span class="pre">mac_addr[0x14]</span></code>,
+<code class="docutils literal notranslate"><span class="pre">+0x90</span> <span class="pre">dev_name[0x20]</span></code>. <code class="docutils literal notranslate"><span class="pre">dev_type</span></code>/<code class="docutils literal notranslate"><span class="pre">serial</span></code>/<code class="docutils literal notranslate"><span class="pre">mac</span></code>/<code class="docutils literal notranslate"><span class="pre">name</span></code> are <strong>scraped by
+<code class="docutils literal notranslate"><span class="pre">strstr</span></code> from the raw body</strong>, not XML-parsed — <code class="docutils literal notranslate"><span class="pre">&lt;regDevSerial&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&lt;regDevMacAddr&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;regDevName&gt;</span></code> (caps 0x30/0x14/0x20).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">srv_splitDevNum</span></code> (<code class="docutils literal notranslate"><span class="pre">FUN_000f9418</span></code>, <code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code>) derives
+<code class="docutils literal notranslate"><span class="pre">dev_type</span></code> from <code class="docutils literal notranslate"><span class="pre">call_num</span></code> (table below). On a <em>subordinate</em> registrar
+(<code class="docutils literal notranslate"><span class="pre">FUN_0006498c()||FUN_00064c84()</span></code> — cfg u8&#64;0x2d335==0 class flag) the
+registering number must share the local site prefix (type digit
+cfg+0x2d330, floor cfg+0x2d332, unit cfg+0x2d334), and type-3 ROOM
+registrations are refused on analog systems (<code class="docutils literal notranslate"><span class="pre">srv_isDigitalSys()==0</span></code> →
+<code class="docutils literal notranslate"><span class="pre">&quot;VIS_DEV_TYPE_ROOM</span> <span class="pre">can't</span> <span class="pre">reg&quot;</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Expires</span> <span class="pre">==</span> <span class="pre">0</span></code> → <strong>unregister</strong>: <code class="docutils literal notranslate"><span class="pre">db_reginfo_del</span></code> with
+<code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">serial_no='&lt;s&gt;'</span> <span class="pre">or</span> <span class="pre">dev_ip='&lt;src</span> <span class="pre">ip&gt;'</span></code>, <code class="docutils literal notranslate"><span class="pre">FUN_000fdd54</span></code> drops the
+call_num map, ACS password rows <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">room_num='&lt;atoi(call_num+6)&gt;'</span></code>
+deleted, <code class="docutils literal notranslate"><span class="pre">send_reply</span></code> → 200.</p></li>
+<li><p>else <code class="docutils literal notranslate"><span class="pre">dpi_register_dev_reg_info</span></code> (below); on derived type 3 also
+<code class="docutils literal notranslate"><span class="pre">FUN_000fdca4(dev_name,</span> <span class="pre">call_num)</span></code> (room map) — then <code class="docutils literal notranslate"><span class="pre">send_reply</span></code> and
+<code class="docutils literal notranslate"><span class="pre">vns_registrarSyncHook</span></code> (§8).</p></li>
+</ol>
+<p>Replies: <code class="docutils literal notranslate"><span class="pre">send_reply</span></code>/<code class="docutils literal notranslate"><span class="pre">sl_send_reply</span></code>/<code class="docutils literal notranslate"><span class="pre">build_res_buf_from_sip_req</span></code>
+(0x000d8cd0/0x000d8ab4/0x000d7fa8) — stateless, <code class="docutils literal notranslate"><span class="pre">sendto</span></code> back to source IP
+port <strong>5060</strong> (hard-coded <code class="docutils literal notranslate"><span class="pre">htons(5060)</span></code> — not the Via port). Status→code via
+<code class="docutils literal notranslate"><span class="pre">g_reg_status</span></code>-indexed table &#64;0x00a6c084: 400 <code class="docutils literal notranslate"><span class="pre">Bad</span> <span class="pre">Request</span></code>, 401 <code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code>,
+500, 503, 410 <code class="docutils literal notranslate"><span class="pre">Sip</span> <span class="pre">Gone</span></code>, else 200 <code class="docutils literal notranslate"><span class="pre">OK</span></code>. The builder injects
+<code class="docutils literal notranslate"><span class="pre">;received=&lt;src&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">;rport=5060</span></code> into the top Via and a CRC16-CCITT
+(<code class="docutils literal notranslate"><span class="pre">crcitt_string_array</span></code> &#64;0x000d88a4, seed <code class="docutils literal notranslate"><span class="pre">b57ecd3250693a8f077639fd0317176b-</span></code>
+over {callid, cseq, from-uri}) <code class="docutils literal notranslate"><span class="pre">;tag=</span></code> into To for codes &lt;300.</p>
+<section id="dev-reg-dedup-dpi-register-dev-reg-info-0x000fc4a0-misc-datamanagement-database-db-api-c-c">
+<h3>dev_reg dedup — <code class="docutils literal notranslate"><span class="pre">dpi_register_dev_reg_info</span></code> &#64;0x000fc4a0 (<code class="docutils literal notranslate"><span class="pre">misc/dataManagement_database_db_api.c.c</span></code>)<a class="headerlink" href="#dev-reg-dedup-dpi-register-dev-reg-info-0x000fc4a0-misc-datamanagement-database-db-api-c-c" title="Link to this heading"></a></h3>
+<p>Search <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">call_num='&lt;new&gt;'</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Existing row</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>none</p></td>
+<td><p>delete <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">serial_no='&lt;s&gt;'</span> <span class="pre">or</span> <span class="pre">dev_ip='&lt;ip&gt;'</span></code> (steal identity) → insert</p></td>
+</tr>
+<tr class="row-odd"><td><p>serial <strong>or</strong> dev_ip matches new</p></td>
+<td><p>delete <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">serial_no</span> <span class="pre">or</span> <span class="pre">dev_ip</span> <span class="pre">or</span> <span class="pre">dev_name</span></code> → insert (<strong>replace</strong> — same device re-registering)</p></td>
+</tr>
+<tr class="row-even"><td><p>different serial <strong>and</strong> different ip, existing serial non-empty, <strong>same dev_type</strong></p></td>
+<td><p>return −1 → <code class="docutils literal notranslate"><span class="pre">send_reply</span></code> (<strong>reject</strong>, row kept)</p></td>
+</tr>
+<tr class="row-odd"><td><p>different serial+ip, different dev_type</p></td>
+<td><p>delete <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">call_num</span></code> → insert (<strong>replace</strong>)</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">db_acspwd_gc</span></code> (same file) also sweeps <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">reg_time&lt;'&lt;now&gt;'</span></code> and deletes the
+room’s ACS pwd rows — expired registrations self-clean.</p>
+<section id="verified-live-2025-11-19-lan-10-0-0-0-24-registrar-5065">
+<h4>Verified live (2025-11-19, LAN 10.0.0.0/24, registrar <code class="docutils literal notranslate"><span class="pre">…:5065</span></code>)<a class="headerlink" href="#verified-live-2025-11-19-lan-10-0-0-0-24-registrar-5065" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong>11-char AOR</strong>: 12-char call_nums (e.g. <code class="docutils literal notranslate"><span class="pre">100000000010</span></code>) all return <code class="docutils literal notranslate"><span class="pre">410</span></code>
+before dedup — the length check is first and nothing is inserted.</p></li>
+<li><p><strong>dedup table confirmed</strong>: <code class="docutils literal notranslate"><span class="pre">10000000001</span></code> → <code class="docutils literal notranslate"><span class="pre">410</span></code> (held by the real indoor
+<code class="docutils literal notranslate"><span class="pre">&#64;10.0.0.47</span></code>, dev_type 3); <code class="docutils literal notranslate"><span class="pre">…02</span></code>, <code class="docutils literal notranslate"><span class="pre">…04</span></code>, <code class="docutils literal notranslate"><span class="pre">…09</span></code> → <code class="docutils literal notranslate"><span class="pre">200</span></code> (inserted).
+<code class="docutils literal notranslate"><span class="pre">410</span></code> therefore means “call_num bound to a <em>different</em> serial <strong>and</strong> IP of
+the same dev_type” — it is not a generic “occupied” signal.</p></li>
+<li><p><strong>stale rows block</strong>: probe rows left behind by earlier runs (same call_num,
+foreign serial, foreign <code class="docutils literal notranslate"><span class="pre">dev_ip</span></code> — e.g. another host/container) keep the
+slot at <code class="docutils literal notranslate"><span class="pre">410</span></code> until deleted or TTL-expired; dedup never consults <code class="docutils literal notranslate"><span class="pre">reg_time</span></code>.</p></li>
+<li><p><strong>unregister</strong>: <code class="docutils literal notranslate"><span class="pre">Expires:</span> <span class="pre">0</span></code> → <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code> and deletes
+<code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">serial_no='&lt;s&gt;'</span> <span class="pre">or</span> <span class="pre">dev_ip='&lt;src&gt;'</span></code> — verified <strong>both</strong> forms live
+(2025-11-19): empty body deletes via <code class="docutils literal notranslate"><span class="pre">dev_ip</span></code> alone (foreign-serial probe
+for the same call_num got <code class="docutils literal notranslate"><span class="pre">200</span></code> = row gone, not <code class="docutils literal notranslate"><span class="pre">410</span></code>), regXML body adds
+the <code class="docutils literal notranslate"><span class="pre">serial_no</span></code> match which also clears stale rows of our serial from
+<em>other</em> source IPs. Prefer the bodied form.</p></li>
+<li><p><strong>no sync push on unregister</strong>: the <code class="docutils literal notranslate"><span class="pre">Expires==0</span></code> path in <code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code>
+deletes + <code class="docutils literal notranslate"><span class="pre">send_reply</span></code> and returns <strong>without</strong> calling
+<code class="docutils literal notranslate"><span class="pre">vns_registrarSyncHook</span></code> (only the insert path calls it). The registrar’s
+row is gone (slot free, calls no longer routed), but the dev_reg table
+copies pushed over visNet <code class="docutils literal notranslate"><span class="pre">:8102</span></code> keep the stale entry on every other
+unit’s device list until the next INSERT-triggered push or row expiry —
+an unregister can never clear another unit’s display immediately.</p></li>
+<li><p><strong>post-insert stall</strong>: after every successful insert the registrar runs
+<code class="docutils literal notranslate"><span class="pre">vns_registrarSyncHook</span></code> on the sipServer task — blocking TCP <code class="docutils literal notranslate"><span class="pre">:8102</span></code>
+connects to every <code class="docutils literal notranslate"><span class="pre">1000000000</span></code>-series row (stale/offline rows cost a
+connect timeout each) — and ignores REGISTERs for ~5–10 s meanwhile.
+Sweep probes must run sequentially, and post-200 unregisters need
+retries to get through the window.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">free_extension</span></code> verified end-to-end</strong>: one consistent probe
+(serial+MAC) → <code class="docutils literal notranslate"><span class="pre">…01</span></code>=<code class="docutils literal notranslate"><span class="pre">410</span></code>, <code class="docutils literal notranslate"><span class="pre">…02</span></code>=<code class="docutils literal notranslate"><span class="pre">200</span></code> → unreg → <code class="docutils literal notranslate"><span class="pre">10000000002</span></code>
+reported free, matching the installation’s real first free slot.</p></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="numbering-t-fff-uu-rrr-ii-vdm10-1-0-sip-server-registrar-c-header-misc-util-common-visutil-c-c">
+<h2>4. Numbering — <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">FFF</span> <span class="pre">UU</span> <span class="pre">RRR</span> <span class="pre">II</span></code> (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/registrar.c</span></code> header + <code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code>)<a class="headerlink" href="#numbering-t-fff-uu-rrr-ii-vdm10-1-0-sip-server-registrar-c-header-misc-util-common-visutil-c-c" title="Link to this heading"></a></h2>
+<p>The 11-digit <code class="docutils literal notranslate"><span class="pre">devLongNum</span></code> is <code class="docutils literal notranslate"><span class="pre">sscanf(&quot;%01d%03d%02d%03d%02d&quot;)</span></code> →
+<code class="docutils literal notranslate"><span class="pre">type</span> <span class="pre">digit,</span> <span class="pre">floor,</span> <span class="pre">unit,</span> <span class="pre">room,</span> <span class="pre">index</span></code>. <code class="docutils literal notranslate"><span class="pre">srv_splitDevNum</span></code> (registrar side) and
+<code class="docutils literal notranslate"><span class="pre">devTypeFromNum</span></code> (<code class="docutils literal notranslate"><span class="pre">FUN_000f9ce0</span></code>, call side) classify:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">call_num</span></code> shape</p></th>
+<th class="head"><p>Class</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">againdevice</span></code></p></td>
+<td><p>6</p></td>
+<td><p>secondary door</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code></p></td>
+<td><p>2</p></td>
+<td><p>pseudo-device, seeded by <code class="docutils literal notranslate"><span class="pre">sip_insertCenterRecord</span></code> (reg_time <code class="docutils literal notranslate"><span class="pre">2037-12-31</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">1000000000N</span></code></p></td>
+<td><p>3 — ROOM</p></td>
+<td><p>extension long-nums; <code class="docutils literal notranslate"><span class="pre">…0</span></code> = main indoor (<code class="docutils literal notranslate"><span class="pre">strncmp(num,&quot;1000000000&quot;,10)</span></code>; tail <code class="docutils literal notranslate"><span class="pre">N</span></code> = extension index, 01–05 registered, idx&gt;5 rejected by <code class="docutils literal notranslate"><span class="pre">sip_callLongNum</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unit!=0</span> <span class="pre">&amp;&amp;</span> <span class="pre">room!=0</span></code></p></td>
+<td><p>3 — ROOM</p></td>
+<td><p>canonical devLongNum; on non-type-2 systems re-split <code class="docutils literal notranslate"><span class="pre">%01d%03d%02d%01d%04d</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unit!=0</span> <span class="pre">&amp;&amp;</span> <span class="pre">room==0</span></code></p></td>
+<td><p>1 — DOOR (or 5 when cfg&#64;0x6018==2, villa)</p></td>
+<td><p>outdoor stations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unit==0</span> <span class="pre">&amp;&amp;</span> <span class="pre">floor==0</span></code>: <code class="docutils literal notranslate"><span class="pre">room==2</span></code> → 4; <code class="docutils literal notranslate"><span class="pre">room==1</span></code> → 8 if idx 0, 7 if idx 1..50, 2 if idx&lt;100</p></td>
+<td><p>wall/indoor specials</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>indoor <code class="docutils literal notranslate"><span class="pre">&amp;&amp;</span></code> not dual-NIC, non-<code class="docutils literal notranslate"><span class="pre">1000000000</span></code> name</p></td>
+<td><p>0xb</p></td>
+<td><p>talkback class (<code class="docutils literal notranslate"><span class="pre">devTypeFromNum</span></code> only)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">10010199999</span></code></p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lookUp</span></code> alias: newest dev_type==3 row (FUN_00064c84-mode only)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="timing-re-register-and-heartbeat">
+<h2>5. Timing — re-REGISTER and heartbeat<a class="headerlink" href="#timing-re-register-and-heartbeat" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Timer</p></th>
+<th class="head"><p>Where</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Expires:</span></code> sent</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_client_handle_register</span></code></p></td>
+<td><p><strong>900 s</strong> (kinds 1/3/8); <code class="docutils literal notranslate"><span class="pre">cfg+0x350ce</span></code>×60 for door reg (kind 9). (<code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §4 shows a live REGISTER with <code class="docutils literal notranslate"><span class="pre">Expires:</span> <span class="pre">600</span></code> — path/config-dependent or from a different build, not silently reconciled)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Re-register</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">task_sipClient_RegistCtrl</span></code>/<code class="docutils literal notranslate"><span class="pre">voip_regist_task</span></code> loop</p></td>
+<td><p>when <code class="docutils literal notranslate"><span class="pre">abs(now</span> <span class="pre">−</span> <span class="pre">last)</span> <span class="pre">&gt;</span> <span class="pre">600</span></code> s → <code class="docutils literal notranslate"><span class="pre">_client_handle_register(1)</span></code> / <code class="docutils literal notranslate"><span class="pre">_client_handle_reregister</span></code> (<code class="docutils literal notranslate"><span class="pre">eXosip_register_build_register</span></code> on the rid); earlier on net-change mq (<code class="docutils literal notranslate"><span class="pre">PROC_NETCHG_REG</span></code>) or <code class="docutils literal notranslate"><span class="pre">REGISTER_FAILURE</span></code> events</p></td>
+</tr>
+<tr class="row-even"><td><p>Heartbeat</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">task_sipClient_HeartBeat</span></code> (<code class="docutils literal notranslate"><span class="pre">sipcli_hb_task</span></code> &#64;0x000e28dc)</p></td>
+<td><p>every <strong>&gt;0x77 s ≈ 120 s</strong>, skipped while a call worker is busy (<code class="docutils literal notranslate"><span class="pre">talk_chan_state_get(0/1)</span></code> — “talking now!”), while net is down, or while own devLongNum isn’t 11 chars</p></td>
+</tr>
+<tr class="row-odd"><td><p>Registrar freshness</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lookUp</span></code>/<code class="docutils literal notranslate"><span class="pre">db_acspwd_gc</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reg_time</span></code> stored as expiry timestamp text; stale rows treated as unregistered</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="heartbeat-message-and-the-sipcmd-virtual-aor">
+<h2>6. Heartbeat MESSAGE and the <code class="docutils literal notranslate"><span class="pre">sipCmd</span></code> virtual AOR<a class="headerlink" href="#heartbeat-message-and-the-sipcmd-virtual-aor" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">task_sipClient_HeartBeat</span></code> → <code class="docutils literal notranslate"><span class="pre">sipcli_send_msg</span></code>/<code class="docutils literal notranslate"><span class="pre">_client_handle_send_sip_cmd</span></code>
+(&#64;0x000dc9b0): <code class="docutils literal notranslate"><span class="pre">MESSAGE</span> <span class="pre">sip:sipCmd&#64;&lt;registrar-ip&gt;:5065</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">text/xml</span></code>, body from <code class="docutils literal notranslate"><span class="pre">_sip_xml_get_sip_info_xml</span></code>
+(&#64;0x000ea910). Verified fields from the task: <strong>method=1, action=1</strong>,
+<code class="docutils literal notranslate"><span class="pre">&lt;from&gt;&lt;deviceSN/&gt;&lt;ipAddr&gt;</span></code> = own ip, <code class="docutils literal notranslate"><span class="pre">&lt;to&gt;&lt;ipAddr&gt;</span></code> = registrar ip block
+(cfg+0x5fd0), body <code class="docutils literal notranslate"><span class="pre">&lt;num&gt;</span></code> = <strong>own 11-digit devLongNum</strong> (cfg+0x2d354):</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;videoIntercomMsg&gt;&lt;header&gt;&lt;method&gt;</span>1<span class="nt">&lt;/method&gt;&lt;action&gt;</span>1<span class="nt">&lt;/action&gt;</span>
+<span class="nt">&lt;from&gt;&lt;deviceSN&gt;</span>…<span class="nt">&lt;/deviceSN&gt;&lt;ipAddr&gt;</span>10.0.0.x<span class="nt">&lt;/ipAddr&gt;&lt;/from&gt;</span>
+<span class="nt">&lt;to&gt;&lt;ipAddr&gt;</span>10.0.0.38<span class="nt">&lt;/ipAddr&gt;&lt;/to&gt;&lt;/header&gt;</span>
+<span class="nt">&lt;body&gt;&lt;num&gt;</span>10000000001<span class="nt">&lt;/num&gt;&lt;/body&gt;&lt;/videoIntercomMsg&gt;</span>
+</pre></div>
+</div>
+<p>Registrar side (<code class="docutils literal notranslate"><span class="pre">lookUp</span></code> &#64;0x000d9658, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/reply.c</span></code>): AOR
+<code class="docutils literal notranslate"><span class="pre">&quot;sipCmd&quot;</span></code> is a virtual name — it <code class="docutils literal notranslate"><span class="pre">strstr</span></code>s the body for
+<code class="docutils literal notranslate"><span class="pre">&lt;method&gt;1&lt;/method&gt;&lt;action&gt;1&lt;/action&gt;</span></code>, scrapes <code class="docutils literal notranslate"><span class="pre">&lt;num&gt;</span></code> (truncating at 11
+chars — the closing tag is cut by <code class="docutils literal notranslate"><span class="pre">num_buf[0xb]=0</span></code>), searches
+<code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">call_num='&lt;num&gt;'</span></code>, and returns 1 only while that registration is
+unexpired; <code class="docutils literal notranslate"><span class="pre">srv_forwardRequest</span></code> then answers <strong>200 OK directly</strong> (no forward).
+So the heartbeat doubles as a registration-freshness probe. (<code class="docutils literal notranslate"><span class="pre">&lt;num&gt;1&lt;/num&gt;</span></code> as
+sent by the sim truncates to a garbage call_num → this path predicts −1/404;
+the 200 OKs seen live may come from the fallback <code class="docutils literal notranslate"><span class="pre">msg+0xd0</span></code>=own-IP forward to
+the box’s own :5060 UAS — unverified.)</p>
+</section>
+<section id="options-keepalive">
+<h2>7. OPTIONS keepalive<a class="headerlink" href="#options-keepalive" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Direction</p></th>
+<th class="head"><p>Code</p></th>
+<th class="head"><p>Behavior</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>inbound OPTIONS → :5060</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_client_handle_message</span></code> &#64;0x000ddbc8 (<code class="docutils literal notranslate"><span class="pre">uas.c</span></code>)</p></td>
+<td><p>bare <code class="docutils literal notranslate"><span class="pre">200</span> <span class="pre">OK</span></code>, no body</p></td>
+</tr>
+<tr class="row-odd"><td><p>outbound OPTIONS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">event/alarmCtrl/talkBackNicBroken_c.c</span></code> (<code class="docutils literal notranslate"><span class="pre">misc/grouped.c</span></code> ~0x24c78)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">eXosip_options_build_request</span></code>/<code class="docutils literal notranslate"><span class="pre">send_request</span></code> ping of the talk peer every loop; <code class="docutils literal notranslate"><span class="pre">call_peer_alive_get</span></code> &#64;0x000de598 reads <code class="docutils literal notranslate"><span class="pre">g_sip_peer_alive</span></code> &#64;0x0081c550; &gt;15 s dead → event 0xd + hang</p></td>
+</tr>
+<tr class="row-even"><td><p>OPTIONS response handling</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_taskUas</span></code> ev 29/31 (<code class="docutils literal notranslate"><span class="pre">ack_tail.c</span></code>)</p></td>
+<td><p>200 → <code class="docutils literal notranslate"><span class="pre">sip_hbReplyFlagSet</span></code> (peer-alive); failure → flag cleared</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">talkBackNicBroken</span></code> is a talkback watchdog — whether the registrar polls each
+registered extension with OPTIONS the same way is <strong>unverified</strong> (the
+extension→registrar liveness we know of is the heartbeat MESSAGE + reg_time).</p>
+</section>
+<section id="post-register-visnet-sync-tcp-8102">
+<h2>8. Post-register visNet sync — TCP :8102<a class="headerlink" href="#post-register-visnet-sync-tcp-8102" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">vns_registrarSyncHook</span></code> (<code class="docutils literal notranslate"><span class="pre">FUN_000f1490</span></code>, <code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_visNetServer.c.c</span></code>,
+called at the end of <code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> on success): enumerates the dev_reg
+table and, for each <code class="docutils literal notranslate"><span class="pre">1000000000</span></code>-prefixed record, TCP-connects to that
+device’s <strong>:8102</strong> and pushes <code class="docutils literal notranslate"><span class="pre">cmd</span> <span class="pre">0x2033</span></code> — a 0x420 packet carrying up to six
+0xb0 dev_reg rows. The receiver (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/visnet/visnet_server.c</span></code>) stores them
+into <code class="docutils literal notranslate"><span class="pre">g_extRoom</span></code> and re-registers each locally. Net effect: after every
+successful REGISTER, the registrar <strong>mesh-syncs the extension table to all
+extensions</strong> — this is the <code class="docutils literal notranslate"><span class="pre">:8102</span></code> connection observed right after REGISTER
+(not merely a liveness probe; the table push is verified, a separate liveness
+role is not).</p>
+</section>
+<section id="message-info-vocabulary-vdm10-1-0-sip-xml-proc-c-client-call-out-c">
+<h2>9. MESSAGE/INFO vocabulary (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/xml_proc.c</span></code>, <code class="docutils literal notranslate"><span class="pre">client/call_out.c</span></code>)<a class="headerlink" href="#message-info-vocabulary-vdm10-1-0-sip-xml-proc-c-client-call-out-c" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Carrier</p></th>
+<th class="head"><p>Body</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MESSAGE</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;videoIntercomMsg&gt;</span></code> method 1 action 1</p></td>
+<td><p>heartbeat (above)</p></td>
+</tr>
+<tr class="row-odd"><td><p>MESSAGE</p></td>
+<td><p>method 2 a1 <code class="docutils literal notranslate"><span class="pre">roomNum/unlockPasswd/hijackPasswd</span></code>; method 3 a1 <code class="docutils literal notranslate"><span class="pre">delFlag/delLongNum/floorNum[/sipNum]</span></code> (the “Pre-Regist” push to doors, <code class="docutils literal notranslate"><span class="pre">sipcli_send_msg(...,&quot;Pre-Regist&quot;,1)</span></code>); method 3 a3 <code class="docutils literal notranslate"><span class="pre">unlockPwd</span></code>; method 4 <code class="docutils literal notranslate"><span class="pre">roomNum</span></code>/<code class="docutils literal notranslate"><span class="pre">floor</span></code>; method 5 <code class="docutils literal notranslate"><span class="pre">responseStatus[/roomNum/subDoorInfo*8]</span></code>; method 6 <code class="docutils literal notranslate"><span class="pre">ID/devType/alarmTime/zone*</span></code>; method 7 <code class="docutils literal notranslate"><span class="pre">ipAddr/mode/channel/encrypt/type/deviceSN</span></code></p></td>
+<td><p>door↔room config exchange — parser <code class="docutils literal notranslate"><span class="pre">_sip_xml_pares</span></code> &#64;0x000eb5ec requires every listed tag</p></td>
+</tr>
+<tr class="row-even"><td><p>MESSAGE</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;locknumXML&gt;&lt;lockNum&gt;n&lt;/lockNum&gt;&lt;/locknumXML&gt;</span></code></p></td>
+<td><p>in-call door-lock select; UAS fast-path in <code class="docutils literal notranslate"><span class="pre">_client_handle_message</span></code>, clamped to lock range; sender <code class="docutils literal notranslate"><span class="pre">send_locknum_msg</span></code> &#64;0x000dfa6c</p></td>
+</tr>
+<tr class="row-odd"><td><p>MESSAGE</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;ringXML&gt;&lt;noRingBack&gt;1&lt;/noRingBack&gt;&lt;/ringXML&gt;</span></code></p></td>
+<td><p>attached to <code class="docutils literal notranslate"><span class="pre">180</span> <span class="pre">Ringing</span></code> when auto-answer (<code class="docutils literal notranslate"><span class="pre">call_autoanswer_gate</span></code>), builder &#64;0x000eb508</p></td>
+</tr>
+<tr class="row-even"><td><p>INFO</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Signal=&lt;d&gt;\r\nDuration=160</span></code> (<code class="docutils literal notranslate"><span class="pre">application/dtmf-relay</span></code>)</p></td>
+<td><p>in-call DTMF / unlock; <code class="docutils literal notranslate"><span class="pre">sip_send_dtmf</span></code> &#64;0x000df6c0</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="busy-flag-extension-routing-vdm10-1-0-sip-server-sipserver-c-client-uas-calls-c">
+<h2>10. Busy flag, extension routing (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/sipServer.c</span></code>, <code class="docutils literal notranslate"><span class="pre">client/uas_calls.c</span></code>)<a class="headerlink" href="#busy-flag-extension-routing-vdm10-1-0-sip-server-sipserver-c-client-uas-calls-c" title="Link to this heading"></a></h2>
+<p>Global busy flag <code class="docutils literal notranslate"><span class="pre">g_callBusy</span></code> &#64;0x00819828 (<code class="docutils literal notranslate"><span class="pre">srv_getCallBusy</span></code> 0xda608 /
+<code class="docutils literal notranslate"><span class="pre">srv_setCallBusy</span></code> 0xda63c) — <strong>only writer is <code class="docutils literal notranslate"><span class="pre">sip_udpProcRule</span></code></strong> (0x000dabb8):
+set when an INVITE to <code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code>/<code class="docutils literal notranslate"><span class="pre">1000000000N</span></code> passes :5065; cleared by
+BYE/CANCEL or a transit 408/603/486 reply; no timeout. <code class="docutils literal notranslate"><span class="pre">FUN_000e2bb0()==0</span></code>
+(“main indoor busy”) gates identically.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Reader</p></th>
+<th class="head"><p>Busy effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_udpProcRule</span></code></p></td>
+<td><p>2nd INVITE: <code class="docutils literal notranslate"><span class="pre">400</span> <span class="pre">Bad</span> <span class="pre">request</span></code>+clear if same caller IP, else <code class="docutils literal notranslate"><span class="pre">486</span> <span class="pre">Busy</span> <span class="pre">here</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uas_handleInvite</span></code> &#64;0x000e6e20</p></td>
+<td><p>incoming INVITE → <code class="docutils literal notranslate"><span class="pre">486</span> <span class="pre">Busy</span> <span class="pre">Here</span></code> + missed-call CDR (also 486 when UI not ready; <code class="docutils literal notranslate"><span class="pre">480</span></code> in DND window; <code class="docutils literal notranslate"><span class="pre">488</span></code> when no/!parseable SDP; <code class="docutils literal notranslate"><span class="pre">400</span></code> on session-alloc failure)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_client_call</span></code>/<code class="docutils literal notranslate"><span class="pre">sip_callLongNum</span></code>/<code class="docutils literal notranslate"><span class="pre">sip_client_call_manage_center</span></code></p></td>
+<td><p>early return — no packet sent (<code class="docutils literal notranslate"><span class="pre">callBusyChk</span></code>/<code class="docutils literal notranslate"><span class="pre">sess_idle_chk</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Extension call routing (<code class="docutils literal notranslate"><span class="pre">sip_callLongNum</span></code> &#64;0x000e4ee0): <code class="docutils literal notranslate"><span class="pre">netAltRoute</span></code> →
+<code class="docutils literal notranslate"><span class="pre">devLookup(num)</span></code> → <strong>direct <code class="docutils literal notranslate"><span class="pre">sip:&lt;num&gt;&#64;&lt;dev-ip&gt;:5060</span></code></strong> — registrar bypassed;
+<code class="docutils literal notranslate"><span class="pre">netDualNic</span></code> → via mainroom <code class="docutils literal notranslate"><span class="pre">:5065</span></code> (called idx 0 → direct :5060). Only
+<code class="docutils literal notranslate"><span class="pre">devTypeFromNum==3</span></code> numbers. <code class="docutils literal notranslate"><span class="pre">Subject:</span> <span class="pre">&quot;This</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">call</span> <span class="pre">to</span> <span class="pre">extension.&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">From:</span> <span class="pre">sip:1000000000&lt;own</span> <span class="pre">idx&gt;&#64;&lt;localip&gt;</span></code>. The <code class="docutils literal notranslate"><span class="pre">1000000000</span></code> contact-patch in
+<code class="docutils literal notranslate"><span class="pre">sip_udpProcRule</span></code> rewrites the ext num to the main box’s devLongNum on
+ManageCenter calls (raw text, in place).</p>
+</section>
+<section id="sequence-register-heartbeat-unregister">
+<h2>11. Sequence — register, heartbeat, unregister<a class="headerlink" href="#sequence-register-heartbeat-unregister" title="Link to this heading"></a></h2>
+<!-- mermaid: fw-registration -->
+<pre  class="mermaid">
+        sequenceDiagram
+    participant E as Extension hicore (eXosip :5060)
+    participant R as Registrar hicore (main indoor :5065)
+    participant V as visNet TCP 8102 (all exts)
+
+    Note over E: _client_handle_register kind 1&lt;br/&gt;Expires 900 · text/xml
+    E-&gt;&gt;R: REGISTER sip:registrar:5065&lt;br/&gt;From sip:devLongNum&#64;ext-ip · regXML
+    R--&gt;&gt;E: 401 Unauthorized (observed live&lt;br/&gt;challenge origin unverified)
+    E-&gt;&gt;R: REGISTER + Authorization Digest MD5
+    R-&gt;&gt;R: sip_registerMode · extract_aor&lt;br/&gt;splitDevNum · dev_reg dedup insert
+    R--&gt;&gt;E: 200 OK · Via +received +rport=5060&lt;br/&gt;To +tag=CRC16
+    R-&gt;&gt;V: TCP :8102 cmd 0x2033&lt;br/&gt;push 1000000000-series dev_reg table
+    loop every ~120 s · skipped while in call
+        E-&gt;&gt;R: MESSAGE sip:sipCmd&#64;registrar:5065&lt;br/&gt;videoIntercomMsg m1 a1 · num=devLongNum
+        R-&gt;&gt;R: lookUp sipCmd · dev_reg freshness on num
+        R--&gt;&gt;E: 200 OK
+    end
+    loop every ~600 s
+        E-&gt;&gt;R: re-REGISTER (same rid)
+    end
+    E-&gt;&gt;R: REGISTER Expires 0 · empty body
+    R-&gt;&gt;R: del dev_reg where serial_no or dev_ip&lt;br/&gt;+ call_num map + room ACS rows
+    R--&gt;&gt;E: 200 OK
+    </pre></section>
+<section id="key-functions">
+<h2>12. Key functions<a class="headerlink" href="#key-functions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Address</p></th>
+<th class="head"><p>File</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_client_handle_register</span></code> / <code class="docutils literal notranslate"><span class="pre">sipcli_register</span></code></p></td>
+<td><p>0x000e05e0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>build+send REGISTER (kind 1/3/8→:5065 exp 900; 9→door)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">task_sipClient_RegistCtrl</span></code></p></td>
+<td><p>0x000e0dc4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>registration controller, re-reg &gt;600 s, net-change re-reg</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">eXosip_client_voip_regist_task</span></code></p></td>
+<td><p>0x000e1a04</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>door→room registration task (2nd eXosip ctx)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_client_handle_reregister</span></code></p></td>
+<td><p>0x000e27fc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>refresh REGISTER on existing rid</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">check_regist_ip</span></code></p></td>
+<td><p>0x000dbaa4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>registrar ip block validity (cfg+0x5fe8)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">collect_door_dev_info</span></code>/<code class="docutils literal notranslate"><span class="pre">fill_door_reg_info</span></code></p></td>
+<td><p>0x000e2fb0/0x000e2d1c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>door enumeration for pre-registration</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_reg_dev_list</span></code></p></td>
+<td><p>0x000e03b0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code></p></td>
+<td><p>dev_reg rows → caller array (skips ManageCenter)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">task_sipClient_HeartBeat</span></code> / <code class="docutils literal notranslate"><span class="pre">sipcli_hb_task</span></code></p></td>
+<td><p>0x000e28dc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/heartbeat.c</span></code></p></td>
+<td><p>~120 s MESSAGE <code class="docutils literal notranslate"><span class="pre">sipCmd</span></code> heartbeat</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_client_handle_send_sip_cmd</span></code> / <code class="docutils literal notranslate"><span class="pre">sipcli_send_msg</span></code></p></td>
+<td><p>0x000dc9b0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/heartbeat.c</span></code></p></td>
+<td><p>MESSAGE sender (<code class="docutils literal notranslate"><span class="pre">text/xml</span></code>, body builder arg)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">task_sipClient_UAS</span></code> / <code class="docutils literal notranslate"><span class="pre">sip_taskUas</span></code></p></td>
+<td><p>0x000e8318</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ack_tail.c</span></code></p></td>
+<td><p>eXosip :5060 listener + event dispatch</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_client_handle_message</span></code></p></td>
+<td><p>0x000ddbc8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code></p></td>
+<td><p>OPTIONS→200; MESSAGE→locknumXML fast path / <code class="docutils literal notranslate"><span class="pre">_sip_xml_pares</span></code> dispatch</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uas_handleInvite</span></code> / <code class="docutils literal notranslate"><span class="pre">_client_handle_voip_request</span></code></p></td>
+<td><p>0x000e6e20</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas_calls.c</span></code></p></td>
+<td><p>incoming INVITE; 486/480/488/400 gates, 180, NewCall spawn</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">call_handleBye</span></code></p></td>
+<td><p>0x000e7d4c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/ack_tail.c</span></code></p></td>
+<td><p>BYE→200 + teardown + cloud hang post</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_callLongNum</span></code></p></td>
+<td><p>0x000e4ee0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas_calls.c</span></code></p></td>
+<td><p>extension call: dev_reg→direct :5060 INVITE</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_send_dtmf</span></code> / <code class="docutils literal notranslate"><span class="pre">send_locknum_msg</span></code></p></td>
+<td><p>0x000df6c0/0x000dfa6c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/call_out.c</span></code></p></td>
+<td><p>INFO dtmf-relay / MESSAGE locknumXML</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_sip_xml_get_reg_info_xml</span></code> / <code class="docutils literal notranslate"><span class="pre">xml_getRegInfoXml</span></code></p></td>
+<td><p>0x000eb2e4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/xml_proc.c</span></code></p></td>
+<td><p>regXML builder (kind=mode selects fields)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_sip_xml_get_sip_info_xml</span></code> / <code class="docutils literal notranslate"><span class="pre">xml_getSipInfoXml</span></code></p></td>
+<td><p>0x000ea910</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/xml_proc.c</span></code></p></td>
+<td><p>videoIntercomMsg builder, methods 1–7</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_sip_xml_pares</span></code> / <code class="docutils literal notranslate"><span class="pre">xml_parseVideoMsg</span></code></p></td>
+<td><p>0x000eb5ec</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/xml_proc.c</span></code></p></td>
+<td><p>videoIntercomMsg parser (0x138 out block)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_sip_xml_get_lockNum_xml</span></code> / <code class="docutils literal notranslate"><span class="pre">_sip_xml_get_ring_xml</span></code></p></td>
+<td><p>0x000ea82c/0x000eb508</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/xml_proc.c</span></code></p></td>
+<td><p>locknumXML / ringXML builders</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_udpServerInit</span></code> / <code class="docutils literal notranslate"><span class="pre">task_sipServer</span></code></p></td>
+<td><p>0x000da6f0/0x000db51c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/sipServer.c</span></code></p></td>
+<td><p>bind UDP 5065, registrar task loop</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_receiveMsg</span></code></p></td>
+<td><p>0x000db23c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/sipServer.c</span></code></p></td>
+<td><p>datagram → parse → udpProcRule → REGISTER/forward dispatch</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_udpProcRule</span></code></p></td>
+<td><p>0x000dabb8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/sipServer.c</span></code></p></td>
+<td><p>global busy flag owner, MC/ext gating, <code class="docutils literal notranslate"><span class="pre">1000000000</span></code> contact patch</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_insertCenterRecord</span></code></p></td>
+<td><p>0x000da888</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/sipServer.c</span></code></p></td>
+<td><p>seed <code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code> dev_reg row (never expires)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">srv_getCallBusy</span></code> / <code class="docutils literal notranslate"><span class="pre">srv_setCallBusy</span></code></p></td>
+<td><p>0x000da608/0x000da63c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/sipServer.c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">g_callBusy</span></code> &#64;0x00819828 get/set</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> / <code class="docutils literal notranslate"><span class="pre">regs_registerMode</span></code></p></td>
+<td><p>0x000d8dcc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/registrar.c</span></code></p></td>
+<td><p>REGISTER transaction end-to-end</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">parse_message</span></code></p></td>
+<td><p>0x000d7b40</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/registrar.c</span></code></p></td>
+<td><p>required-header sanity (To/Call-ID/CSeq/Expires/Contact)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extract_aor</span></code> / <code class="docutils literal notranslate"><span class="pre">extract_host</span></code></p></td>
+<td><p>0x000d77a4/0x000d79e0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/registrar.c</span></code></p></td>
+<td><p>AOR scrape; From user must be 11 chars</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">send_reply</span></code> / <code class="docutils literal notranslate"><span class="pre">sl_send_reply</span></code></p></td>
+<td><p>0x000d8cd0/0x000d8ab4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/registrar.c</span></code></p></td>
+<td><p>status→code table; stateless reply to src:5060</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">build_res_buf_from_sip_req</span></code></p></td>
+<td><p>0x000d7fa8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/registrar.c</span></code></p></td>
+<td><p>response builder (received=/rport=5060/CRC16 to-tag)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lookUp</span></code> / <code class="docutils literal notranslate"><span class="pre">srv_lookUp</span></code></p></td>
+<td><p>0x000d9658</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/reply.c</span></code></p></td>
+<td><p>R-URI → dev_ip (ManageCenter/sipCmd/own/dev_reg)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">build_req_buf_from_sip_req</span></code></p></td>
+<td><p>0x000d9eec</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/reply.c</span></code></p></td>
+<td><p>forward request: +<code class="docutils literal notranslate"><span class="pre">Via</span> <span class="pre">…:5065</span></code>, Contact→:5065 rewrite</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_forwardReply</span></code></p></td>
+<td><p>0x000cb700</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/forward.c</span></code></p></td>
+<td><p>stateless response forward + main-room Contact rewrite</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dpi_register_dev_reg_info</span></code></p></td>
+<td><p>0x000fc4a0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/dataManagement_database_db_api.c.c</span></code></p></td>
+<td><p>dev_reg dedup insert (serial|ip replace; num+type reject)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">db_acspwd_gc</span></code></p></td>
+<td><p>0x000fc650</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/dataManagement_database_db_api.c.c</span></code></p></td>
+<td><p>expired-reg sweep + room ACS pwd cleanup</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">srv_splitDevNum</span></code></p></td>
+<td><p>0x000f9418</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code></p></td>
+<td><p>11-digit → {type,floor,unit,room,idx} (registrar)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">devTypeFromNum</span></code></p></td>
+<td><p>0x000f9ce0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code></p></td>
+<td><p>number → class byte (call path)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">call_peer_alive_get</span></code></p></td>
+<td><p>0x000de598</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/session_sdp.c</span></code></p></td>
+<td><p>OPTIONS liveness flag &#64;0x0081c550</p></td>
+</tr>
+<tr class="row-odd"><td><p>OPTIONS watchdog (<code class="docutils literal notranslate"><span class="pre">talkBackNicBroken</span></code>)</p></td>
+<td><p>~0x24c00</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/grouped.c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">eXosip_options_*</span></code> peer ping, &gt;15 s dead → hang</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">vns_registrarSyncHook</span></code></p></td>
+<td><p>0x000f1490</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">misc/net_sipClient_visNetServer.c.c</span></code></p></td>
+<td><p>post-REGISTER :8102 cmd 0x2033 table push</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="marked-unverified">
+<h2>13. Marked unverified<a class="headerlink" href="#marked-unverified" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>401 challenge origin</strong> — wire shows <code class="docutils literal notranslate"><span class="pre">Digest</span> <span class="pre">realm=&quot;Hikvision&quot;</span></code>, but no
+challenge/WWW-Authenticate generation exists in the decompiled <code class="docutils literal notranslate"><span class="pre">net/sipServer</span></code>;
+<code class="docutils literal notranslate"><span class="pre">send_reply</span></code> can emit bare <code class="docutils literal notranslate"><span class="pre">401</span> <span class="pre">Unauthorized</span></code> via the status table.</p></li>
+<li><p><strong>Which g_reg_status maps to 401</strong> — the status→code table &#64;0x00a6c084 is
+data; values not recovered.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> regXML element</strong> — seen in <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §4 captures, not
+emitted by this build’s <code class="docutils literal notranslate"><span class="pre">xml_getRegInfoXml</span></code>.</p></li>
+<li><p><strong>Registrar-side OPTIONS polling of extensions</strong> — only the talkback-peer
+OPTIONS watchdog is in the decompile.</p></li>
+<li><p><strong>Heartbeat <code class="docutils literal notranslate"><span class="pre">&lt;num&gt;</span></code> mismatch</strong> — code expects the sender’s devLongNum for the
+dev_reg freshness check; the sim sends <code class="docutils literal notranslate"><span class="pre">&lt;num&gt;1&lt;/num&gt;</span></code> and still reports 200
+OKs — acceptance looser than <code class="docutils literal notranslate"><span class="pre">lookUp</span></code> predicts.</p></li>
+<li><p>Per-door <code class="docutils literal notranslate"><span class="pre">kind==9</span></code> Pre-Regist addressing block (cfg+0x34fac/0x34fcc/0x34fec/
+0x35040/0x350ce) — fields inferred from offset comments, not verified live.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">heartbeat.c</span></code> vdm10_1.0 rewrite carries a stray “method 8” comment — the raw
+decompile of <code class="docutils literal notranslate"><span class="pre">sipcli_hb_task</span></code> sets method=1/action=1 directly; treat the
+comment as stale.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-left" title="Firmware internals — hicore (INDOOR_V2.0.24_build230608)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="door-call-flow.html" class="btn btn-neutral float-right" title="Doorbell call flow — firmware internals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

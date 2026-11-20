@@ -1,0 +1,7 @@
+metzler.sip.sdp module
+======================
+
+.. automodule:: metzler.sip.sdp
+   :members:
+   :show-inheritance:
+   :undoc-members:

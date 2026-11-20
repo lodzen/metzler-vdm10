@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protocol / message-format deltas — V2.0.24 vs V2.2.100 &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100" href="subsystem-changes.html" />
+    <link rel="prev" title="Registration — V2.0.24 vs V2.2.100" href="registration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sip-method-set-unchanged">1. SIP method set — unchanged</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#user-agent">2. User-Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sdp-media-offer">3. SDP / media offer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#xml-vocabulary">4. XML vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#heartbeat-message-shape">5. Heartbeat / MESSAGE shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#auth-headers-sep-and-challenge-are-not-the-sip-digest">6. Auth headers — SEP and challenge are NOT the SIP Digest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#content-type-charset-variants">7. Content-Type / charset variants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transport-encoding-notes">8. Transport/encoding notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Protocol / message-format deltas — V2.0.24 vs V2.2.100</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/version-comparison/protocol-changes.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="protocol-message-format-deltas-v2-0-24-vs-v2-2-100">
+<h1>Protocol / message-format deltas — V2.0.24 vs V2.2.100<a class="headerlink" href="#protocol-message-format-deltas-v2-0-24-vs-v2-2-100" title="Link to this heading"></a></h1>
+<p>Wire-visible changes between the builds. V1 facts from
+<code class="docutils literal notranslate"><span class="pre">docs/protocol.md</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/firmware/intercom-registration.md</span></code>, <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code>
+(live-verified); V2 facts from <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/</span></code> +
+<code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/resolved-function-literals.json</span></code> (static).</p>
+<section id="sip-method-set-unchanged">
+<h2>1. SIP method set — unchanged<a class="headerlink" href="#sip-method-set-unchanged" title="Link to this heading"></a></h2>
+<p>Both stacks handle <code class="docutils literal notranslate"><span class="pre">REGISTER</span></code>, <code class="docutils literal notranslate"><span class="pre">INVITE</span></code>, <code class="docutils literal notranslate"><span class="pre">ACK</span></code>, <code class="docutils literal notranslate"><span class="pre">BYE</span></code>, <code class="docutils literal notranslate"><span class="pre">CANCEL</span></code>, <code class="docutils literal notranslate"><span class="pre">MESSAGE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">INFO</span></code>, <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> on the client leg (V2 <code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00143340</span></code>
+diagnostics enumerate the same set: “receive MESSAGE new” / <code class="docutils literal notranslate"><span class="pre">&lt;locknumXML&gt;</span></code> /
+<code class="docutils literal notranslate"><span class="pre">INFO</span></code> / <code class="docutils literal notranslate"><span class="pre">Signal=</span></code> / <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> / invite / ack / cancel / bye).
+Registrar still REGISTER + forwarding (<code class="docutils literal notranslate"><span class="pre">sip_server_dispatch_method</span></code>
+&#64;<code class="docutils literal notranslate"><span class="pre">0x00228d68</span></code>, <code class="docutils literal notranslate"><span class="pre">sip_server_route_invite</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0022b780</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sip_server_route_message</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0022dc6c</span></code>, <code class="docutils literal notranslate"><span class="pre">sip_server_route_bye_or_cancel</span></code>
+&#64;<code class="docutils literal notranslate"><span class="pre">0x0022f20c</span></code>, <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/sip/server/{dispatch,proxy}.c</span></code>).</p>
+</section>
+<section id="user-agent">
+<h2>2. User-Agent<a class="headerlink" href="#user-agent" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Old</p></th>
+<th class="head"><p>New</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Client UA</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">eXosip/3.6.0</span></code> (wire-verified, <code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §4)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HKVS/2.0.0</span></code> — <code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00143340</span></code> calls <code class="docutils literal notranslate"><span class="pre">eXosip_set_user_agent(DAT_00144360)</span></code>; literal resolved in <code class="docutils literal notranslate"><span class="pre">resolved-function-literals.json</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>HTTP UAs (context)</p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">User-Agent:</span> <span class="pre">Hikvision</span></code> on EZVIZ HTTP, <code class="docutils literal notranslate"><span class="pre">ZTEHttpClient/3.0.1</span> <span class="pre">neon/0.25.1</span></code>, <code class="docutils literal notranslate"><span class="pre">EZVIZ</span> <span class="pre">ipc</span></code> (<code class="docutils literal notranslate"><span class="pre">decompiled/ezviz_app_sub.cpp.c</span></code>) — not SIP</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="sdp-media-offer">
+<h2>3. SDP / media offer<a class="headerlink" href="#sdp-media-offer" title="Link to this heading"></a></h2>
+<p>V1 offer (<code class="docutils literal notranslate"><span class="pre">ANALYSIS.md</span></code> §5, verified): <code class="docutils literal notranslate"><span class="pre">m=audio</span> <span class="pre">…</span> <span class="pre">RTP/AVP</span> <span class="pre">0</span> <span class="pre">2</span> <span class="pre">101</span></code> →
+<code class="docutils literal notranslate"><span class="pre">PCMU/8000</span></code>, <code class="docutils literal notranslate"><span class="pre">G726-32/8000</span></code>, <code class="docutils literal notranslate"><span class="pre">telephone-event</span></code>; <code class="docutils literal notranslate"><span class="pre">m=video</span> <span class="pre">…</span> <span class="pre">96</span></code> →
+<code class="docutils literal notranslate"><span class="pre">H264/90000</span></code> + <code class="docutils literal notranslate"><span class="pre">fmtp:96</span> <span class="pre">packetization-mode=1;profile-level-id=4D001E</span></code>.
+Intercom calls use the same <strong>header-only</strong> template (private attrs, no <code class="docutils literal notranslate"><span class="pre">m=</span></code>).</p>
+<p>V2 (static, function <code class="docutils literal notranslate"><span class="pre">0x00127fa4</span></code>/<code class="docutils literal notranslate"><span class="pre">0x00139fa4</span></code> region +
+codec table <code class="docutils literal notranslate"><span class="pre">0x00125dec</span></code>):</p>
+<div class="highlight-sdp notranslate"><div class="highlight"><pre><span></span>v=0\r\no=%s 0 0 IN IP4|IP6 %s\r\ns=Talk session\r\nc=IN IP4|IP6 %s\r\nt=0 0
+a=doorFloor:%d a=responseType:%d a=doorType:%d a=isSpecialType:%d
+a=isConfirm:%d a=version:%s a=lockNum:%d          (private attrs; +version,+lockNum)
+m=audio %d RTP/AVP 0 8 101
+a=rtpmap:0 PCMU/8000 | 8 PCMA/8000 | 101 telephone-event/8000 | fmtp:101 0-16
+m=video %d RTP/AVP 96
+a=rtpmap:96 H264/90000
+a=fmtp:96 profile-level-id=42801F;packetization-mode=1
+</pre></div>
+</div>
+<p>Additional codec table &#64;<code class="docutils literal notranslate"><span class="pre">0x00125dec</span></code> (the selectable/parsed set):</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>PT</p></th>
+<th class="head"><p>Codec</p></th>
+<th class="head"><p>fmtp</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PCMU/8000</span></code></p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PCMA/8000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bitrate=64000</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>98</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">G7221/16000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bitrate=32000</span></code> (DSP enc/dec &#64;<code class="docutils literal notranslate"><span class="pre">0x003b3774</span></code>/<code class="docutils literal notranslate"><span class="pre">0x003b3860</span></code>, <code class="docutils literal notranslate"><span class="pre">human_readable/misc/audio_drv.c</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>100</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MP4A-LATM/16000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">profile-level-id=24;object=23;bitrate=64000</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>103</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">G726/8000</span></code> (G726_32)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bitrate=24000</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>104</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MP4A-LATM/16000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">profile-level-id=2;object=2;bitrate=64000</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>115</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OPUS/16000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bitrate=6400</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Delta: <code class="docutils literal notranslate"><span class="pre">PCMA</span></code> joined the offer, G7221/MP4A-LATM/OPUS/G726_32 are in the codec
+set, <code class="docutils literal notranslate"><span class="pre">IN</span> <span class="pre">IP6</span></code> exists in the templates, two new private attributes
+(<code class="docutils literal notranslate"><span class="pre">a=version:</span></code>, <code class="docutils literal notranslate"><span class="pre">a=lockNum:</span></code>). <code class="docutils literal notranslate"><span class="pre">s=Talk</span> <span class="pre">session</span></code> and the <code class="docutils literal notranslate"><span class="pre">doorFloor/responseType/</span> <span class="pre">doorType/isSpecialType/isConfirm</span></code> attrs are unchanged. H264 stays pt 96 but
+fmtp <code class="docutils literal notranslate"><span class="pre">profile-level-id</span></code> differs (<code class="docutils literal notranslate"><span class="pre">42801F</span></code> vs <code class="docutils literal notranslate"><span class="pre">4D001E</span></code>).</p>
+</section>
+<section id="xml-vocabulary">
+<h2>4. XML vocabulary<a class="headerlink" href="#xml-vocabulary" title="Link to this heading"></a></h2>
+<p>Unchanged roots/fields: <code class="docutils literal notranslate"><span class="pre">regXML</span></code>, <code class="docutils literal notranslate"><span class="pre">regDevSerial</span></code>, <code class="docutils literal notranslate"><span class="pre">regDevMacAddr</span></code>,
+<code class="docutils literal notranslate"><span class="pre">regDevName</span></code>, <code class="docutils literal notranslate"><span class="pre">floorNum</span></code>, <code class="docutils literal notranslate"><span class="pre">sipNum</span></code>, <code class="docutils literal notranslate"><span class="pre">locknumXML</span></code>/<code class="docutils literal notranslate"><span class="pre">lockNum</span></code>, <code class="docutils literal notranslate"><span class="pre">ringXML</span></code>/
+<code class="docutils literal notranslate"><span class="pre">noRingBack</span></code>, <code class="docutils literal notranslate"><span class="pre">videoIntercomMsg</span></code> <code class="docutils literal notranslate"><span class="pre">header/method/action/num</span></code>,
+<code class="docutils literal notranslate"><span class="pre">responseStatus</span></code>, <code class="docutils literal notranslate"><span class="pre">unlockPwd</span></code>/<code class="docutils literal notranslate"><span class="pre">unlockPasswd</span></code>/<code class="docutils literal notranslate"><span class="pre">hijackPasswd</span></code>, <code class="docutils literal notranslate"><span class="pre">delFlag</span></code>,
+<code class="docutils literal notranslate"><span class="pre">deviceSN</span></code>, <code class="docutils literal notranslate"><span class="pre">ipAddr</span></code>, <code class="docutils literal notranslate"><span class="pre">devLongNum</span></code>, <code class="docutils literal notranslate"><span class="pre">roomNum</span></code>, <code class="docutils literal notranslate"><span class="pre">floor</span></code>, <code class="docutils literal notranslate"><span class="pre">zone*</span></code>, <code class="docutils literal notranslate"><span class="pre">alarmTime</span></code>,
+<code class="docutils literal notranslate"><span class="pre">subDoorInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">againdevice</span></code>, <code class="docutils literal notranslate"><span class="pre">ManageCenter</span></code>, <code class="docutils literal notranslate"><span class="pre">sipCmd</span></code>.</p>
+<p>New in V2 (verified literals, owners in parentheses):</p>
+<ul class="simple">
+<li><p><strong>Registration</strong>: <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;V2.0.0&lt;/version&gt;</span></code> in the <em>request</em> regXML
+(<code class="docutils literal notranslate"><span class="pre">sip_xml_build_registration_identity</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001216ac</span></code>); <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&lt;random&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;isSummerTime&gt;</span></code> in the <em>response</em>
+(<code class="docutils literal notranslate"><span class="pre">sip_server_register_device</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code>; parsed by client
+<code class="docutils literal notranslate"><span class="pre">cli_reg_resp_proc</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001318cc</span></code>); <code class="docutils literal notranslate"><span class="pre">regPassword</span></code> fields
+(<code class="docutils literal notranslate"><span class="pre">xml_parse_result_v2</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001237d8</span></code>, <code class="docutils literal notranslate"><span class="pre">isapi_set_iot_param</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00315ecc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">isapi_set_device_communication_to_json</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0031fcb8</span></code>); <code class="docutils literal notranslate"><span class="pre">commPassword</span></code>,
+<code class="docutils literal notranslate"><span class="pre">commPasswordWithDoor</span></code>, <code class="docutils literal notranslate"><span class="pre">commPasswordWithConfirm</span></code> (<code class="docutils literal notranslate"><span class="pre">0x001237d8</span></code>).</p></li>
+<li><p><strong>SIP2.0 message envelope</strong> (<code class="docutils literal notranslate"><span class="pre">xml_getSipInfoXml_v2</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00120138</span></code>,
+<code class="docutils literal notranslate"><span class="pre">xml_parse_head_v2</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00124a08</span></code>, <code class="docutils literal notranslate"><span class="pre">sip/xml_proc.c</span></code>): <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">msgId</span></code>, <code class="docutils literal notranslate"><span class="pre">uri</span></code> (<code class="docutils literal notranslate"><span class="pre">/SIP/</span></code>), <code class="docutils literal notranslate"><span class="pre">encrypt</span></code> = <code class="docutils literal notranslate"><span class="pre">true</span></code>/<code class="docutils literal notranslate"><span class="pre">false</span></code> + <code class="docutils literal notranslate"><span class="pre">withSalt</span></code>,
+<code class="docutils literal notranslate"><span class="pre">rui</span></code>, <code class="docutils literal notranslate"><span class="pre">phoneNo</span></code>, <code class="docutils literal notranslate"><span class="pre">serverAddr</span></code>; encrypted <code class="docutils literal notranslate"><span class="pre">&lt;body&gt;</span></code> payloads keyed by the
+registration <code class="docutils literal notranslate"><span class="pre">random</span></code>/reg-key (PBKDF2/AES-128-CBC, see registration.md).</p></li>
+<li><p><strong>Method/action words</strong> replace/augment numeric ids in the v2 envelope:
+methods <code class="docutils literal notranslate"><span class="pre">Query</span></code>/<code class="docutils literal notranslate"><span class="pre">Control</span></code>/<code class="docutils literal notranslate"><span class="pre">Notify</span></code>/<code class="docutils literal notranslate"><span class="pre">Response</span></code>; actions <code class="docutils literal notranslate"><span class="pre">ConfirmInfo</span></code>,
+<code class="docutils literal notranslate"><span class="pre">OutdoorInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">CameraInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">QRInfo</span></code>, <code class="docutils literal notranslate"><span class="pre">Token</span></code>, <code class="docutils literal notranslate"><span class="pre">UnlockByPassword</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PushStreamType</span></code>, <code class="docutils literal notranslate"><span class="pre">CallLadder</span></code>, <code class="docutils literal notranslate"><span class="pre">LeaveMessage</span></code>, <code class="docutils literal notranslate"><span class="pre">PickupWhenLM</span></code>
+(literals &#64;<code class="docutils literal notranslate"><span class="pre">0x00120138</span></code>).</p></li>
+<li><p><strong>Result/error</strong>: <code class="docutils literal notranslate"><span class="pre">Result</span></code>/<code class="docutils literal notranslate"><span class="pre">Success</span></code>, <code class="docutils literal notranslate"><span class="pre">errorCode</span></code>, <code class="docutils literal notranslate"><span class="pre">errorMsg</span></code>
+(<code class="docutils literal notranslate"><span class="pre">xml_parse_result_v2</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001237d8</span></code>); <code class="docutils literal notranslate"><span class="pre">ringId</span></code> (door-bell),
+<code class="docutils literal notranslate"><span class="pre">responseStatusStrg</span></code> on the ISAPI side.</p></li>
+<li><p><strong>Password mgmt</strong>: <code class="docutils literal notranslate"><span class="pre">oldPassword</span></code>/<code class="docutils literal notranslate"><span class="pre">newPassword</span></code> (<code class="docutils literal notranslate"><span class="pre">0x0031c1a4</span></code>); <code class="docutils literal notranslate"><span class="pre">msgType</span></code>
+on internal/SDK queues (<code class="docutils literal notranslate"><span class="pre">cli_msg_task</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001363b0</span></code>, <code class="docutils literal notranslate"><span class="pre">0x00101f6c</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sipNum</span></code> is absent from the V2 <em>request</em> builder’s emitted set (serial/
+MAC/name/floor only; <code class="docutils literal notranslate"><span class="pre">sipNum</span></code> still parsed/used elsewhere — inferred
+demotion, not removal).</p></li>
+</ul>
+</section>
+<section id="heartbeat-message-shape">
+<h2>5. Heartbeat / MESSAGE shape<a class="headerlink" href="#heartbeat-message-shape" title="Link to this heading"></a></h2>
+<p>Same carrier: <code class="docutils literal notranslate"><span class="pre">MESSAGE</span> <span class="pre">sip:sipCmd&#64;&lt;registrar&gt;:5065</span></code>, <code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">text/xml</span></code>, <code class="docutils literal notranslate"><span class="pre">videoIntercomMsg</span></code> <code class="docutils literal notranslate"><span class="pre">method=1</span> <span class="pre">action=1</span></code> every <strong>~119 s</strong> (<code class="docutils literal notranslate"><span class="pre">0x77</span></code>
+threshold, identical constant on both sides), skipped while network down or
+devLongNum isn’t 11 chars; <code class="docutils literal notranslate"><span class="pre">sipCmd</span></code> remains a virtual AOR.</p>
+<ul class="simple">
+<li><p>V1: <code class="docutils literal notranslate"><span class="pre">task_sipClient_HeartBeat</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000e28dc</span></code> → <code class="docutils literal notranslate"><span class="pre">sipcli_send_msg</span></code>
+&#64;<code class="docutils literal notranslate"><span class="pre">0x000dc9b0</span></code> (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/heartbeat.c</span></code>); body via
+<code class="docutils literal notranslate"><span class="pre">xml_getSipInfoXml</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x000ea910</span></code>; from-ip/to-ip + own devLongNum.</p></li>
+<li><p>V2: <code class="docutils literal notranslate"><span class="pre">cli_heartbeat_task</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00133668</span></code> → <code class="docutils literal notranslate"><span class="pre">cli_send_sip_cmd</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0012c8bc</span></code>
+(<code class="docutils literal notranslate"><span class="pre">sip/client/{heartbeat,device_helpers}.c</span></code>); same field set plus serial;
+on failure posts registration event 5 + UI status 9 — heartbeat loss now
+actively trips re-registration (inferred from <code class="docutils literal notranslate"><span class="pre">sip_client_post_registration_event(5)</span></code>).</p></li>
+</ul>
+</section>
+<section id="auth-headers-sep-and-challenge-are-not-the-sip-digest">
+<h2>6. Auth headers — SEP and challenge are NOT the SIP Digest<a class="headerlink" href="#auth-headers-sep-and-challenge-are-not-the-sip-digest" title="Link to this heading"></a></h2>
+<p>V2 firmware contains three distinct auth vocabularies that must not be
+conflated:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Scheme</p></th>
+<th class="head"><p>Where</p></th>
+<th class="head"><p>Evidence</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Digest</span> <span class="pre">realm=&quot;Hikvision&quot;</span> <span class="pre">…</span> <span class="pre">algorithm=MD5</span></code></p></td>
+<td><p>SIP <code class="docutils literal notranslate"><span class="pre">:5065</span></code> REGISTER (+ proxy paths)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip_build_digest_challenge</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0022af50</span></code>, verifier &#64;<code class="docutils literal notranslate"><span class="pre">0x0011b468</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">WWW-Authenticate:</span> <span class="pre">SEP</span> <span class="pre">CIPHER_SUITE=&quot;0&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">Authorization:</span> <span class="pre">SEP</span> <span class="pre">DATA=&quot;…&quot;</span></code></p></td>
+<td><p>SDK/talkback login layer, <strong>not SIP</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tbs_build_auth_req</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001747bc</span></code>, <code class="docutils literal notranslate"><span class="pre">tbs_parse_auth_resp</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00174ea0</span></code> (<code class="docutils literal notranslate"><span class="pre">human_readable/misc/noname.c</span></code>, raw <code class="docutils literal notranslate"><span class="pre">decompiled/noname.c</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>ISAPI challenge/sessionLogin (<code class="docutils literal notranslate"><span class="pre">challenge</span></code>,<code class="docutils literal notranslate"><span class="pre">salt</span></code>,<code class="docutils literal notranslate"><span class="pre">sessionID</span></code>,<code class="docutils literal notranslate"><span class="pre">sessionIDVersion</span></code>, SHA-256)</p></td>
+<td><p>HTTP ISAPI only</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isapi_secur_isapi_secur.c</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x003039c8</span></code>/<code class="docutils literal notranslate"><span class="pre">0x00303548</span></code>/<code class="docutils literal notranslate"><span class="pre">0x00302888</span></code> (<code class="docutils literal notranslate"><span class="pre">sec_hmac_sha256</span></code>), gen_challenge &#64;<code class="docutils literal notranslate"><span class="pre">0x0030864c</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>V1 had only the ISAPI <code class="docutils literal notranslate"><span class="pre">/Security/challenge</span></code> RSA exchange
+(<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/secur.c</span></code>, <code class="docutils literal notranslate"><span class="pre">isapi_sdk_srv_gen_challenge</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001cb658</span></code>) —
+sessionLogin/SHA256 is new. A SIP peer never sees SEP or sessionLogin.</p>
+</section>
+<section id="content-type-charset-variants">
+<h2>7. Content-Type / charset variants<a class="headerlink" href="#content-type-charset-variants" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Body kind</p></th>
+<th class="head"><p>V1</p></th>
+<th class="head"><p>V2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SIP XML bodies</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text/xml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text/xml</span></code> (unchanged — <code class="docutils literal notranslate"><span class="pre">cli_send_regist</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00130c50</span></code>, <code class="docutils literal notranslate"><span class="pre">cli_send_sip_cmd</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0012c8bc</span></code>, reg response builder &#64;<code class="docutils literal notranslate"><span class="pre">0x002291b8</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>ISAPI/REST responses</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text/xml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">application/xml;</span> <span class="pre">charset=&quot;UTF-8&quot;</span></code> / <code class="docutils literal notranslate"><span class="pre">application/json;</span> <span class="pre">charset=&quot;UTF-8&quot;</span></code> negotiated (<code class="docutils literal notranslate"><span class="pre">rest_negotiate_response_format</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x002e0b00</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>ONVIF-ish HTTP</p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Content-Type:</span> <span class="pre">text/xml;</span> <span class="pre">charset=utf-8</span></code> (<code class="docutils literal notranslate"><span class="pre">onvif_create_http_header</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x001549b4</span></code>, familyVoice)</p></td>
+</tr>
+<tr class="row-odd"><td><p>EZVIZ HTTP</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text/xml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">text/xml;</span> <span class="pre">charset=&quot;utf-8&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">decompiled/ezviz_app_sub.cpp.c</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="transport-encoding-notes">
+<h2>8. Transport/encoding notes<a class="headerlink" href="#transport-encoding-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">text/xml</span></code> bodies are still LF/CRLF-mixed templates on the client; the V2
+registrar parses them with TinyXML — entity-escaping now matters
+(see <code class="docutils literal notranslate"><span class="pre">registration.md</span></code> checklist).</p></li>
+<li><p>V2 adds an XML writer API (<code class="docutils literal notranslate"><span class="pre">sip_xml_writer_*</span></code>, <code class="docutils literal notranslate"><span class="pre">sip/client/xml_writer.c</span></code>)
+producing the same tag vocabulary — output shape is preserved while the
+generator changed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Expires</span></code> handling: V1 client sent fixed 900 (kinds 1/3/8) / door-reg
+<code class="docutils literal notranslate"><span class="pre">cfg+0x350ce</span></code>*60; V2 registrar <strong>echoes</strong> the request Expires in the
+response and the client derives per-role values (<code class="docutils literal notranslate"><span class="pre">cli_send_regist</span></code>
+role→expires; <code class="docutils literal notranslate"><span class="pre">cli_reg_resp_proc</span></code> reads <code class="docutils literal notranslate"><span class="pre">expires</span></code> from the response) —
+inferred role-based expiry.</p></li>
+<li><p>IPv6 appears end-to-end in V2 SIP (<code class="docutils literal notranslate"><span class="pre">sip_config_get_ipv6_mode</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x00230b2c</span></code>
+picks <code class="docutils literal notranslate"><span class="pre">AF_INET</span></code> vs <code class="docutils literal notranslate"><span class="pre">AF_INET6</span></code> sockaddr handling in
+<code class="docutils literal notranslate"><span class="pre">sip_server_register_device</span></code>; <code class="docutils literal notranslate"><span class="pre">IP6</span></code> SDP templates; <code class="docutils literal notranslate"><span class="pre">inet_pton</span></code> in
+<code class="docutils literal notranslate"><span class="pre">xml_parse_head_v2</span></code>). V1 was IPv4-only.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="registration.html" class="btn btn-neutral float-left" title="Registration — V2.0.24 vs V2.2.100" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="subsystem-changes.html" class="btn btn-neutral float-right" title="Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

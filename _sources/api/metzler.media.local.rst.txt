@@ -1,0 +1,7 @@
+metzler.media.local module
+==========================
+
+.. automodule:: metzler.media.local
+   :members:
+   :show-inheritance:
+   :undoc-members:

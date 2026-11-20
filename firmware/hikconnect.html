@@ -1,0 +1,1180 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hik-Connect / EZVIZ cloud channel — registration and call-state pushes &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Door unlock via ISAPI (HTTP XML) — firmware internals" href="door-unlock-api.html" />
+    <link rel="prev" title="Doorbell pairing &amp; door↔indoor signaling — firmware internals" href="doorbell-pairing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ezdevsdk-and-the-layered-architecture">1. ezDevSDK and the layered architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#service-lifecycle-control-c-protocol-ezviz-control-cpp">2. Service lifecycle — <code class="docutils literal notranslate"><span class="pre">control.c</span></code> (<code class="docutils literal notranslate"><span class="pre">protocol/ezviz_control.cpp</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bootstrap-lbs-das-session">3. Bootstrap: LBS → DAS → session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wire-frame-verified-ezdevsdk-ezdev-basic-c">4. Wire frame (verified — <code class="docutils literal notranslate"><span class="pre">ezdevsdk/ezdev_basic.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#device-registration-activation">5. Device registration / activation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#servers-domains-contacted">6. Servers / domains contacted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#call-state-pushes-what-produces-the-hik-connect-cards">7. Call-state pushes — what produces the Hik-Connect cards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#other-cloud-traffic">8. Other cloud traffic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-the-simulator-does-doesn-t-need">9. What the simulator does / doesn’t need</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unverified-open-items">10. Unverified / open items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-functions">Key functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware/hikconnect.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hik-connect-ezviz-cloud-channel-registration-and-call-state-pushes">
+<h1>Hik-Connect / EZVIZ cloud channel — registration and call-state pushes<a class="headerlink" href="#hik-connect-ezviz-cloud-channel-registration-and-call-state-pushes" title="Link to this heading"></a></h1>
+<p>How <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (Metzler VTH 2.0.24, a rebranded Hikvision indoor station) talks to
+the Hik-Connect / EZVIZ cloud. Evidence: <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/ezviz/*.c</span></code> (app layer,
+<code class="docutils literal notranslate"><span class="pre">protocol/ezviz_*.cpp</span></code>), <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/ezdevsdk/*.c</span></code> (SDK subcore), and
+<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/misc/dclog.c</span></code> (SDK transport internals). The SDK kernel itself is
+largely external (<code class="docutils literal notranslate"><span class="pre">/*</span> <span class="pre">ext</span> <span class="pre">*/</span></code> markers) — internals cited here are recovered
+from call sites, log strings and the few decompiled subcore files.</p>
+<section id="ezdevsdk-and-the-layered-architecture">
+<h2>1. ezDevSDK and the layered architecture<a class="headerlink" href="#ezdevsdk-and-the-layered-architecture" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Code</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>App</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">protocol/ezviz_*.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">route/ezvizRoute.c</span></code>, <code class="docutils literal notranslate"><span class="pre">transProtocol/ezviz_trans_parse.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">functions/ezviz_send_stream.cpp</span></code></p></td>
+<td><p>registers per-domain callbacks, builds JSON/records, drives local SIP on app commands</p></td>
+</tr>
+<tr class="row-odd"><td><p>ezDevSDK subcore</p></td>
+<td><p>statically linked, <code class="docutils literal notranslate"><span class="pre">subcore/*</span></code> + <code class="docutils literal notranslate"><span class="pre">userpace/src/domain/*</span></code> (jenkins tree <code class="docutils literal notranslate"><span class="pre">Frontend.Civil.All-SDK</span></code>, <code class="docutils literal notranslate"><span class="pre">trans_parse2.c</span></code> header)</p></td>
+<td><p>framed+digested channel to DAS, LBS/DAS bootstrap, MQTT transport, P2P/UDT NAT traversal, per-domain streams</p></td>
+</tr>
+<tr class="row-even"><td><p>Cloud</p></td>
+<td><p>LBS → DAS (<code class="docutils literal notranslate"><span class="pre">&lt;dasDomain&gt;:8666</span></code>) → per-domain channels + TLS alarm link</p></td>
+<td><p>push delivery, call signaling, alarm store, OTA, remote view</p></td>
+</tr>
+</tbody>
+</table>
+<p>ezDevSDK is Hikvision’s embedded cloud SDK: the device never speaks HTTP or
+push-protocol directly to Hik-Connect — it opens one framed channel to a
+<strong>DAS</strong> (device access server) reached through an <strong>LBS</strong> bootstrap, then
+multiplexes “domains” (base, preview, talk, third-party, alarm) plus
+kernel-extend channels (“sub” :3700, “special” :3999) over it.</p>
+</section>
+<section id="service-lifecycle-control-c-protocol-ezviz-control-cpp">
+<h2>2. Service lifecycle — <code class="docutils literal notranslate"><span class="pre">control.c</span></code> (<code class="docutils literal notranslate"><span class="pre">protocol/ezviz_control.cpp</span></code>)<a class="headerlink" href="#service-lifecycle-control-c-protocol-ezviz-control-cpp" title="Link to this heading"></a></h2>
+<p>Supervisor thread <code class="docutils literal notranslate"><span class="pre">ezvizopenTask</span></code> &#64;0x003d9fbc: waits for network
+(<code class="docutils literal notranslate"><span class="pre">if_is_device_active</span></code>) <strong>and</strong> the EZVIZ enable flag <code class="docutils literal notranslate"><span class="pre">cfg+0x328d0</span></code> non-empty;
+writes <code class="docutils literal notranslate"><span class="pre">/home/config/dev_info</span></code>; then runs <code class="docutils literal notranslate"><span class="pre">start_ezviz_service</span></code> &#64;0x003d9dbc:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>#</p></th>
+<th class="head"><p>function</p></th>
+<th class="head"><p>addr</p></th>
+<th class="head"><p>role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_boot_start</span></code></p></td>
+<td><p>0x003d9770</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezDevSDK_Init(dasDomain=cfg+0x3280c,</span> <span class="pre">port=*(u16*)(cfg+0x328cc),</span> <span class="pre">cbBlk,</span> <span class="pre">1)</span></code> + <code class="docutils literal notranslate"><span class="pre">ezDevSDK_Start</span></code> (<code class="docutils literal notranslate"><span class="pre">FUN_0047c3c0</span></code>/<code class="docutils literal notranslate"><span class="pre">FUN_0047c70c</span></code>, ext); cb block carries event/log/kv-load/kv-save/dev_id/masterkey getters and the paths <code class="docutils literal notranslate"><span class="pre">/home/config/{dev_info,dev_id,dev_masterkey}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_sub_domain</span></code></p></td>
+<td><p>0x003d9c14</p></td>
+<td><p>kernel-extend domain <code class="docutils literal notranslate"><span class="pre">&quot;sub&quot;</span></code> v1.0.0, <strong>port 3700</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">start_special_domain</span></code></p></td>
+<td><p>0x003d9ce8</p></td>
+<td><p>kernel-extend domain <code class="docutils literal notranslate"><span class="pre">&quot;special&quot;</span></code>, <strong>port 3999</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_register_domain</span></code></p></td>
+<td><p>0x003db638</p></td>
+<td><p><strong>base</strong> domain: recv cb <code class="docutils literal notranslate"><span class="pre">ezviz_base_cb_recv_ezviz_msg</span></code>, maxmsg 0x20000</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_preview_domain_start</span></code></p></td>
+<td><p>0x003e02d0</p></td>
+<td><p>live A/V to the app (<code class="docutils literal notranslate"><span class="pre">av.c</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_talk_op_register</span></code></p></td>
+<td><p>0x003de2e4</p></td>
+<td><p>two-way voice (<code class="docutils literal notranslate"><span class="pre">audio.c</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_thirdparty_domain_start</span></code></p></td>
+<td><p>0x003e2e0c</p></td>
+<td><p>JSON app↔device + call pushes (<code class="docutils literal notranslate"><span class="pre">third_party.c</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_alarm_domain_start</span></code></p></td>
+<td><p>0x003dcf94</p></td>
+<td><p>TLS alarm channel, 11 type-indexed staging bufs (<code class="docutils literal notranslate"><span class="pre">alarm.c</span></code>)</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">stop_ezviz_service</span></code> &#64;0x003d992c tears down in the same order (any failure
+aborts). The supervisor’s 2 s loop restarts everything when: the enable flag
+clears, <code class="docutils literal notranslate"><span class="pre">cfg+0x3280c</span></code> changes (<code class="docutils literal notranslate"><span class="pre">&quot;#####</span> <span class="pre">LBS</span> <span class="pre">changed</span> <span class="pre">.....&quot;</span></code>, the DAS push), or
+the interface flips wlan0↔eth0 (<code class="docutils literal notranslate"><span class="pre">FUN_00482014(1,</span> <span class="pre">ifname,</span> <span class="pre">5)</span></code>).</p>
+</section>
+<section id="bootstrap-lbs-das-session">
+<h2>3. Bootstrap: LBS → DAS → session<a class="headerlink" href="#bootstrap-lbs-das-session" title="Link to this heading"></a></h2>
+<p>Verified against <code class="docutils literal notranslate"><span class="pre">base_function.c</span></code>, <code class="docutils literal notranslate"><span class="pre">control.c</span></code>, <code class="docutils literal notranslate"><span class="pre">misc/dclog.c</span></code>:</p>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">ezDevSDK_Init</span></code> gets the LBS domain (<code class="docutils literal notranslate"><span class="pre">cfg+0x3280c</span></code>) + port
+(<code class="docutils literal notranslate"><span class="pre">cfg+0x328cc</span></code>, default <strong>8666</strong> = 0x21da). paramLib defaults write
+<code class="docutils literal notranslate"><span class="pre">litedev.ys7.com</span></code> (dev-mode==2) else <code class="docutils literal notranslate"><span class="pre">litedev.ezvizlife.com</span></code>, alarm server
+<code class="docutils literal notranslate"><span class="pre">alarm.ys7.com</span></code> at <code class="docutils literal notranslate"><span class="pre">cfg+0x3284c</span></code>, ports 8666/7400
+(<code class="docutils literal notranslate"><span class="pre">system_param_paramLib.c.c</span></code> &#64;0x00068618).</p></li>
+<li><p>SDK-internal bootstrap (names recovered in <code class="docutils literal notranslate"><span class="pre">dclog.c</span></code>, not decompiled):
+STUN auth (<code class="docutils literal notranslate"><span class="pre">stun_send_refreshkey_i/iii</span></code>, <code class="docutils literal notranslate"><span class="pre">parse_auth_ii</span></code>), RSA session-key
+encryption (<code class="docutils literal notranslate"><span class="pre">RSA(010001)</span></code> = exp 65537), <code class="docutils literal notranslate"><span class="pre">createdevid_iii</span></code>,
+reg/light-reg/unreg — then <strong>MQTT</strong> (“MQIsdp”, Aliyun-style
+<code class="docutils literal notranslate"><span class="pre">productKey/deviceName/deviceLicense</span></code>) publishing devinfo to
+<code class="docutils literal notranslate"><span class="pre">/Basic/pu2cenplt/%s/devinfo</span></code>. SDKVersion string <code class="docutils literal notranslate"><span class="pre">V2.0.6</span></code>.</p></li>
+<li><p>SDK→app base-domain msgs (<code class="docutils literal notranslate"><span class="pre">ezviz_base_cb_recv_ezviz_msg</span></code> &#64;0x003db1d8):</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>type</p></th>
+<th class="head"><p>payload</p></th>
+<th class="head"><p>handler</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>user-id string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">g_userId</span></code> &#64;0x0076a246 — the cloud-assigned device user id; <code class="docutils literal notranslate"><span class="pre">ezviz_user_id_valid()</span></code> = non-empty and ≠ <code class="docutils literal notranslate"><span class="pre">&quot;0000000000000000&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>—</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;start</span> <span class="pre">upgrade&quot;</span></code> (puts only)</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{u32</span> <span class="pre">num;</span> <span class="pre">pkt[0x354]}</span></code></p></td>
+<td><p>OTA packet info → <code class="docutils literal notranslate"><span class="pre">ezviz_ext_cb_upgrade_packet_info</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>0x13</p></td>
+<td><p>0x40-byte domain</p></td>
+<td><p>LBS/DAS push → <code class="docutils literal notranslate"><span class="pre">cfg+0x3280c</span></code>, port 8666; supervisor restarts on change</p></td>
+</tr>
+<tr class="row-even"><td><p>0x14</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">{u32</span> <span class="pre">x;</span> <span class="pre">str</span> <span class="pre">proto;</span> <span class="pre">str</span> <span class="pre">content;</span> <span class="pre">u32}</span></code></p></td>
+<td><p>HCNetSDK-over-EZVIZ request → <code class="docutils literal notranslate"><span class="pre">ezviz_net_client_sdk_proc</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">event_notice_callback</span></code> &#64;0x003d9294: case 0 <code class="docutils literal notranslate"><span class="pre">&quot;Device</span> <span class="pre">regist</span> <span class="pre">to</span> <span class="pre">DAS&quot;</span></code> →
+<code class="docutils literal notranslate"><span class="pre">g_registered</span></code>=1; 1 offline; 2 re-regist after LBS/DAS switch; 3 invalid
+authcode; 4 fast re-regist.</p></li>
+<li><p>Once <code class="docutils literal notranslate"><span class="pre">sipcli_fae8c</span> <span class="pre">&amp;&amp;</span> <span class="pre">ezviz_user_id_valid</span></code> hold, the supervisor fires the
+~60 s keepalive <code class="docutils literal notranslate"><span class="pre">ezviz_net_Pu2client_proc</span></code> &#64;0x003e773c (svc <strong>0x305e</strong>:
+<code class="docutils literal notranslate"><span class="pre">{DevSerial,</span> <span class="pre">DEVICE[]{Enable</span> <span class="pre">T/F,Type:S,Index,NickName,Serial},</span> <span class="pre">Status{Type:&quot;lockNum&quot;,Value:{json}}}</span></code>) and refreshes the third-party token
+(<code class="docutils literal notranslate"><span class="pre">ezviz_third_party_token_req</span></code>, svc 0x348c, <code class="docutils literal notranslate"><span class="pre">{AppKey,</span> <span class="pre">&quot;sdk&quot;,</span> <span class="pre">&quot;signal&quot;}</span></code>;
+stale when &gt;0x93a80 ≈ 7 days).</p></li>
+</ol>
+</section>
+<section id="wire-frame-verified-ezdevsdk-ezdev-basic-c">
+<h2>4. Wire frame (verified — <code class="docutils literal notranslate"><span class="pre">ezdevsdk/ezdev_basic.c</span></code>)<a class="headerlink" href="#wire-frame-verified-ezdevsdk-ezdev-basic-c" title="Link to this heading"></a></h2>
+<p>Every device↔DAS message (default TCP <strong>8666</strong>) is built by <code class="docutils literal notranslate"><span class="pre">ezdev_send</span></code>
+&#64;0x00437928 and parsed by <code class="docutils literal notranslate"><span class="pre">ezdev_recv</span></code> &#64;0x00437b40:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>offset</p></th>
+<th class="head"><p>field</p></th>
+<th class="head"><p>encoding</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0x00</p></td>
+<td><p>magic <code class="docutils literal notranslate"><span class="pre">E9</span> <span class="pre">AC</span> <span class="pre">BA</span> <span class="pre">9E</span></code></p></td>
+<td><p>stored LE <code class="docutils literal notranslate"><span class="pre">0xe9acba9e</span></code>; receiver bswaps → <code class="docutils literal notranslate"><span class="pre">0x9ebaace9</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>0x04</p></td>
+<td><p>version = 1</p></td>
+<td><p>native-LE</p></td>
+</tr>
+<tr class="row-even"><td><p>0x08</p></td>
+<td><p>seq</p></td>
+<td><p><strong>BE</strong>, global <code class="docutils literal notranslate"><span class="pre">g_ezdev_seq</span></code> &#64;0x009b6ba8, ++/msg</p></td>
+</tr>
+<tr class="row-odd"><td><p>0x0c</p></td>
+<td><p>code</p></td>
+<td><p><strong>BE</strong> service/domain code</p></td>
+</tr>
+<tr class="row-even"><td><p>0x10</p></td>
+<td><p>subcode</p></td>
+<td><p><strong>BE</strong> msg type — the <code class="docutils literal notranslate"><span class="pre">ezdev_recv</span></code> return value</p></td>
+</tr>
+<tr class="row-odd"><td><p>0x14</p></td>
+<td><p>flags</p></td>
+<td><p>0 (always, this build)</p></td>
+</tr>
+<tr class="row-even"><td><p>0x18</p></td>
+<td><p>body_len</p></td>
+<td><p><strong>BE</strong> = name_len + payload_len</p></td>
+</tr>
+<tr class="row-odd"><td><p>0x1c</p></td>
+<td><p>name_len</p></td>
+<td><p><strong>BE</strong> strlen(name); 0 when no binary payload</p></td>
+</tr>
+<tr class="row-even"><td><p>0x20</p></td>
+<td><p>name + payload</p></td>
+<td><p>body (name has no NUL)</p></td>
+</tr>
+<tr class="row-odd"><td><p>+body</p></td>
+<td><p>digest</p></td>
+<td><p>32 bytes over the <strong>body only</strong> — recv log calls it “md5 digest” (MD5→32 hex chars, possibly keyed; <code class="docutils literal notranslate"><span class="pre">md5_hash</span></code>/<code class="docutils literal notranslate"><span class="pre">FUN_004464e0</span></code> not recovered)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Total = <code class="docutils literal notranslate"><span class="pre">0x20</span> <span class="pre">+</span> <span class="pre">body_len</span> <span class="pre">+</span> <span class="pre">0x20</span></code>. Header is <strong>not</strong> covered by the digest.
+Unverified: whether the digest is keyed, and whether the payload is
+additionally encrypted — the subcore also contains AES-CBC
+(<code class="docutils literal notranslate"><span class="pre">ezd_aes_enc</span></code>/<code class="docutils literal notranslate"><span class="pre">ezd_aes_dec</span></code>) and the RSA STUN key exchange, so per-session
+crypto may exist above this layer (<code class="docutils literal notranslate"><span class="pre">platform_encrypt.c</span></code> path strings).
+Earlier notes describing this trailer as a generic “encryption wrap” are
+superseded by the digest analysis in <code class="docutils literal notranslate"><span class="pre">ezdevsdk/README.md</span></code>.</p>
+<p>Service codes observed: <code class="docutils literal notranslate"><span class="pre">0x3038</span></code>→3700, <code class="docutils literal notranslate"><span class="pre">0x305e</span></code>→3999 (keepalive),
+<code class="docutils literal notranslate"><span class="pre">0x3482</span></code>→3999, <code class="docutils literal notranslate"><span class="pre">0x348c</span></code> third-party token req, <code class="docutils literal notranslate"><span class="pre">0x348e</span></code> call push,
+<code class="docutils literal notranslate"><span class="pre">0x4904</span></code>→1100, <code class="docutils literal notranslate"><span class="pre">0x4950</span></code> MsgSeq data, <code class="docutils literal notranslate"><span class="pre">0x6001</span></code> rejected
+(<code class="docutils literal notranslate"><span class="pre">ezviz_base_send_ezviz_msg</span></code> &#64;0x003dafc0).</p>
+</section>
+<section id="device-registration-activation">
+<h2>5. Device registration / activation<a class="headerlink" href="#device-registration-activation" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Piece</p></th>
+<th class="head"><p>Where</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dev_info</span></code> file</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_save_device_info</span></code> &#64;0x003d9ab0</p></td>
+<td><p>JSON → <code class="docutils literal notranslate"><span class="pre">/home/config/dev_info</span></code>: <code class="docutils literal notranslate"><span class="pre">dev_status</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_subserial</span></code>, <strong><code class="docutils literal notranslate"><span class="pre">dev_verification_code</span></code></strong>, <code class="docutils literal notranslate"><span class="pre">dev_serial</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_firmwareversion</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_type</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_mac</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_nickname</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_firmwareidentificationcode</span></code>, <code class="docutils literal notranslate"><span class="pre">dev_oeminfo</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Persistent creds</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_boot_start</span></code> cb block</p></td>
+<td><p>paths <code class="docutils literal notranslate"><span class="pre">/home/config/dev_id</span></code>, <code class="docutils literal notranslate"><span class="pre">/home/config/dev_masterkey</span></code> handed to the SDK (bound-account key material lives here, app code never touches it)</p></td>
+</tr>
+<tr class="row-even"><td><p>DevSerial</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FUN_004821f4(&quot;dev_subserial&quot;)</span></code></p></td>
+<td><p>sent as <code class="docutils literal notranslate"><span class="pre">DevSerial</span></code> field in every third-party-domain message</p></td>
+</tr>
+<tr class="row-odd"><td><p>user-id</p></td>
+<td><p>base msg type 0</p></td>
+<td><p>cloud-assigned <code class="docutils literal notranslate"><span class="pre">g_userId</span></code> — presence ⇒ registered+online, gates keepalive and the call push</p></td>
+</tr>
+<tr class="row-even"><td><p>appKey</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cfg+0x3288c</span></code></p></td>
+<td><p>32-hex OEM appKey compiled into paramLib defaults (&#64;0x00068618); used for token requests and call pushes</p></td>
+</tr>
+<tr class="row-odd"><td><p>token</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">third_party.c</span></code></p></td>
+<td><p>0x348c req <code class="docutils literal notranslate"><span class="pre">{Authorization:&quot;&quot;,</span> <span class="pre">DevSerial,</span> <span class="pre">AppKey,</span> <span class="pre">Destination:&quot;sdk&quot;,</span> <span class="pre">Auth:&quot;signal&quot;}</span></code>; reply type 0 → <code class="docutils literal notranslate"><span class="pre">g_token</span></code>; <code class="docutils literal notranslate"><span class="pre">SIGN_CHECK_ERR</span></code> response invalidates it</p></td>
+</tr>
+<tr class="row-even"><td><p>QR binding</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui_civilset_QRstr_Get</span></code> (<code class="docutils literal notranslate"><span class="pre">src_gui_civilset.c.c</span></code> ~line 870)</p></td>
+<td><p>QR payload starts with <code class="docutils literal notranslate"><span class="pre">www.hik-connect.com</span></code> and embeds the cfg+0x328d0 area/operator code — the phone-app pairing string; verified it exists, full layout not decoded</p></td>
+</tr>
+<tr class="row-odd"><td><p>operation code</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_set_operation_code</span></code> &#64;0x003d9690</p></td>
+<td><p>forwards <code class="docutils literal notranslate"><span class="pre">cfg+0x328d0+2</span></code> (skips a 2-byte prefix) to <code class="docutils literal notranslate"><span class="pre">ezd_sdk_init_ok</span></code> — the same field that enables the service and feeds the QR string</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="servers-domains-contacted">
+<h2>6. Servers / domains contacted<a class="headerlink" href="#servers-domains-contacted" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Host</p></th>
+<th class="head"><p>Source</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">litedev.ys7.com</span></code> / <code class="docutils literal notranslate"><span class="pre">litedev.ezvizlife.com</span></code></p></td>
+<td><p>paramLib default <code class="docutils literal notranslate"><span class="pre">cfg+0x3280c</span></code></p></td>
+<td><p>default LBS (picked by dev-mode)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dev.ys7.com</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">setEzvizServer</span></code> serial cmd &#64;0x00059974</p></td>
+<td><p>production env override</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">test/test2/test5.ys7.com</span></code>, <code class="docutils literal notranslate"><span class="pre">t2dev.ezvizlife.com</span></code>, <code class="docutils literal notranslate"><span class="pre">pbopen.ys7.com</span></code>, <code class="docutils literal notranslate"><span class="pre">ifuxi.ezvizlife.com</span></code>, <code class="docutils literal notranslate"><span class="pre">dev.ezvizlife.com</span></code></p></td>
+<td><p>same cmd</p></td>
+<td><p>test/staging envs, all port 8666</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">alarm.ys7.com</span></code></p></td>
+<td><p>paramLib default <code class="docutils literal notranslate"><span class="pre">cfg+0x3284c</span></code></p></td>
+<td><p>alarm-domain TLS server</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">www.hik-connect.com</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gui_civilset_QRstr_Get</span></code></p></td>
+<td><p>QR/binding URL host (displayed, not dialed)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">www.hik-online.com</span></code></p></td>
+<td><p>paramLib default (+0x586c)</p></td>
+<td><p>alternate web host, selected by <code class="docutils literal notranslate"><span class="pre">FUN_00075040</span></code> (region check /* unverified */)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">devlog.ys7.com</span></code></p></td>
+<td><p>string table (HIKCONNECT.md)</p></td>
+<td><p>telemetry host — unverified in <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/</span></code>; dclog uploads go out as <code class="docutils literal notranslate"><span class="pre">multipart/form-data</span></code> HTTP (<code class="docutils literal notranslate"><span class="pre">dclog_upload_ezdev</span></code> &#64;0x004257fc)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="call-state-pushes-what-produces-the-hik-connect-cards">
+<h2>7. Call-state pushes — what produces the Hik-Connect cards<a class="headerlink" href="#call-state-pushes-what-produces-the-hik-connect-cards" title="Link to this heading"></a></h2>
+<p>Three distinct mechanisms; only the first is the SIP-driven push:</p>
+<p><strong>(a) Third-party-domain call push (the user-facing cards).</strong>
+<code class="docutils literal notranslate"><span class="pre">ezviz_third_party_send_call(callState)</span></code> &#64;0x003de520 sends svc <strong>0x348e</strong>
+(“pu2opentransferdata”) with fields <code class="docutils literal notranslate"><span class="pre">Authorization=&quot;&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">DevSerial</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Token</span></code>, <code class="docutils literal notranslate"><span class="pre">MsgSeq</span></code>=uuid, <code class="docutils literal notranslate"><span class="pre">AppKey</span></code> (cfg+0x3288c), <code class="docutils literal notranslate"><span class="pre">Destination</span></code>, <code class="docutils literal notranslate"><span class="pre">Type</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Data</span></code> = <code class="docutils literal notranslate"><span class="pre">{&quot;push_setting&quot;:{&quot;alert&quot;:&quot;&lt;utf8</span> <span class="pre">GBK</span> <span class="pre">name&gt;&quot;}}</span></code> plus a sound tag
+<code class="docutils literal notranslate"><span class="pre">com.hikvision.4530.ring:{0|1|2}</span></code>. Alert names (<code class="docutils literal notranslate"><span class="pre">callAlertTable</span></code> &#64;0x006d8a40):
+0 “call income” (收到一条呼叫), 1 “hangup” (收到一条挂断), 2 “answer” —
+<strong>only 0 and 1 are ever sent</strong> by the call path. A 0→1 sequence with no app
+answer renders as the “call declined / missed call” card.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Trigger</p></th>
+<th class="head"><p>Caller site</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>INVITE ringing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_NewCallProc</span></code> &#64;0x003de838, sole caller sip_client ring loop &#64;0x000dc5dc</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">send_call(0)</span></code> then <code class="docutils literal notranslate"><span class="pre">g_ezvizCallState</span></code> &#64;0x0081b10c = 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>call ends: BYE / CANCEL / timeout / local hangup / answer-reject</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">call_cloudHangPost</span></code> = <code class="docutils literal notranslate"><span class="pre">ezviz_CancelCallProc</span></code> &#64;0x003de9ac — 6 SIP teardown sites &#64;0xe5f18/0xe65f4/0xe807c/0xe817c/0xea2a8/0xea620, all <code class="docutils literal notranslate"><span class="pre">(0,1,handler)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">send_call(1)</span></code> then state → 0</p></td>
+</tr>
+<tr class="row-even"><td><p>app answers (cmdId 2)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">appUASCallNormalProc</span></code> &#64;0x003e478c → <code class="docutils literal notranslate"><span class="pre">(0,2,arg)</span></code></p></td>
+<td><p>type 2 = no cloud push (returns early when state∈1..3); local accept path runs</p></td>
+</tr>
+<tr class="row-odd"><td><p>app refuses/hangs (cmdId 3)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">appUASCallHangupProc</span></code> &#64;0x003e4994 → <code class="docutils literal notranslate"><span class="pre">(0,1,arg)</span></code></p></td>
+<td><p>hangup push as above</p></td>
+</tr>
+</tbody>
+</table>
+<p>Gating (all required for the ring push — <code class="docutils literal notranslate"><span class="pre">audio.c</span></code> + caller table):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">netAltRoute()</span></code>/<code class="docutils literal notranslate"><span class="pre">srv_isMainRoom</span></code> (FUN_000f86b0) — <strong>main-room device only</strong>;</p></li>
+<li><p>cloud bound: <code class="docutils literal notranslate"><span class="pre">ezviz_user_id_valid()</span></code> and <code class="docutils literal notranslate"><span class="pre">ez_dev_mode_get()</span></code>==2
+(FUN_000549d8; ==2 selects the direct push path, else the mq/alarm path —
+the mode semantics are marked unverified in <code class="docutils literal notranslate"><span class="pre">names/ezviz.tsv</span></code>);</p></li>
+<li><p>ring-delay byte elapsed (per-session cfg byte, exact source unverified);</p></li>
+<li><p>caller devType class (<code class="docutils literal notranslate"><span class="pre">sess+0x7c</span></code> via <code class="docutils literal notranslate"><span class="pre">devTypeFromNum</span></code>) <strong>not in {7,8,0xb}</strong>
+— sub-door index classes / indoor-only modes are suppressed; main door
+1/5, door 2, generic 3/4/6/9 are pushed;</p></li>
+<li><p>caller number ≠ <code class="docutils literal notranslate"><span class="pre">&quot;1000000000&quot;</span></code> (the room base = self).</p></li>
+</ul>
+<p><strong>(b) Alarm-domain call record (call log + JPEG).</strong> When <code class="docutils literal notranslate"><span class="pre">ez_dev_mode_get()!=2</span></code>
+the same events are queued as 0x48-byte <code class="docutils literal notranslate"><span class="pre">{type,channel,handler[0x40]}</span></code> msgs on
+<code class="docutils literal notranslate"><span class="pre">/ezviz_talk_message</span></code> (<code class="docutils literal notranslate"><span class="pre">g_ezvizCallMq</span></code>); <code class="docutils literal notranslate"><span class="pre">ezviz_talk_task</span></code> &#64;0x003ded74 replays
+them: type 0 → <code class="docutils literal notranslate"><span class="pre">ezviz_ext_start_talk</span></code> → <code class="docutils literal notranslate"><span class="pre">ezviz_ext_push_alarm_call_hangup(0)</span></code>
+&#64;0x003dc87c builds a 0x14c record <code class="docutils literal notranslate"><span class="pre">{ver</span> <span class="pre">2,</span> <span class="pre">channel,</span> <span class="pre">time,</span> <span class="pre">alarmType</span> <span class="pre">1,</span> <span class="pre">caller</span> <span class="pre">&quot;N-N-N-N&quot;,</span> <span class="pre">handler,</span> <span class="pre">callUuid</span> <span class="pre">&quot;&lt;ts&gt;-&lt;devno&gt;-1-00000-&lt;rand&gt;&quot;,</span> <span class="pre">callType</span> <span class="pre">4}</span></code>
+with a JPEG snapshot (<code class="docutils literal notranslate"><span class="pre">ezviz_decapture</span></code>), types 1/2 → hangup record
+(alarmType 3/2). Sent via the TLS alarm channel.</p>
+<p><strong>(c) Poll replies.</strong> Third-party <code class="docutils literal notranslate"><span class="pre">apiId</span> <span class="pre">1</span></code> getcallstate and HCNetSDK cmd
+<code class="docutils literal notranslate"><span class="pre">0x126020</span></code> report <code class="docutils literal notranslate"><span class="pre">tp_get_call_state</span></code>-1 (0 idle / 1 calling / 2 talking; the
+app-session states 4/5 collapse to byte 1 “Error-ish” — no push is generated
+for them). <code class="docutils literal notranslate"><span class="pre">apiId</span> <span class="pre">3</span></code> callsignal cmdId 2/3/4/5/6 = answer / refuse / ringover /
+over / busy → the <code class="docutils literal notranslate"><span class="pre">appUASCall*Proc</span></code> handlers above (rc 1 or 0x7a0–0x7a7).</p>
+</section>
+<section id="other-cloud-traffic">
+<h2>8. Other cloud traffic<a class="headerlink" href="#other-cloud-traffic" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Traffic</p></th>
+<th class="head"><p>Path</p></th>
+<th class="head"><p>Detail</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Keepalive/status</p></td>
+<td><p>svc 0x305e, ~60 s</p></td>
+<td><p>DevSerial + door table + lockNum JSON (<code class="docutils literal notranslate"><span class="pre">ezviz_net_Pu2client_proc</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sensor/defend alarms</p></td>
+<td><p>alarm TLS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_push_alarm_nol</span></code> &#64;0x00108644 — 0x43-entry type table &#64;0x0076a288; defend-internal ranges {5–10,12–14,16–29} refused</p></td>
+</tr>
+<tr class="row-even"><td><p>Smart-lock events</p></td>
+<td><p>alarm TLS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_push_alarm_trans</span></code> &#64;0x003dc4f8 — types 0x11–0x16, 0x65–0x98; <code class="docutils literal notranslate"><span class="pre">&lt;SmartlockSN&gt;</span></code>/<code class="docutils literal notranslate"><span class="pre">&lt;SmartLockName&gt;</span></code>/<code class="docutils literal notranslate"><span class="pre">&lt;openType&gt;</span></code> tags base64’d</p></td>
+</tr>
+<tr class="row-odd"><td><p>Remote view / talk</p></td>
+<td><p>preview + talk domains, or P2P/UDT</p></td>
+<td><p>preview cb cmds start/stop/param/iframe (<code class="docutils literal notranslate"><span class="pre">ezviz_preview_recv_msg_cb</span></code>); EzvizStreamBuf 4×0x80000 rings keyed by source IP; uplink frame <code class="docutils literal notranslate"><span class="pre">{3,2,len,seq,0x55667788}</span></code> + 0xa0 frames (<code class="docutils literal notranslate"><span class="pre">send_stream.c</span></code>); P2P v3 + UDT NAT traversal in subcore (<code class="docutils literal notranslate"><span class="pre">dclog.c</span></code> map)</p></td>
+</tr>
+<tr class="row-even"><td><p>Remote unlock</p></td>
+<td><p>third-party apiId 2 / HCNetSDK 0x126009</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_third_party_remotecontrolgateway</span></code> → <code class="docutils literal notranslate"><span class="pre">sipcli_gateway_unlock(srcId,</span> <span class="pre">channel-1,</span> <span class="pre">lockId)</span></code>; smart-lock variant checks the DB password → rc 0x7a3–0x7a7</p></td>
+</tr>
+<tr class="row-odd"><td><p>HCNetSDK tunnel</p></td>
+<td><p>base msg 0x14 → svc 5 reply</p></td>
+<td><p>hex-ascii → <code class="docutils literal notranslate"><span class="pre">{len,cksum,netCmd}</span></code> binary → reply base64 in <code class="docutils literal notranslate"><span class="pre">{ProtocolType:&quot;HCNetSDK&quot;,Content}</span></code> (<code class="docutils literal notranslate"><span class="pre">ezviz_net_client_sdk_proc</span></code> &#64;0x003e7268); includes <code class="docutils literal notranslate"><span class="pre">/ISAPI</span></code> passthrough 0x117000–3 (GB28181Service write can reboot)</p></td>
+</tr>
+<tr class="row-even"><td><p>Cloud OTA</p></td>
+<td><p>base msgs 1/2 + query</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_cb_upgrade_packet_info</span></code> &#64;0x003e3858 → <code class="docutils literal notranslate"><span class="pre">http://ip:port/file</span></code>, version compare → <code class="docutils literal notranslate"><span class="pre">ezvizUpgradeTask</span></code> retry downloader</p></td>
+</tr>
+<tr class="row-odd"><td><p>Shadow property sync</p></td>
+<td><p>SDK module 0x3ea</p></td>
+<td><p>cmds 0x16/0x21/0x22/0x23/0x24 JSON <code class="docutils literal notranslate"><span class="pre">{BusiID,Type,Value}</span></code> (<code class="docutils literal notranslate"><span class="pre">ezdevsdk/shadow_func.c</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Telemetry</p></td>
+<td><p>dclog</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GenerateDCLog</span></code> &#64;0x00441b5c JSON array; record tags 0x3e9 (stream/call stats) / 0x3ef (net online); separate HTTP file upload</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cloud storage ext</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cloud.c</span></code></p></td>
+<td><p>open/write/close are <strong>log-only stubs</strong> — feature compiled out in this build</p></td>
+</tr>
+</tbody>
+</table>
+<!-- mermaid: fw-hikconnect -->
+<pre  class="mermaid">
+        sequenceDiagram
+    autonumber
+    participant FW as hicore (ezviz supervisor)
+    participant LBS as LBS (litedev.ys7.com / ezvizlife)
+    participant DAS as DAS (:8666)
+    participant AL as alarm.ys7.com (TLS)
+    participant APP as Hik-Connect app
+
+    Note over FW: ezvizopenTask — wait for net + enable flag cfg+0x328d0
+    FW-&gt;&gt;FW: write /home/config/dev_info JSON&lt;br/&gt;serial · verification code · MAC
+    FW-&gt;&gt;LBS: ezDevSDK_Init + Start (bootstrap, STUN auth · RSA key · MQTT reg)
+    LBS--&gt;&gt;FW: base msg 0x13 — LBS/DAS domain push&lt;br/&gt;cfg+0x3280c, port 8666
+    FW-&gt;&gt;DAS: TCP 8666 ezdev frames (magic E9ACBA9E + MD5 digest)
+    DAS--&gt;&gt;FW: regist to DAS ok (event 0) · user-id (msg 0)
+    Note over FW,AL: domains up — sub 3700 · special 3999&lt;br/&gt;base · preview · talk · third-party · alarm
+    FW-&gt;&gt;AL: TLS connect (alarm channel ops)
+    loop ~60 s while user-id valid
+        FW-&gt;&gt;DAS: svc 0x305e status — DevSerial + DEVICE[] + lockNum
+    end
+
+    Note over FW,APP: door call — SIP INVITE ringing
+    FW-&gt;&gt;DAS: send_call(0) svc 0x348e — &quot;call income&quot; push&lt;br/&gt;gated: main-room · cloud online · devType∉{7,8,0xb}
+    DAS-&gt;&gt;APP: push notification
+    alt app answers (apiId 3, cmdId 2)
+        DAS-&gt;&gt;FW: callsignal → appUASCallNormalProc (type 2, no push)
+        FW-&gt;&gt;APP: preview + talk streams (DAS relay or P2P)
+        APP-&gt;&gt;DAS: cmdId 3 / 5 (hangup or over)
+        DAS-&gt;&gt;FW: appUASCallHangupProc → send_call(1)
+        DAS-&gt;&gt;APP: call-ended card
+    else BYE · CANCEL · timeout · reject
+        FW-&gt;&gt;DAS: send_call(1) — hangup push
+        DAS-&gt;&gt;APP: &quot;call declined / missed call&quot; card
+    end
+    </pre></section>
+<section id="what-the-simulator-does-doesn-t-need">
+<h2>9. What the simulator does / doesn’t need<a class="headerlink" href="#what-the-simulator-does-doesn-t-need" title="Link to this heading"></a></h2>
+<p>The sim never speaks to the cloud — which is fine, because the push path lives
+in the <strong>main indoor’s</strong> firmware, not the callee’s:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Sim behavior</p></th>
+<th class="head"><p>Cloud consequence</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Local SIP plane only (<code class="docutils literal notranslate"><span class="pre">--sip-host</span></code> PBX / Linphone bridge)</p></td>
+<td><p>none needed — the EZVIZ enable flag <code class="docutils literal notranslate"><span class="pre">cfg+0x328d0</span></code> can stay empty; supervisor then skips <code class="docutils literal notranslate"><span class="pre">start_ezviz_service</span></code> entirely</p></td>
+</tr>
+<tr class="row-odd"><td><p>Door call rings a real main indoor</p></td>
+<td><p>the main indoor itself pushes state 0→1; our sim only affects whether the call looks “answered” (200 OK → BYE = normal hangup) or “declined” (4xx/timeout → missed-call card) — exactly the cards described in <code class="docutils literal notranslate"><span class="pre">docs/protocol.md</span></code> §7</p></td>
+</tr>
+<tr class="row-even"><td><p>Remote answer via Hik-Connect app</p></td>
+<td><p>not reproducible: needs DAS + third-party domain + token; the app’s <code class="docutils literal notranslate"><span class="pre">apiId</span> <span class="pre">3</span></code> callsignal and HCNetSDK tunnel terminate in firmware code the sim doesn’t run</p></td>
+</tr>
+<tr class="row-odd"><td><p>Remote view / talkback from the app</p></td>
+<td><p>not reproducible: preview/talk domains + P2P/UDT + EzvizStreamBuf machinery</p></td>
+</tr>
+<tr class="row-even"><td><p>Remote unlock from the app</p></td>
+<td><p>sim-side equivalent is the SIP <code class="docutils literal notranslate"><span class="pre">INFO</span></code> DTMF / <code class="docutils literal notranslate"><span class="pre">locknumXML</span></code> path, not the cloud <code class="docutils literal notranslate"><span class="pre">apiId</span> <span class="pre">2</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Missed-call cards for calls TO the sim</p></td>
+<td><p>only if the sim registered its own cloud account — out of scope; implementing it would mean the 0xE9ACBA9E frame + digest + STUN/MQTT registration + domain channels</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="unverified-open-items">
+<h2>10. Unverified / open items<a class="headerlink" href="#unverified-open-items" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>MD5 digest keying and any payload encryption above the frame layer
+(<code class="docutils literal notranslate"><span class="pre">platform_encrypt</span></code>, <code class="docutils literal notranslate"><span class="pre">md5_hash</span></code>/<code class="docutils literal notranslate"><span class="pre">FUN_004464e0</span></code> not decompiled).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ez_dev_mode_get</span></code> (FUN_000549d8) semantics beyond “==2 selects the push path”.</p></li>
+<li><p>Exact STUN→MQTT registration sequence inside the SDK (names recovered only).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">devlog.ys7.com</span></code> usage; alarm.ys7.com TLS details (ALPN, cert pinning — the
+ctx uses <code class="docutils literal notranslate"><span class="pre">SSLv23_client_method</span></code> + ctrl 0x21, verify mode unclear).</p></li>
+<li><p>Zigbee/third-party appKey derivation and token lifetime accounting.</p></li>
+</ul>
+</section>
+<section id="key-functions">
+<h2>Key functions<a class="headerlink" href="#key-functions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>function</p></th>
+<th class="head"><p>addr</p></th>
+<th class="head"><p>file</p></th>
+<th class="head"><p>role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezvizopenTask</span></code></p></td>
+<td><p>0x003d9fbc</p></td>
+<td><p>control.c</p></td>
+<td><p>supervisor: net/enable wait, LBS-change + iface restart, 60 s keepalive, token refresh</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_boot_start</span></code></p></td>
+<td><p>0x003d9770</p></td>
+<td><p>control.c</p></td>
+<td><p>dev-info file + ezDevSDK_Init/Start</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">start_ezviz_service</span></code></p></td>
+<td><p>0x003d9dbc</p></td>
+<td><p>control.c</p></td>
+<td><p>ordered domain bring-up (boot → sub 3700 → special 3999 → base → preview → talk → third-party → alarm)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">event_notice_callback</span></code></p></td>
+<td><p>0x003d9294</p></td>
+<td><p>control.c</p></td>
+<td><p>SDK reg/offline/fast-regist events</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_base_cb_recv_ezviz_msg</span></code></p></td>
+<td><p>0x003db1d8</p></td>
+<td><p>base_function.c</p></td>
+<td><p>SDK→app pump: user-id (0), OTA (1/2), LBS push (0x13), trans req (0x14)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_base_send_ezviz_msg</span></code></p></td>
+<td><p>0x003dafc0</p></td>
+<td><p>base_function.c</p></td>
+<td><p>svc-code → port map, kernel send</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_base_set_ezviz_server</span></code></p></td>
+<td><p>0x003db148</p></td>
+<td><p>base_function.c</p></td>
+<td><p>write pushed LBS/DAS domain to cfg+0x3280c</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezdev_send</span></code> / <code class="docutils literal notranslate"><span class="pre">ezdev_recv</span></code></p></td>
+<td><p>0x00437928 / 0x00437b40</p></td>
+<td><p>ezdevsdk/ezdev_basic.c</p></td>
+<td><p>32-byte frame + MD5 digest trailer, port 8666</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_third_party_send_call</span></code></p></td>
+<td><p>0x003de520</p></td>
+<td><p>audio.c</p></td>
+<td><p>build+send svc 0x348e call push (states 0 call / 1 hangup / 2 answer-unused)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_third_party_send_data</span></code></p></td>
+<td><p>0x003e2b40</p></td>
+<td><p>third_party.c</p></td>
+<td><p>“pu2opentransferdata” req fields + send</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_third_party_token_req</span></code></p></td>
+<td><p>0x003e2948</p></td>
+<td><p>third_party.c</p></td>
+<td><p>svc 0x348c token request (appkey/”sdk”/”signal”)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_thirdparty_recv_msg</span></code></p></td>
+<td><p>0x003e2634</p></td>
+<td><p>third_party.c</p></td>
+<td><p>domain inbound: token (0), app request (1), response (2)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_third_party_callsignal</span></code></p></td>
+<td><p>0x003e10d4</p></td>
+<td><p>third_party.c</p></td>
+<td><p>apiId 3 dispatch → appUASCall*Proc</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_NewCallProc</span></code></p></td>
+<td><p>0x003de838</p></td>
+<td><p>audio.c</p></td>
+<td><p>ring → push(0) or mq record; main-room + dev-mode gates</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_CancelCallProc</span></code> (<code class="docutils literal notranslate"><span class="pre">call_cloudHangPost</span></code>)</p></td>
+<td><p>0x003de9ac</p></td>
+<td><p>audio.c</p></td>
+<td><p>hangup → push(1) when type==1 &amp; state∈1..3; else mq record</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_talk_task</span></code></p></td>
+<td><p>0x003ded74</p></td>
+<td><p>audio.c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/ezviz_talk_message</span></code> mq → ext_start/stop_talk → alarm records</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_push_alarm_call_hangup</span></code></p></td>
+<td><p>0x003dc87c</p></td>
+<td><p>alarm.c</p></td>
+<td><p>0x14c call record + JPEG over TLS alarm channel</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_push_alarm_nol</span></code> / <code class="docutils literal notranslate"><span class="pre">_trans</span></code></p></td>
+<td><p>0x00108644 / 0x003dc4f8</p></td>
+<td><p>alarm.c</p></td>
+<td><p>sensor + smart-lock alarm pushes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">appUASCallNormalProc</span></code></p></td>
+<td><p>0x003e478c</p></td>
+<td><p>trans_parse.c</p></td>
+<td><p>app answer (cmdId 2) — local accept + type-2 hangpost</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">appUASCallHangupProc</span></code></p></td>
+<td><p>0x003e4994</p></td>
+<td><p>trans_parse.c</p></td>
+<td><p>app refuse/hangup (cmdId 3) — local hangup + push(1)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tp_get_call_state</span></code></p></td>
+<td><p>0x003e4730</p></td>
+<td><p>trans_parse.c</p></td>
+<td><p>shared call-state getter (idle/door/app, calling/talking)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_net_client_sdk_proc</span></code></p></td>
+<td><p>0x003e7268</p></td>
+<td><p>trans_parse.c</p></td>
+<td><p>HCNetSDK-over-EZVIZ request → reply pipeline</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_net_Pu2client_proc</span></code></p></td>
+<td><p>0x003e773c</p></td>
+<td><p>trans_parse.c</p></td>
+<td><p>60 s svc-0x305e status push</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">netClientUAS2SDKProc</span></code></p></td>
+<td><p>0x003e65c4</p></td>
+<td><p>trans_parse.c</p></td>
+<td><p>netCmd dispatcher (unlock 0x126009, callstate 0x126020, callsignal 0x126022, ISAPI 0x117000–3)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_cb_upgrade_packet_info</span></code></p></td>
+<td><p>0x003e3858</p></td>
+<td><p>upgrade.c</p></td>
+<td><p>OTA packet-info → URL + version compare</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_preview_recv_msg_cb</span></code></p></td>
+<td><p>0x003dff28</p></td>
+<td><p>av.c</p></td>
+<td><p>preview domain cmds (start/stop/param/iframe)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ezviz_ext_cb_on_start_talk</span></code></p></td>
+<td><p>0x003dda30</p></td>
+<td><p>audio.c</p></td>
+<td><p>talk-domain start → audio pump to SDK</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">setEzvizServer</span></code></p></td>
+<td><p>0x00059974</p></td>
+<td><p>misc/serial_shellCmd_toolserver.c.c</p></td>
+<td><p>serial-console env→LBS domain table (all port 8666)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">netAltRoute</span></code></p></td>
+<td><p>0x000f86b0</p></td>
+<td><p>(core)</p></td>
+<td><p>is-main-room gate used by every cloud push</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ez_dev_mode_get</span></code></p></td>
+<td><p>0x000549d8</p></td>
+<td><p>(core)</p></td>
+<td><p>dev-mode getter; ==2 selects direct third-party push</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="doorbell-pairing.html" class="btn btn-neutral float-left" title="Doorbell pairing &amp; door↔indoor signaling — firmware internals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="door-unlock-api.html" class="btn btn-neutral float-right" title="Door unlock via ISAPI (HTTP XML) — firmware internals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

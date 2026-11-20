@@ -1,0 +1,433 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vdm10-python &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="metzler docs" href="README.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">vdm10-python</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="vdm10-python">
+<h1>vdm10-python<a class="headerlink" href="#vdm10-python" title="Link to this heading"></a></h1>
+<p>Python library and indoor-station simulator for Metzler/Hikvision VDM10 SIP
+intercoms — the reverse-engineered private SIP dialect, packaged.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">README</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="README.html#editing-the-diagrams">Editing the diagrams</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Simulator architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#component-overview">Component overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#module-map">Module map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#run-modes">Run modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#threads">Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#call-dispatch-inbound">Call dispatch (inbound)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#media-model">Media model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#call-id-bookkeeping-loop-prevention">Call-ID bookkeeping (loop prevention)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#the-concrete-differences-vs-standard-sip-rfc-3261">The concrete differences vs standard SIP (RFC 3261)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#registration">1. Registration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#numbering">2. Numbering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#incoming-invite-classification">3. Incoming INVITE classification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#intercom-extension-call-bridged-to-the-provider">4. Intercom/extension call — bridged to the provider</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#door-calls">5. Door calls</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#provider-leg-specifics">6. Provider leg specifics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#teardown-and-the-hik-connect-side-effects">7. Teardown — and the Hik-Connect side effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#safety-notes">8. Safety notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#lan-discovery-verified-live-on-the-10-0-0-0-24-net">9. LAN discovery (verified live on the 10.0.0.0/24 net)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#two-sip-stacks-three-ports">1. Two SIP stacks, three ports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#register-packet-shape-vdm10-1-0-sip-client-registration-c">2. REGISTER — packet shape (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/registration.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#registrar-pipeline-sip-registermode-0x000d8dcc-vdm10-1-0-sip-server-registrar-c">3. Registrar pipeline — <code class="docutils literal notranslate"><span class="pre">sip_registerMode</span></code> &#64;0x000d8dcc (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/registrar.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#numbering-t-fff-uu-rrr-ii-vdm10-1-0-sip-server-registrar-c-header-misc-util-common-visutil-c-c">4. Numbering — <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">FFF</span> <span class="pre">UU</span> <span class="pre">RRR</span> <span class="pre">II</span></code> (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/registrar.c</span></code> header + <code class="docutils literal notranslate"><span class="pre">misc/util_common_visUtil.c.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#timing-re-register-and-heartbeat">5. Timing — re-REGISTER and heartbeat</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#heartbeat-message-and-the-sipcmd-virtual-aor">6. Heartbeat MESSAGE and the <code class="docutils literal notranslate"><span class="pre">sipCmd</span></code> virtual AOR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#options-keepalive">7. OPTIONS keepalive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#post-register-visnet-sync-tcp-8102">8. Post-register visNet sync — TCP :8102</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#message-info-vocabulary-vdm10-1-0-sip-xml-proc-c-client-call-out-c">9. MESSAGE/INFO vocabulary (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/xml_proc.c</span></code>, <code class="docutils literal notranslate"><span class="pre">client/call_out.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#busy-flag-extension-routing-vdm10-1-0-sip-server-sipserver-c-client-uas-calls-c">10. Busy flag, extension routing (<code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/server/sipServer.c</span></code>, <code class="docutils literal notranslate"><span class="pre">client/uas_calls.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#sequence-register-heartbeat-unregister">11. Sequence — register, heartbeat, unregister</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#key-functions">12. Key functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/intercom-registration.html#marked-unverified">13. Marked unverified</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/door-call-flow.html">Doorbell call flow — firmware internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#components-ports-session-table">1. Components, ports, session table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#sequence-overview">2. Sequence overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#the-door-s-invite-at-the-main-indoor">3. The door’s INVITE at the main indoor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#ring-answer-timeout-at-each-unit">4. Ring, answer, timeout at each unit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#media-what-actually-flows">5. Media — what actually flows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#in-call-control-unlock">6. In-call control — unlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#teardown-cancel-timeout">7. Teardown, cancel, timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#gui-screens-and-transitions">8. GUI screens and transitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#verified-vs-unverified-summary">9. Verified vs. unverified — summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-call-flow.html#key-functions">Key functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#pairing-model-who-registers-with-whom">1. Pairing model — who registers with whom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#config-time-pairing-ivms-isapi">2. Config-time pairing (iVMS / ISAPI)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#runtime-pre-registration-pre-regist">3. Runtime pre-registration — “Pre-Regist”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#devlongnum-construction-the-type-1-door-class">4. devLongNum construction &amp; the type-1 door class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#credentials-unlockpwd-hijackpasswd">5. Credentials — <code class="docutils literal notranslate"><span class="pre">unlockPwd</span></code> / <code class="docutils literal notranslate"><span class="pre">hijackPasswd</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#ongoing-doorindoor-signaling">6. Ongoing door↔indoor signaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#main-vs-extension">7. Main vs extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#visnet-channel-tcp-8102">8. visNet channel — TCP :8102</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#sub-door-support">9. Sub-door support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#sequence">10. Sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#key-functions">11. Key functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/doorbell-pairing.html#gaps-unverified">Gaps / unverified</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#ezdevsdk-and-the-layered-architecture">1. ezDevSDK and the layered architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#service-lifecycle-control-c-protocol-ezviz-control-cpp">2. Service lifecycle — <code class="docutils literal notranslate"><span class="pre">control.c</span></code> (<code class="docutils literal notranslate"><span class="pre">protocol/ezviz_control.cpp</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#bootstrap-lbs-das-session">3. Bootstrap: LBS → DAS → session</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#wire-frame-verified-ezdevsdk-ezdev-basic-c">4. Wire frame (verified — <code class="docutils literal notranslate"><span class="pre">ezdevsdk/ezdev_basic.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#device-registration-activation">5. Device registration / activation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#servers-domains-contacted">6. Servers / domains contacted</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#call-state-pushes-what-produces-the-hik-connect-cards">7. Call-state pushes — what produces the Hik-Connect cards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#other-cloud-traffic">8. Other cloud traffic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#what-the-simulator-does-doesn-t-need">9. What the simulator does / doesn’t need</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#unverified-open-items">10. Unverified / open items</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/hikconnect.html#key-functions">Key functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#registered-uri">1. Registered URI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#request">2. Request</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#execution-isapiexecuteremoteopendoor-0x001d2538">3. Execution — <code class="docutils literal notranslate"><span class="pre">isapiExecuteRemoteOpenDoor</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001d2538</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#down-the-queue-vns-opendoor-up-0x001085f0">4. Down the queue — <code class="docutils literal notranslate"><span class="pre">vns_opendoor_up</span></code> &#64; <code class="docutils literal notranslate"><span class="pre">0x001085f0</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#device-type-gate-the-catch-for-an-indoor-station">5. Device-type gate (the catch for an indoor station)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#errors-all-verified-in-dispatcher-parser-executor">6. Errors (all verified in dispatcher/parser/executor)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#authentication">7. Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#unknowns-not-established">8. Unknowns / not established</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/door-unlock-api.html#function-index">9. Function index</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-system">/ISAPI/System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-videointercom">/ISAPI/VideoIntercom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-event">/ISAPI/Event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-security">/ISAPI/Security</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-image">/ISAPI/Image</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-accesscontrol">/ISAPI/AccessControl</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-streaming">/ISAPI/Streaming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-securitycp">/ISAPI/SecurityCP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-contentmgmt">/ISAPI/ContentMgmt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-smartlock">/ISAPI/SmartLock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#isapi-singlesmartlock">/ISAPI/SingleSmartLock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware/isapi-endpoints.html#caveats-unknowns">Caveats / unknowns</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/README.html#isolation">Isolation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/architecture-v2.html#server-side-sipsvrlib-module-map">1. Server side — sipsvrLib module map</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/architecture-v2.html#sipdevsdk-callback-table-api">2. sipDevSDK callback table &amp; API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/architecture-v2.html#config-layout-sipsvrlib-config-t-sipsvr-config-load-defaults-0x0023bd98">3. Config layout (sipsvrLib <code class="docutils literal notranslate"><span class="pre">config_t</span></code>, <code class="docutils literal notranslate"><span class="pre">sipsvr_config_load_defaults</span></code> &#64;0x0023bd98)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/architecture-v2.html#client-side-what-stayed">4. Client side — what stayed</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/architecture-v2.html#key-management-adjacent-crypto">5. Key-management &amp; adjacent crypto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/architecture-v2.html#structural-deltas-vs-v1-summary">6. Structural deltas vs v1 (summary)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#two-sip-stacks-same-port-split">1. Two SIP stacks, same port split</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#register-client-packet-shape-sip-client-registration-c">2. REGISTER — client packet shape (<code class="docutils literal notranslate"><span class="pre">sip/client/registration.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#registrar-pipeline-sip-server-register-device-0x002291b8-sip-server-registrar-c">3. Registrar pipeline — <code class="docutils literal notranslate"><span class="pre">sip_server_register_device</span></code> &#64;0x002291b8 (<code class="docutils literal notranslate"><span class="pre">sip/server/registrar.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#password-selection-sip-lookup-registration-password-0x00119bb8-sip-server-credentials-c">4. Password selection — <code class="docutils literal notranslate"><span class="pre">sip_lookup_registration_password</span></code> &#64;0x00119bb8 (<code class="docutils literal notranslate"><span class="pre">sip/server/credentials.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#numbering-t-fff-uu-rrr-ii-sip-server-numbering-c">5. Numbering — <code class="docutils literal notranslate"><span class="pre">T</span> <span class="pre">FFF</span> <span class="pre">UU</span> <span class="pre">RRR</span> <span class="pre">II</span></code> (<code class="docutils literal notranslate"><span class="pre">sip/server/numbering.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#timing-keepalive">6. Timing &amp; keepalive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#dev-reg-persistence">7. dev_reg persistence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#busy-session-state">8. Busy / session state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#sequence-register-heartbeat-unregister">9. Sequence — register, heartbeat, unregister</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#key-functions">10. Key functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/intercom-registration.html#marked-unverified">11. Marked unverified</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#inbound-invite-uas-handle-invite-0x00141e14-sip-client-uas-c">1. Inbound INVITE — <code class="docutils literal notranslate"><span class="pre">uas_handle_invite</span></code> &#64;0x00141e14 (<code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#sdp-sess-make-sdp-0x00127fa4-sip-client-session-ctrl-c">2. SDP — <code class="docutils literal notranslate"><span class="pre">sess_make_sdp</span></code> &#64;0x00127fa4 (<code class="docutils literal notranslate"><span class="pre">sip/client/session_ctrl.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#registrar-side-routing-sip-server-proxy-c">3. Registrar-side routing — <code class="docutils literal notranslate"><span class="pre">sip/server/proxy.c</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#extension-fan-out-sip-talkback-tables-c-client-invites">4. Extension fan-out — <code class="docutils literal notranslate"><span class="pre">sip/talkback_tables.c</span></code> + client INVITEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#in-call-control-dtmf-info-message">5. In-call control — DTMF/INFO/MESSAGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#sequence">6. Sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#marked-unverified">7. Marked unverified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/door-call-flow.html#key-functions">Key functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#pairing-model-who-registers-where">1. Pairing model — who registers where</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#number-assignment-fast-regist">2. Number assignment — <code class="docutils literal notranslate"><span class="pre">fast_regist</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#devlongnum-construction-the-type-1-gate">3. devLongNum construction &amp; the type-1 gate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#visnet-channel-tcp-8102-v2-crypto-parity">4. visNet channel — TCP :8102 (v2 crypto parity)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#credentials-unlockpwd-hijackpasswd-regpassword-unlock-token">5. Credentials — unlockPwd / hijackPasswd / regPassword / unlock token</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#regpassword-provisioning-the-random-key">6. regPassword provisioning &amp; the <code class="docutils literal notranslate"><span class="pre">&lt;random&gt;</span></code> key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#extension-list-fan-out-membership">7. Extension list &amp; fan-out membership</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#sequence-pairing-steady-state">8. Sequence — pairing steady state</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#key-functions">9. Key functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/doorbell-pairing.html#resolved-in-pass23-still-unverified">10. Resolved in pass23 / still unverified</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/hikconnect.html#architecture">1. Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/hikconnect.html#token-machinery-ezviz-ezviz-app-sub-c-ezviz-app-third-party-c-ezviz-app-base-c">2. Token machinery (<code class="docutils literal notranslate"><span class="pre">ezviz/ezviz_app_sub.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_app_third_party.c</span></code>, <code class="docutils literal notranslate"><span class="pre">ezviz_app_base.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/hikconnect.html#alarm-shadow-v3">3. Alarm &amp; shadow_v3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/hikconnect.html#binding-qr">4. Binding &amp; QR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/hikconnect.html#p2p-talk-preview">5. P2P / talk / preview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="firmware-v2/hikconnect.html#unverified-open-items">6. Unverified / open items</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/README.html#caveats-read-before-trusting-any-line">Caveats — read before trusting any line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/README.html#the-artifacts">The artifacts</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/registration.html#side-by-side">1. Side-by-side</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/registration.html#request-response-packet-comparison">2. Request/response packet comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/registration.html#what-breaks-must-change-for-a-sip-1-0-era-client">3. What breaks / must change for a SIP-1.0-era client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/registration.html#explicitly-open-from-vdm10-2-0-analysis-registration-md">4. Explicitly open (from <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/analysis/registration.md</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#sip-method-set-unchanged">1. SIP method set — unchanged</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#user-agent">2. User-Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#sdp-media-offer">3. SDP / media offer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#xml-vocabulary">4. XML vocabulary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#heartbeat-message-shape">5. Heartbeat / MESSAGE shape</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#auth-headers-sep-and-challenge-are-not-the-sip-digest">6. Auth headers — SEP and challenge are NOT the SIP Digest</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#content-type-charset-variants">7. Content-Type / charset variants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/protocol-changes.html#transport-encoding-notes">8. Transport/encoding notes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#sip-server-local-registrar-5065">SIP server (local registrar, :5065)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#sip-client-5060">SIP client (:5060)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#visnet-tcp-8102">visNet (TCP :8102)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#isapi-rest">ISAPI / REST</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#ezviz-hik-connect">EZVIZ / Hik-Connect</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#gui">GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#network">Network</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#database">Database</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#new-devices-protocols-in-v2">New devices/protocols in V2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/subsystem-changes.html#binary-bulk">Binary bulk</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/config-and-gates.html#raw-cfg-offsets">1. Raw cfg offsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/config-and-gates.html#named-config-fields-v2-dump-shell-task-command-server-0x0008f56c">2. Named config fields (V2 dump, <code class="docutils literal notranslate"><span class="pre">shell_task_command_server</span></code> &#64;<code class="docutils literal notranslate"><span class="pre">0x0008f56c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/config-and-gates.html#gui-wizard-gates">3. GUI / wizard gates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/config-and-gates.html#runtime-gates-that-decide-register-fate-v2">4. Runtime gates that decide REGISTER fate (V2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/config-and-gates.html#what-a-provisioning-client-must-know">5. What a provisioning client must know</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/unchanged.html#container-extraction">Container &amp; extraction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/unchanged.html#sip-wire-contract">SIP wire contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="version-comparison/unchanged.html#packaging-deltas-that-are-not-protocol-changes">Packaging deltas that are <em>not</em> protocol changes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/metzler.html">metzler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.Call"><code class="docutils literal notranslate"><span class="pre">Call</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.IndoorStation"><code class="docutils literal notranslate"><span class="pre">IndoorStation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.IntercomMedia"><code class="docutils literal notranslate"><span class="pre">IntercomMedia</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.LocalMediaBridge"><code class="docutils literal notranslate"><span class="pre">LocalMediaBridge</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.Packet"><code class="docutils literal notranslate"><span class="pre">Packet</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.RtpRelay"><code class="docutils literal notranslate"><span class="pre">RtpRelay</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.RtspPuller"><code class="docutils literal notranslate"><span class="pre">RtspPuller</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.RtspServer"><code class="docutils literal notranslate"><span class="pre">RtspServer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.SipIntercomMedia"><code class="docutils literal notranslate"><span class="pre">SipIntercomMedia</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.SipProvider"><code class="docutils literal notranslate"><span class="pre">SipProvider</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.Srtp"><code class="docutils literal notranslate"><span class="pre">Srtp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.SrtpSession"><code class="docutils literal notranslate"><span class="pre">SrtpSession</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.alaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">alaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.answer_policy"><code class="docutils literal notranslate"><span class="pre">answer_policy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.bind_rtp"><code class="docutils literal notranslate"><span class="pre">bind_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.branch"><code class="docutils literal notranslate"><span class="pre">branch()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.build_parser"><code class="docutils literal notranslate"><span class="pre">build_parser()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.call_id"><code class="docutils literal notranslate"><span class="pre">call_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.digest_response"><code class="docutils literal notranslate"><span class="pre">digest_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.env_bool"><code class="docutils literal notranslate"><span class="pre">env_bool()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.env_default"><code class="docutils literal notranslate"><span class="pre">env_default()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.finalize_options"><code class="docutils literal notranslate"><span class="pre">finalize_options()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.is_rtp"><code class="docutils literal notranslate"><span class="pre">is_rtp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.load_env"><code class="docutils literal notranslate"><span class="pre">load_env()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.md5"><code class="docutils literal notranslate"><span class="pre">md5()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.media_addr"><code class="docutils literal notranslate"><span class="pre">media_addr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.parse_sdp"><code class="docutils literal notranslate"><span class="pre">parse_sdp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.pcm_to_ulaw"><code class="docutils literal notranslate"><span class="pre">pcm_to_ulaw()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.sdp_answer_firmware"><code class="docutils literal notranslate"><span class="pre">sdp_answer_firmware()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.sdp_answer_talkback"><code class="docutils literal notranslate"><span class="pre">sdp_answer_talkback()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.set_rtp_range"><code class="docutils literal notranslate"><span class="pre">set_rtp_range()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.sip_uri"><code class="docutils literal notranslate"><span class="pre">sip_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.srtp_available"><code class="docutils literal notranslate"><span class="pre">srtp_available()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.tag"><code class="docutils literal notranslate"><span class="pre">tag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#metzler.ulaw_to_pcm"><code class="docutils literal notranslate"><span class="pre">ulaw_to_pcm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/metzler.html#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="README.html" class="btn btn-neutral float-right" title="metzler docs" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

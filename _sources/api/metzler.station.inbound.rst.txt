@@ -1,0 +1,7 @@
+metzler.station.inbound module
+==============================
+
+.. automodule:: metzler.station.inbound
+   :members:
+   :show-inheritance:
+   :undoc-members:

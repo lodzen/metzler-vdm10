@@ -1,0 +1,28 @@
+metzler package
+===============
+
+.. automodule:: metzler
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   metzler.media
+   metzler.sip
+   metzler.station
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   metzler.cli
+   metzler.config
+   metzler.discovery
+   metzler.provider

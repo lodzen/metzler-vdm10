@@ -1,0 +1,7 @@
+metzler.station.outbound module
+===============================
+
+.. automodule:: metzler.station.outbound
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+metzler.sip.message module
+==========================
+
+.. automodule:: metzler.sip.message
+   :members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,0 +1,7 @@
+metzler.cli module
+==================
+
+.. automodule:: metzler.cli
+   :members:
+   :show-inheritance:
+   :undoc-members:

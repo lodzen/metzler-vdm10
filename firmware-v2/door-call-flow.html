@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doorbell call flow — firmware internals (V2.2.100) &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)" href="doorbell-pairing.html" />
+    <link rel="prev" title="Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)" href="intercom-registration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Doorbell call flow — firmware internals (V2.2.100)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#inbound-invite-uas-handle-invite-0x00141e14-sip-client-uas-c">1. Inbound INVITE — <code class="docutils literal notranslate"><span class="pre">uas_handle_invite</span></code> &#64;0x00141e14 (<code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sdp-sess-make-sdp-0x00127fa4-sip-client-session-ctrl-c">2. SDP — <code class="docutils literal notranslate"><span class="pre">sess_make_sdp</span></code> &#64;0x00127fa4 (<code class="docutils literal notranslate"><span class="pre">sip/client/session_ctrl.c</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#registrar-side-routing-sip-server-proxy-c">3. Registrar-side routing — <code class="docutils literal notranslate"><span class="pre">sip/server/proxy.c</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#extension-fan-out-sip-talkback-tables-c-client-invites">4. Extension fan-out — <code class="docutils literal notranslate"><span class="pre">sip/talkback_tables.c</span></code> + client INVITEs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#in-call-control-dtmf-info-message">5. In-call control — DTMF/INFO/MESSAGE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence">6. Sequence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#marked-unverified">7. Marked unverified</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-functions">Key functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Doorbell call flow — firmware internals (V2.2.100)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware-v2/door-call-flow.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="doorbell-call-flow-firmware-internals-v2-2-100">
+<h1>Doorbell call flow — firmware internals (V2.2.100)<a class="headerlink" href="#doorbell-call-flow-firmware-internals-v2-2-100" title="Link to this heading"></a></h1>
+<p>How <code class="docutils literal notranslate"><span class="pre">hicore</span></code> V2.2.100 handles a door call — the V2 counterpart of
+<a class="reference internal" href="../firmware/door-call-flow.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">../firmware/door-call-flow.md</span></code></span></a>. The port
+split is unchanged (eXosip UAS :5060, sipsvrLib :5065, RTSP :554, visNet
+:8102), but the registrar is now a C++ proxy that rewrites headers and can
+digest-challenge INVITEs, and the client enforces a SIP2.0 version gate on
+incoming offers.</p>
+<p>Sources: <code class="docutils literal notranslate"><span class="pre">VDM10_2.0/human_readable/sip/client/{uas,session_ctrl,call_out,</span> <span class="pre">messages,device_helpers}.c</span></code>, <code class="docutils literal notranslate"><span class="pre">sip/server/{proxy,dispatch,reply}.c</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sip/talkback_tables.c</span></code>, <code class="docutils literal notranslate"><span class="pre">net/net_netservice_rtpsession_talkbackrtpsession.c</span></code>.</p>
+<section id="inbound-invite-uas-handle-invite-0x00141e14-sip-client-uas-c">
+<h2>1. Inbound INVITE — <code class="docutils literal notranslate"><span class="pre">uas_handle_invite</span></code> &#64;0x00141e14 (<code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code>)<a class="headerlink" href="#inbound-invite-uas-handle-invite-0x00141e14-sip-client-uas-c" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code> &#64;0x00143340 dispatches EXOSIP_CALL_INVITE (event 5).
+Gates, in order (all verified in decompile):</p>
+<ul class="simple">
+<li><p>Missing To/From username → early exit; <code class="docutils literal notranslate"><span class="pre">vis_pred_a_q()</span></code> +
+<code class="docutils literal notranslate"><span class="pre">cli_flags_bit19_get()</span></code> gate; <code class="docutils literal notranslate"><span class="pre">FUN_00163210(from_num,0)==0xd</span></code> selects the
+visNet/CVBS fast path (extension-pickup <code class="docutils literal notranslate"><span class="pre">cvbs_extension_pickup(1)</span></code> +
+direct 200 with <code class="docutils literal notranslate"><span class="pre">sess_make_sdp</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eXosip_get_remote_sdp</span></code> fails → <code class="docutils literal notranslate"><span class="pre">488</span></code> (0x1e8).</p></li>
+<li><p><strong>SIP2.0 private-SDP gate</strong>: the 4th session-level SDP attribute
+(<code class="docutils literal notranslate"><span class="pre">sdp_message_attribute_get(sdp,-1,3)</span></code> — its <em>name</em>) is <code class="docutils literal notranslate"><span class="pre">strncmp</span></code>’d 13
+bytes against the literal <code class="docutils literal notranslate"><span class="pre">isSpecialType</span></code> (<code class="docutils literal notranslate"><span class="pre">DAT_00142b84</span></code>, resolved
+pass23 — the earlier “<code class="docutils literal notranslate"><span class="pre">a=version:</span></code> 13-char prefix” wording was wrong).
+A missing/different attribute at slot 3 sets the non-conforming flag,
+and when <code class="docutils literal notranslate"><span class="pre">vis_pred_d_q()==0</span></code> (SIP2.0-only device) → <code class="docutils literal notranslate"><span class="pre">403</span></code> (0x193). The
+<code class="docutils literal notranslate"><span class="pre">a=version:</span></code> value is parsed separately (<code class="docutils literal notranslate"><span class="pre">sess_sdp_attr_set</span></code> literal
+<code class="docutils literal notranslate"><span class="pre">version</span></code> → <code class="docutils literal notranslate"><span class="pre">xml_version_id_q</span></code>), so this is a private-SDP
+layout/conformance check, not a version-prefix check.</p></li>
+<li><p>Call classification: <code class="docutils literal notranslate"><span class="pre">FUN_00163210(from_num,bVar)</span></code> → <code class="docutils literal notranslate"><span class="pre">sess+0x90</span></code>
+(door/room/… classes; <code class="docutils literal notranslate"><span class="pre">==2</span></code> promoted to 7 when the caller is an 11-char
+number; local-origin check <code class="docutils literal notranslate"><span class="pre">sip_client_check_request_origin_is_local</span></code>
+&#64;0x00127410 can force class 6).</p></li>
+<li><p>DND/time window (<code class="docutils literal notranslate"><span class="pre">cli_call_datetime_parse</span></code>) or contact-blacklist hit →
+<code class="docutils literal notranslate"><span class="pre">480</span></code> (0x1e0); GUI busy/not-ready → <code class="docutils literal notranslate"><span class="pre">486</span></code> (0x1e6); session claim failure →
+400.</p></li>
+<li><p>On accept: <code class="docutils literal notranslate"><span class="pre">eXosip_call_build_answer(0xb4)</span></code> + <code class="docutils literal notranslate"><span class="pre">sess_make_sdp</span></code> → <code class="docutils literal notranslate"><span class="pre">180</span></code>;
+class <code class="docutils literal notranslate"><span class="pre">0xb</span></code> additionally sends <code class="docutils literal notranslate"><span class="pre">183</span></code> (0xb7) with SDP. Then
+<code class="docutils literal notranslate"><span class="pre">sip_client_claim_session_slot</span></code> &#64;0x0012778c claims slot 0, stamps
+did/tid/jid, sets the <code class="docutils literal notranslate"><span class="pre">+600</span></code> ringing flag + timers, optional
+<code class="docutils literal notranslate"><span class="pre">cli_send_incall_msg(1)</span></code>, and spawns the ring/call worker thread
+(<code class="docutils literal notranslate"><span class="pre">uwt_thread_create</span></code> — <code class="docutils literal notranslate"><span class="pre">DAT_00142bf8</span></code>/<code class="docutils literal notranslate"><span class="pre">DAT_00142bfc</span></code>, the
+NewCall01/02-equivalent; <code class="docutils literal notranslate"><span class="pre">cli_call_ring_task</span></code> &#64;0x0013b3bc is the ring
+worker; EZVIZ-bound calls pick the cloud-notify variant).</p></li>
+</ul>
+<p>Inbound non-INVITE messages: <code class="docutils literal notranslate"><span class="pre">uas_call_msg_proc</span></code> &#64;0x00142c04; OPTIONS
+responses via <code class="docutils literal notranslate"><span class="pre">cli_options_resp_proc</span></code> &#64;0x00139a8c.</p>
+</section>
+<section id="sdp-sess-make-sdp-0x00127fa4-sip-client-session-ctrl-c">
+<h2>2. SDP — <code class="docutils literal notranslate"><span class="pre">sess_make_sdp</span></code> &#64;0x00127fa4 (<code class="docutils literal notranslate"><span class="pre">sip/client/session_ctrl.c</span></code>)<a class="headerlink" href="#sdp-sess-make-sdp-0x00127fa4-sip-client-session-ctrl-c" title="Link to this heading"></a></h2>
+<p>Header-only private SDP for intercom calls:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>v=0 · o=&lt;serial&gt; 0 0 IN IP4 &lt;ip&gt; · s=Talk session · c=IN IP4 &lt;ip&gt; · t=0 0
+a=doorFloor:%d  a=responseType:%d  a=doorType:%d
+a=isSpecialType:%d  a=isConfirm:%d  a=version:%s
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">a=version:</span></code> selects <code class="docutils literal notranslate"><span class="pre">V2.0.0</span></code> (literal at 0x128ff4) by default, or
+<code class="docutils literal notranslate"><span class="pre">V1.0.0</span></code> (<code class="docutils literal notranslate"><span class="pre">DAT_00128ff0</span></code>, resolved pass23) in the compat/legacy-peer path;
+the parsed peer version feeds <code class="docutils literal notranslate"><span class="pre">sip_check_peer_version_at_least_two</span></code>
+&#64;0x0022b6b4 (<code class="docutils literal notranslate"><span class="pre">V≥2</span></code> sscanf on server side).</p>
+<p>Class <code class="docutils literal notranslate"><span class="pre">0xb</span></code> (fixed talkback) emits real media SDP:
+<code class="docutils literal notranslate"><span class="pre">m=audio</span> <span class="pre">%d</span> <span class="pre">RTP/AVP</span> <span class="pre">0</span> <span class="pre">8</span> <span class="pre">101</span></code> + <code class="docutils literal notranslate"><span class="pre">a=rtpmap:0</span> <span class="pre">PCMU/8000</span></code>,
+<code class="docutils literal notranslate"><span class="pre">a=rtpmap:8</span> <span class="pre">PCMA/8000</span></code>, <code class="docutils literal notranslate"><span class="pre">a=rtpmap:101</span> <span class="pre">telephone-event/8000</span></code>,
+<code class="docutils literal notranslate"><span class="pre">a=fmtp:101</span> <span class="pre">0-16</span></code>, <code class="docutils literal notranslate"><span class="pre">a=sendrecv</span></code>, <code class="docutils literal notranslate"><span class="pre">m=video</span> <span class="pre">%d</span> <span class="pre">RTP/AVP</span> <span class="pre">96</span></code>,
+<code class="docutils literal notranslate"><span class="pre">a=rtpmap:96</span> <span class="pre">H264/90000</span></code>, <code class="docutils literal notranslate"><span class="pre">a=fmtp:96</span> <span class="pre">profile-level-…</span></code>. The advertised codec
+table (<code class="docutils literal notranslate"><span class="pre">0x00125dec</span></code> region, <code class="docutils literal notranslate"><span class="pre">sip_client.c</span></code>) lists: <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">PCMU/8000</span></code>,
+<code class="docutils literal notranslate"><span class="pre">8</span> <span class="pre">PCMA/8000</span></code>, <code class="docutils literal notranslate"><span class="pre">98</span> <span class="pre">G7221/16000</span></code> (fmtp bitrate=32000),
+<code class="docutils literal notranslate"><span class="pre">100</span> <span class="pre">MP4A-LATM/16000</span></code> (profile-level-id=24;object=23;bitrate=64000),
+<code class="docutils literal notranslate"><span class="pre">104</span> <span class="pre">MP4A-LATM/16000</span></code> (object=2;bitrate=64000), <code class="docutils literal notranslate"><span class="pre">103</span> <span class="pre">G726(-32)/8000</span></code>
+(bitrate=24000), <code class="docutils literal notranslate"><span class="pre">115</span> <span class="pre">OPUS/16000</span></code> (bitrate=6400) — a superset of the v1
+audio set (PCMU/PCMA plus G7221/MP4A-LATM/G726/OPUS; video stays H.264 PT96).
+<code class="docutils literal notranslate"><span class="pre">sess_parse_remote_sdp</span></code> &#64;0x00132e20 / <code class="docutils literal notranslate"><span class="pre">sess_sdp_attr_set</span></code> &#64;0x00132b20 parse
+the same <code class="docutils literal notranslate"><span class="pre">a=</span></code> vocabulary (<code class="docutils literal notranslate"><span class="pre">doorFloor</span></code>, <code class="docutils literal notranslate"><span class="pre">doorType</span></code> → persisted <code class="docutils literal notranslate"><span class="pre">cfg+0x6018</span></code>,
+<code class="docutils literal notranslate"><span class="pre">isSpecialType</span></code>, <code class="docutils literal notranslate"><span class="pre">isConfirm</span></code> → forced class 6, <code class="docutils literal notranslate"><span class="pre">responseType</span></code>).</p>
+<p>Outgoing calls: <code class="docutils literal notranslate"><span class="pre">cli_invite</span></code> &#64;0x0013c36c → <code class="docutils literal notranslate"><span class="pre">cli_send_invite</span></code>
+&#64;0x00140274 (and <code class="docutils literal notranslate"><span class="pre">cli_send_invite_voip</span></code> &#64;0x00140ca4 for the voip leg),
+<code class="docutils literal notranslate"><span class="pre">cli_call_doorphone</span></code> &#64;0x0013b620 for door calls, <code class="docutils literal notranslate"><span class="pre">cli_invite_registered_device</span></code>
+&#64;0x00139fa4 for direct INVITE to a registered peer
+(<code class="docutils literal notranslate"><span class="pre">m=audio</span> <span class="pre">…</span> <span class="pre">RTP/AVP</span> <span class="pre">0</span> <span class="pre">8</span> <span class="pre">101</span></code> SDP variant — registered extensions get real
+SDP), <code class="docutils literal notranslate"><span class="pre">cli_ring_proc</span></code> &#64;0x00127990 ringback, <code class="docutils literal notranslate"><span class="pre">cli_cancel_by_num</span></code>
+&#64;0x0013cd2c, <code class="docutils literal notranslate"><span class="pre">cli_send_hang</span></code> &#64;0x0013ce80, <code class="docutils literal notranslate"><span class="pre">cli_pickup</span></code> &#64;0x0013e1f0 /
+<code class="docutils literal notranslate"><span class="pre">cli_pickup_lm_v2</span></code> &#64;0x0013040c, <code class="docutils literal notranslate"><span class="pre">cli_call_terminate</span></code> &#64;0x0013ebf4,
+<code class="docutils literal notranslate"><span class="pre">cli_hang_all_q</span></code> &#64;0x0013e774.</p>
+</section>
+<section id="registrar-side-routing-sip-server-proxy-c">
+<h2>3. Registrar-side routing — <code class="docutils literal notranslate"><span class="pre">sip/server/proxy.c</span></code><a class="headerlink" href="#registrar-side-routing-sip-server-proxy-c" title="Link to this heading"></a></h2>
+<p>When the door dials through :5065, <code class="docutils literal notranslate"><span class="pre">sip_server_route_invite</span></code> &#64;0x0022b780:</p>
+<ul class="simple">
+<li><p>Parses <code class="docutils literal notranslate"><span class="pre">a=version:</span></code> out of the body (<code class="docutils literal notranslate"><span class="pre">strstr</span></code>); <code class="docutils literal notranslate"><span class="pre">V≥2</span></code> + auth-mode==1 →
+same 401/403 digest challenge as REGISTER (realm <code class="docutils literal notranslate"><span class="pre">Hikvision</span></code>,
+<code class="docutils literal notranslate"><span class="pre">sip_build_digest_challenge</span></code> &#64;0x0022af50).</p></li>
+<li><p>Resolves callee: <code class="docutils literal notranslate"><span class="pre">sipsvr_resolve_device_record</span></code> &#64;0x00230ee4 (own name →
+manager record; else addressbook) → <code class="docutils literal notranslate"><span class="pre">0x194</span></code> if absent; caller must also
+resolve (<code class="docutils literal notranslate"><span class="pre">sip_addressbook_resolve_destination</span></code> &#64;0x002311a0) → <code class="docutils literal notranslate"><span class="pre">0x194</span></code>.</p></li>
+<li><p>Busy/online check on both records (<code class="docutils literal notranslate"><span class="pre">sip_device_is_online</span></code> &#64;0x00230ddc)
+→ <code class="docutils literal notranslate"><span class="pre">0x1e6</span></code> (<strong>486</strong>) or drop with <code class="docutils literal notranslate"><span class="pre">sip_device_mark_idle</span></code>.</p></li>
+<li><p>Forward: clones top Via, rewrites it to own listen IP:port, adds
+<code class="docutils literal notranslate"><span class="pre">Record-Route:</span> <span class="pre">sip:&lt;own&gt;:&lt;port&gt;</span></code>, decrements Max-Forwards, rewrites the
+R-URI host:port to the registered device IP:port, and rewrites the
+<strong>From username to the room longNum</strong> (<code class="docutils literal notranslate"><span class="pre">sip_sdk_query_room_number</span></code>
+&#64;0x002252c0) when the callee is the manager/self name — the v2 equivalent
+of the v1 <code class="docutils literal notranslate"><span class="pre">1000000000</span></code> contact patch.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sip_server_route_ack</span></code> &#64;0x0022cfb4 / <code class="docutils literal notranslate"><span class="pre">sip_server_route_bye_or_cancel</span></code>
+&#64;0x0022f20c / <code class="docutils literal notranslate"><span class="pre">sip_server_route_message</span></code> &#64;0x0022dc6c /
+<code class="docutils literal notranslate"><span class="pre">sip_server_route_response</span></code> &#64;0x0022d598 do the same lookup+rewrite for
+the rest of the dialog/transaction traffic; dispatch in
+<code class="docutils literal notranslate"><span class="pre">sip_server_dispatch_method</span></code> &#64;0x00228d68.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">dispatch_action==1</span></code> in <code class="docutils literal notranslate"><span class="pre">sip_server_process_packet_work_item</span></code> &#64;0x00227fb4
+broadcasts a copy to <strong>every online registered device</strong> at port <code class="docutils literal notranslate"><span class="pre">0x13c4</span></code>
+(5060) — the extension fan-out primitive (used by MESSAGE/notification
+fan-out; call fan-out itself is per-device INVITE from the client leg).</p>
+</section>
+<section id="extension-fan-out-sip-talkback-tables-c-client-invites">
+<h2>4. Extension fan-out — <code class="docutils literal notranslate"><span class="pre">sip/talkback_tables.c</span></code> + client INVITEs<a class="headerlink" href="#extension-fan-out-sip-talkback-tables-c-client-invites" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tb_extensionTask</span></code> &#64;0x0011d208 consumes the extension event mq;
+<code class="docutils literal notranslate"><span class="pre">tb_extensionAnswerEvent</span></code> &#64;0x0011cb84 / <code class="docutils literal notranslate"><span class="pre">tb_extensionCancelEvent</span></code>
+&#64;0x0011cd90 / <code class="docutils literal notranslate"><span class="pre">tb_extensionByeEvent</span></code> &#64;0x0011ced0 handle
+first-answer-wins leg teardown and BYE propagation (same event model as
+v1’s EXTENSION_ANSWER/CANCEL/BYE).</p></li>
+<li><p>NAT/dual-NIC: <code class="docutils literal notranslate"><span class="pre">tb_masq_rule_table_fill</span></code> &#64;0x000cc8d0,
+<code class="docutils literal notranslate"><span class="pre">tb_talkback_nat_apply</span></code> &#64;0x000cc9fc / <code class="docutils literal notranslate"><span class="pre">tb_talkback_nat_remove</span></code>
+&#64;0x000ccb5c, <code class="docutils literal notranslate"><span class="pre">tb_createRoute</span></code> &#64;0x0011c66c / <code class="docutils literal notranslate"><span class="pre">tb_closeRoute</span></code> &#64;0x0011c894 /
+<code class="docutils literal notranslate"><span class="pre">tb_routeCheck</span></code> &#64;0x0011c938 / <code class="docutils literal notranslate"><span class="pre">tb_extension_routes_clear</span></code> &#64;0x0011c930.</p></li>
+<li><p>Per-extension legs are ordinary client INVITEs
+(<code class="docutils literal notranslate"><span class="pre">cli_invite_registered_device</span></code> &#64;0x00139fa4) to the registered IP —
+the registered endpoint set now comes from the sipsvrLib
+addressbook/dev_reg instead of the v1 5-slot table.</p></li>
+</ul>
+</section>
+<section id="in-call-control-dtmf-info-message">
+<h2>5. In-call control — DTMF/INFO/MESSAGE<a class="headerlink" href="#in-call-control-dtmf-info-message" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cli_send_dtmf</span></code> &#64;0x0012cd60 — INFO <code class="docutils literal notranslate"><span class="pre">application/dtmf-relay</span></code>
+(<code class="docutils literal notranslate"><span class="pre">Signal=&lt;d&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Duration=160</span></code>-style body as in v1).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cli_send_incall_msg</span></code> &#64;0x0012d3b0 / <code class="docutils literal notranslate"><span class="pre">cli_send_call_info</span></code> &#64;0x0012c080 —
+in-call MESSAGE payloads via the v2 XML vocabulary
+(<code class="docutils literal notranslate"><span class="pre">xml_getSipInfoXml_v2</span></code> &#64;0x00120138; locknum via
+<code class="docutils literal notranslate"><span class="pre">sip_xml_build_lock_number_message</span></code> &#64;0x0011f09c —
+<code class="docutils literal notranslate"><span class="pre">&lt;locknumXML&gt;&lt;lockNum&gt;</span></code> + lock-mode element).</p></li>
+<li><p>Unlock during call can also go through the visNet/remote paths
+(<code class="docutils literal notranslate"><span class="pre">cli_unlock_remote_v2</span></code> &#64;0x0012e548 — see
+<a class="reference internal" href="doorbell-pairing.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">doorbell-pairing.md</span></code></span></a> §5); DTMF-vs-visNet choice
+is the <code class="docutils literal notranslate"><span class="pre">cli_lock_op_q</span></code>/<code class="docutils literal notranslate"><span class="pre">cli_lock_a_q</span></code> helpers &#64;0x0012a898/0x0012ba70.</p></li>
+<li><p>Session timers/state: <code class="docutils literal notranslate"><span class="pre">cli_session_ctrl_task</span></code> &#64;0x001414b8 +
+<code class="docutils literal notranslate"><span class="pre">cli_session_proc_q</span></code> &#64;0x0013af80 + <code class="docutils literal notranslate"><span class="pre">cli_talking_chk</span></code> &#64;0x001383c0 +
+<code class="docutils literal notranslate"><span class="pre">cli_call_state_get_q</span></code> &#64;0x001384d4 + <code class="docutils literal notranslate"><span class="pre">cli_in_call_q</span></code> &#64;0x00139a34;
+teardown <code class="docutils literal notranslate"><span class="pre">cli_free_sip_session</span></code> &#64;0x001308d0 / <code class="docutils literal notranslate"><span class="pre">cli_free_session_idx</span></code>
+&#64;0x0013ed38; shared call flags via <code class="docutils literal notranslate"><span class="pre">cli_vistalk_state_set</span></code>/
+<code class="docutils literal notranslate"><span class="pre">cli_vistalk_busy_get</span></code>/<code class="docutils literal notranslate"><span class="pre">cli_vistalk_mode_get</span></code> &#64;0x0012d374/0x0012d390/
+0x0012d3a0 (GUI <code class="docutils literal notranslate"><span class="pre">gui/windows/oversee.c</span></code>, EZVIZ <code class="docutils literal notranslate"><span class="pre">ezviz_app_stream.c</span></code>,
+and the RTP talkback session <code class="docutils literal notranslate"><span class="pre">net_netservice_rtpsession_talkbackrtpsession.c</span></code>
+gate on <code class="docutils literal notranslate"><span class="pre">busy</span></code>/<code class="docutils literal notranslate"><span class="pre">mode==2</span></code>).</p></li>
+</ul>
+</section>
+<section id="sequence">
+<h2>6. Sequence<a class="headerlink" href="#sequence" title="Link to this heading"></a></h2>
+<!-- mermaid: fwv2-door-call -->
+<pre  class="mermaid">
+        sequenceDiagram
+    participant D as Door station
+    participant R as Registrar sipsvrLib :5065
+    participant M as Main indoor :5060 (eXosip)
+    participant E as Extensions (registered dev_reg)
+
+    alt door dials via registrar
+        D-&gt;&gt;R: INVITE sip:room&#64;main:5065 (+a=version:V2.0.0)
+        R-&gt;&gt;R: version≥2 + auth-mode → digest check&lt;br/&gt;resolve callee/caller · online check
+        R--&gt;&gt;D: 401/403 (digest) or 486 (busy) or 404
+        R-&gt;&gt;M: INVITE (Via→own :5065, Record-Route,&lt;br/&gt;R-URI→reg IP:port, From user→room num)
+    else door dials direct
+        D-&gt;&gt;M: INVITE sip:room&#64;main:5060
+    end
+    M-&gt;&gt;M: uas_handle_invite · version gate (non-V2 → 403)&lt;br/&gt;486/480/488/400 rejects · 180 Ringing (+183 if 0xb)
+    M-&gt;&gt;E: INVITE per registered ext (cli_invite_registered_device)
+    E--&gt;&gt;M: 180 Ringing
+    alt first answer wins
+        E--&gt;&gt;M: 200 OK → ACK · CANCEL other legs (tb_extensionAnswerEvent)
+        M--&gt;&gt;D: 200 OK (sess_make_sdp, c=answerer ip)
+        D-&gt;&gt;M: ACK
+    else timeout/reject
+        M--&gt;&gt;D: 408/487 · CANCEL all ext legs
+    end
+    Note over M,D: media = RTSP pull of peer :554 (v1 model)&lt;br/&gt;type-0xb → real RTP/AVP SDP session
+    M-&gt;&gt;D: INFO application/dtmf-relay (unlock) · MESSAGE locknumXML
+    D-&gt;&gt;M: BYE → 200 · tb_extensionByeEvent → BYE ext legs
+    </pre></section>
+<section id="marked-unverified">
+<h2>7. Marked unverified<a class="headerlink" href="#marked-unverified" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Whether doors dial :5060 direct vs :5065 (both paths exist; selection
+is a door-side choice, not visible in this binary).</p></li>
+<li><p>Door-side pull of the answering unit’s :554 (mechanism parity with v1
+assumed; door code not in this image).</p></li>
+<li><p>Exact response code the eXosip layer emits for a local user-reject.</p></li>
+<li><p>Which of the two ring-worker entry points (<code class="docutils literal notranslate"><span class="pre">DAT_00142bf8</span></code>/<code class="docutils literal notranslate"><span class="pre">0x142bfc</span></code>)
+corresponds to v1’s NewCall01 vs NewCall02 split — the
+EZVIZ-configured predicate picks between them as in v1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cli_flags_bit19</span></code>, <code class="docutils literal notranslate"><span class="pre">vis_pred_*</span></code>, <code class="docutils literal notranslate"><span class="pre">cli_call_datetime_parse</span></code> window
+semantics — flag names kept, cfg meanings unresolved.</p></li>
+</ul>
+</section>
+<section id="key-functions">
+<h2>Key functions<a class="headerlink" href="#key-functions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Address</p></th>
+<th class="head"><p>File</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cli_ua_task</span></code></p></td>
+<td><p>0x00143340</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code></p></td>
+<td><p>:5060 eXosip loop, <code class="docutils literal notranslate"><span class="pre">HKVS/2.0.0</span></code> UA</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">uas_handle_invite</span></code></p></td>
+<td><p>0x00141e14</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code></p></td>
+<td><p>INVITE gates + 180/183 + session claim + ring worker</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">uas_call_answer</span></code> / <code class="docutils literal notranslate"><span class="pre">uas_call_msg_proc</span></code></p></td>
+<td><p>0x00141a24 / 0x00142c04</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code></p></td>
+<td><p>answer build / in-call inbound msgs</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cli_options_resp_proc</span></code></p></td>
+<td><p>0x00139a8c</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/uas.c</span></code></p></td>
+<td><p>OPTIONS liveness</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sess_make_sdp</span></code> / <code class="docutils literal notranslate"><span class="pre">sess_parse_remote_sdp</span></code> / <code class="docutils literal notranslate"><span class="pre">sess_sdp_attr_set</span></code></p></td>
+<td><p>0x00127fa4 / 0x00132e20 / 0x00132b20</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/session_ctrl.c</span></code></p></td>
+<td><p>private SDP emit/parse</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cli_session_ctrl_task</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_session_proc_q</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_free_sip_session</span></code></p></td>
+<td><p>0x001414b8 / 0x0013af80 / 0x001308d0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/session_ctrl.c</span></code></p></td>
+<td><p>in-call timers/teardown</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cli_invite</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_send_invite</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_send_invite_voip</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_invite_registered_device</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_call_doorphone</span></code></p></td>
+<td><p>0x0013c36c / 0x00140274 / 0x00140ca4 / 0x00139fa4 / 0x0013b620</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/call_out.c</span></code>, <code class="docutils literal notranslate"><span class="pre">device_helpers.c</span></code></p></td>
+<td><p>outgoing INVITE variants</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cli_call_ring_task</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_ring_proc</span></code></p></td>
+<td><p>0x0013b3bc / 0x00127990</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/call_out.c</span></code></p></td>
+<td><p>ring worker / ringback</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cli_send_dtmf</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_send_incall_msg</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_send_call_info</span></code></p></td>
+<td><p>0x0012cd60 / 0x0012d3b0 / 0x0012c080</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/call_out.c</span></code></p></td>
+<td><p>INFO/MESSAGE in-call</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cli_cancel_by_num</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_send_hang</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_pickup</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_call_terminate</span></code></p></td>
+<td><p>0x0013cd2c / 0x0013ce80 / 0x0013e1f0 / 0x0013ebf4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/call_out.c</span></code></p></td>
+<td><p>cancel/hang/answer/end</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cli_vistalk_state_set</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_vistalk_busy_get</span></code> / <code class="docutils literal notranslate"><span class="pre">cli_vistalk_mode_get</span></code></p></td>
+<td><p>0x0012d374 / 0x0012d390 / 0x0012d3a0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/client/device_helpers.c</span></code></p></td>
+<td><p>shared call-state flags</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">sip_server_route_invite</span></code> / <code class="docutils literal notranslate"><span class="pre">route_ack</span></code> / <code class="docutils literal notranslate"><span class="pre">route_bye_or_cancel</span></code> / <code class="docutils literal notranslate"><span class="pre">route_message</span></code> / <code class="docutils literal notranslate"><span class="pre">route_response</span></code></p></td>
+<td><p>0x0022b780 / 0x0022cfb4 / 0x0022f20c / 0x0022dc6c / 0x0022d598</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/proxy.c</span></code></p></td>
+<td><p>:5065 proxy + header rewrite + digest gate</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sip_check_peer_version_at_least_two</span></code></p></td>
+<td><p>0x0022b6b4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/server/proxy.c</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">V≥2</span></code> check for INVITE auth</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tb_extensionTask</span></code> / <code class="docutils literal notranslate"><span class="pre">tb_extensionAnswerEvent</span></code> / <code class="docutils literal notranslate"><span class="pre">tb_extensionCancelEvent</span></code> / <code class="docutils literal notranslate"><span class="pre">tb_extensionByeEvent</span></code></p></td>
+<td><p>0x0011d208 / 0x0011cb84 / 0x0011cd90 / 0x0011ced0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/talkback_tables.c</span></code></p></td>
+<td><p>extension fan-out events</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tb_createRoute</span></code> / <code class="docutils literal notranslate"><span class="pre">tb_routeCheck</span></code> / <code class="docutils literal notranslate"><span class="pre">tb_masq_rule_table_fill</span></code></p></td>
+<td><p>0x0011c66c / 0x0011c938 / 0x000cc8d0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sip/talkback_tables.c</span></code></p></td>
+<td><p>dual-NIC NAT routes</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intercom-registration.html" class="btn btn-neutral float-left" title="Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="doorbell-pairing.html" class="btn btn-neutral float-right" title="Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

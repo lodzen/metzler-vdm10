@@ -1,0 +1,1058 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metzler.discovery &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware/isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">metzler.discovery</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for metzler.discovery</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""LAN discovery for VDM10 devices (stdlib only, no dependencies).</span>
+
+<span class="sd">Two mechanisms, both verified against live firmware V2.0.24:</span>
+
+<span class="sd">1. SADP inquiry (Hikvision Secure Active Discovery Protocol): an XML</span>
+<span class="sd">   ``&lt;Probe&gt;`` to the multicast group ``239.255.255.250:37020`` (plus optional</span>
+<span class="sd">   unicast sweep - multicast may be filtered). Outdoor stations answer with a</span>
+<span class="sd">   ``&lt;ProbeMatch&gt;`` XML (DeviceType/DeviceDescription/DeviceSN/MAC/IPv4).</span>
+<span class="sd">   The indoor units run the SADP *client* side (``sadpc_*``,</span>
+<span class="sd">   ``confrelatedev_check_doorDev``) to find doors but do not answer inquiries.</span>
+
+<span class="sd">2. Registrar fingerprint: a kind-1 indoor REGISTER to ``host:5065``. The main</span>
+<span class="sd">   indoor's registrar replies to ``source-ip:5060`` - ``htons(5060)`` is</span>
+<span class="sd">   hard-coded in ``send_reply`` (``vdm10_1.0/sip/server/registrar.c``), NOT</span>
+<span class="sd">   the Via port - so the probing socket must bind :5060. Any SIP reply means</span>
+<span class="sd">   a registrar is present (main indoor); extension indoors have no registrar</span>
+<span class="sd">   and stay silent. Status codes map extension-slot state: ``410 Sip Gone``</span>
+<span class="sd">   = number taken by another device, ``200 OK`` = slot free - but a ``200``</span>
+<span class="sd">   *inserts* a dev_reg row, so every probe is followed by an ``Expires: 0``</span>
+<span class="sd">   unregister to clean up (verified: 200 OK).</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">select</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">SADP_GROUP</span> <span class="o">=</span> <span class="s2">"239.255.255.250"</span>
+<span class="n">SADP_PORT</span> <span class="o">=</span> <span class="mi">37020</span>
+<span class="n">REGISTRAR_PORT</span> <span class="o">=</span> <span class="mi">5065</span>
+<span class="n">SIP_UA_PORT</span> <span class="o">=</span> <span class="mi">5060</span>
+<span class="n">VDM10_OUTDOOR_TYPE</span> <span class="o">=</span> <span class="s2">"57619"</span>
+<span class="n">VDM10_MAC_PREFIXES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"bc:9b:5e"</span><span class="p">,)</span>
+<span class="n">EXT_BASE</span> <span class="o">=</span> <span class="s2">"1000000000"</span>  <span class="c1"># devLongNum prefix; + slot digit = 11-char AOR</span>
+<span class="n">EXT_SLOTS</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>  <span class="c1"># firmware caps registered extensions at idx 5</span>
+
+<span class="n">_SADP_PROBE</span> <span class="o">=</span> <span class="s1">'&lt;?xml version="1.0" encoding="utf-8"?&gt;&lt;Probe&gt;&lt;Uuid&gt;</span><span class="si">{u}</span><span class="s1">&lt;/Uuid&gt;&lt;Types&gt;inquiry&lt;/Types&gt;&lt;/Probe&gt;'</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_probe_match</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="s2">"replace"</span><span class="p">))</span>
+    <span class="k">except</span> <span class="n">ET</span><span class="o">.</span><span class="n">ParseError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">tag</span> <span class="o">!=</span> <span class="s2">"ProbeMatch"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">tag</span><span class="p">:</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">root</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="sadp_probe">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.sadp_probe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sadp_probe</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">(),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">multicast</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">iface_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""SADP inquiry -&gt; list of {tag: value} dicts keyed by responding IP.</span>
+
+<span class="sd">    ``targets``: extra unicast (host, port) tuples for the sweep fallback.</span>
+<span class="sd">    """</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IP_MULTICAST_TTL</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">iface_ip</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IP_MULTICAST_IF</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_aton</span><span class="p">(</span><span class="n">iface_ip</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">""</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">probe</span> <span class="o">=</span> <span class="n">_SADP_PROBE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="n">dests</span> <span class="o">=</span> <span class="p">([(</span><span class="n">SADP_GROUP</span><span class="p">,</span> <span class="n">SADP_PORT</span><span class="p">)]</span> <span class="k">if</span> <span class="n">multicast</span> <span class="k">else</span> <span class="p">[])</span> <span class="o">+</span> <span class="p">[(</span><span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">targets</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dests</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">continue</span>
+    <span class="n">out</span><span class="p">,</span> <span class="n">seen</span> <span class="o">=</span> <span class="p">{},</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+    <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_parse_probe_match</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">m</span><span class="p">[</span><span class="s2">"_ip"</span><span class="p">]</span> <span class="o">=</span> <span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">out</span><span class="p">[</span><span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">m</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="is_vdm10_outdoor">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.is_vdm10_outdoor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_vdm10_outdoor</span><span class="p">(</span><span class="n">match</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">mac</span> <span class="o">=</span> <span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"MAC"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"DeviceType"</span><span class="p">)</span> <span class="o">==</span> <span class="n">VDM10_OUTDOOR_TYPE</span> <span class="ow">or</span> <span class="n">mac</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">VDM10_MAC_PREFIXES</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_reg_packet</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">call_id</span><span class="p">,</span> <span class="n">expires</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">):</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="n">expires</span><span class="p">:</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">"&lt;regXML&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"&lt;regDevSerial&gt;</span><span class="si">{</span><span class="n">serial</span><span class="si">}</span><span class="s2">&lt;/regDevSerial&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"&lt;regDevMacAddr&gt;</span><span class="si">{</span><span class="n">mac</span><span class="si">}</span><span class="s2">&lt;/regDevMacAddr&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"&lt;sipNum&gt;</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&lt;/sipNum&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="sa">f</span><span class="s2">"&lt;floorNum&gt;</span><span class="si">{</span><span class="n">floor</span><span class="si">}</span><span class="s2">&lt;/floorNum&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="s2">"&lt;/regXML&gt;"</span>
+        <span class="p">)</span>
+    <span class="n">via</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"SIP/2.0/UDP </span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">listen_port</span><span class="si">}</span><span class="s2">;branch=z9hG4bK-</span><span class="si">{</span><span class="n">call_id</span><span class="p">[:</span><span class="mi">16</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"REGISTER sip:</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">reg_port</span><span class="si">}</span><span class="s2"> SIP/2.0</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Via: </span><span class="si">{</span><span class="n">via</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"To: &lt;sip:</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">reg_port</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s1">'From: "probe"&lt;sip:</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s1">&gt;;tag=p</span><span class="si">{</span><span class="n">call_id</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="se">\r\n</span><span class="s1">'</span>
+        <span class="sa">f</span><span class="s2">"Call-ID: </span><span class="si">{</span><span class="n">call_id</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">CSeq: 1 REGISTER</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Contact: &lt;sip:</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">listen_port</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Expires: </span><span class="si">{</span><span class="n">expires</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">Max-Forwards: 70</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"User-Agent: eXosip/3.6.0</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Content-Type: text/xml</span><span class="se">\r\n</span><span class="s2">Content-Length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="p">)</span><span class="si">}</span><span class="se">\r\n\r\n</span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_status_of</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"ascii"</span><span class="p">,</span> <span class="s2">"replace"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"SIP/2.0 "</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="registrar_probe">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.registrar_probe">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">registrar_probe</span><span class="p">(</span>
+    <span class="n">host</span><span class="p">,</span>
+    <span class="n">ext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+    <span class="n">listen_port</span><span class="o">=</span><span class="n">SIP_UA_PORT</span><span class="p">,</span>
+    <span class="n">reg_port</span><span class="o">=</span><span class="n">REGISTRAR_PORT</span><span class="p">,</span>
+    <span class="n">serial</span><span class="o">=</span><span class="s2">"Q12345678"</span><span class="p">,</span>
+    <span class="n">mac</span><span class="o">=</span><span class="s2">"02:00:11:22:33:44"</span><span class="p">,</span>
+    <span class="n">floor</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">local_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">"""REGISTER fingerprint -&gt; SIP status int, or None when the host is silent.</span>
+
+<span class="sd">    The probe binds ``listen_port`` because the VDM10 registrar replies to</span>
+<span class="sd">    source-ip:5060 unconditionally (``send_reply`` hard-codes the port). On a</span>
+<span class="sd">    2xx answer the probe *registered* an extension, so an ``Expires: 0``</span>
+<span class="sd">    unregister is sent immediately to remove the dev_reg row again.</span>
+<span class="sd">    """</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}</span><span class="s2">0"</span>
+    <span class="k">if</span> <span class="n">local_ip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">local_ip</span> <span class="o">=</span> <span class="n">local_ip_for</span><span class="p">(</span><span class="n">host</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">""</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">))</span>  <span class="c1"># registrar answers only here (firmware)</span>
+    <span class="n">call_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"vdm10-probe-</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">[:</span><span class="mi">12</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span>
+        <span class="n">_reg_packet</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">call_id</span><span class="p">,</span> <span class="mi">900</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">status</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+    <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">_status_of</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">or</span> <span class="n">status</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">&gt;=</span> <span class="mi">200</span><span class="p">:</span>  <span class="c1"># final response (skip 1xx)</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="ow">and</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">status</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+        <span class="n">u</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span>
+            <span class="n">_reg_packet</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">call_id</span><span class="si">}</span><span class="s2">-unreg"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="n">listen_port</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">reg_port</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>  <span class="c1"># drain the unregister ack</span>
+        <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="n">u</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">status</span></div>
+
+
+
+<div class="viewcode-block" id="scan_extension_slots">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.scan_extension_slots">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">scan_extension_slots</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="n">EXT_SLOTS</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""probe ``{base}{slot}`` for each slot -&gt; {ext_number: status|None}.</span>
+
+<span class="sd">    Live semantics: 410 = slot taken by a device, 200 = free (slot row is</span>
+<span class="sd">    removed again by the probe's unregister follow-up), None = no registrar.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}{</span><span class="n">slot</span><span class="si">}</span><span class="s2">"</span><span class="p">:</span> <span class="n">registrar_probe</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">EXT_BASE</span><span class="si">}{</span><span class="n">slot</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="k">for</span> <span class="n">slot</span> <span class="ow">in</span> <span class="n">slots</span><span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="free_extension">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.free_extension">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">free_extension</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""lowest free (status 200) extension long-number on the registrar."""</span>
+    <span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">scan_extension_slots</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">and</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">status</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ext</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="is_vdm10_host">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.is_vdm10_host">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_vdm10_host</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""OUI check via the ARP table - Metzler/Hikvision VDM10 OUIs."""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"/proc/net/arp"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">ip</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">cols</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">VDM10_MAC_PREFIXES</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># outside Linux / no arp entry -&gt; don't filter it out</span></div>
+
+
+
+<div class="viewcode-block" id="docker_detected">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.docker_detected">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">docker_detected</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""running inside a container -&gt; derived IPs are the NAT'd bridge address,</span>
+<span class="sd">    useless for SIP: callers must ask the user for the host's real LAN IP."""</span>
+    <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"/.dockerenv"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cgroup</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">"/proc/1/cgroup"</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">marker</span> <span class="ow">in</span> <span class="n">cgroup</span> <span class="k">for</span> <span class="n">marker</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"docker"</span><span class="p">,</span> <span class="s2">"containerd"</span><span class="p">,</span> <span class="s2">"kubepods"</span><span class="p">,</span> <span class="s2">"podman"</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="local_ip_for">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.local_ip_for">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">local_ip_for</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">REGISTRAR_PORT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""the local IP used to reach ``host`` (UDP connect, no traffic sent)."""</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="subnet_of">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.subnet_of">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">subnet_of</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""/24 host list derived from an IP (the VDM10 default LAN layout)."""</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">ip</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">255</span><span class="p">)]</span></div>
+
+
+
+<div class="viewcode-block" id="tcp_candidates">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.tcp_candidates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tcp_candidates</span><span class="p">(</span><span class="n">subnet</span><span class="p">,</span> <span class="n">ports</span><span class="o">=</span><span class="p">(</span><span class="mi">8000</span><span class="p">,</span> <span class="mi">8102</span><span class="p">),</span> <span class="n">connect_timeout</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""parallel TCP connect scan -&gt; {ip: [open ports]} - the Hikvision SDK/</span>
+<span class="sd">    visNet signature narrows REGISTER fingerprinting to a handful of hosts."""</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">concurrent.futures</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">probe</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">),</span> <span class="n">connect_timeout</span><span class="p">)</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">port</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">subnet</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">]:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<div class="viewcode-block" id="discover">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.discover">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">discover</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">subnet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">local_ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""full LAN sweep -&gt; {"doors": [...], "registrars": [...], "candidates": [...]}</span>
+
+<span class="sd">    - ``doors``: SADP ProbeMatch dicts of outdoor stations (DeviceType 57619</span>
+<span class="sd">      or VDM10 OUI)</span>
+<span class="sd">    - ``registrars``: hosts that answered the :5065 REGISTER fingerprint -</span>
+<span class="sd">      i.e. the main indoor (extension indoors stay silent)</span>
+<span class="sd">    - ``candidates``: hosts with the Hikvision TCP signature that were neither</span>
+<span class="sd">      SADP responders nor registrars - shown as "possible indoor" fallback</span>
+<span class="sd">    """</span>
+    <span class="n">local_ip</span> <span class="o">=</span> <span class="n">local_ip</span> <span class="ow">or</span> <span class="n">_default_local_ip</span><span class="p">()</span>
+    <span class="n">subnet</span> <span class="o">=</span> <span class="n">subnet</span> <span class="ow">or</span> <span class="p">(</span><span class="n">subnet_of</span><span class="p">(</span><span class="n">local_ip</span><span class="p">)</span> <span class="k">if</span> <span class="n">local_ip</span> <span class="k">else</span> <span class="p">[])</span>
+    <span class="n">doors</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">m</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">sadp_probe</span><span class="p">(</span><span class="n">targets</span><span class="o">=</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">SADP_PORT</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">subnet</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">iface_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_vdm10_outdoor</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">door_ips</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s2">"_ip"</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">doors</span><span class="p">}</span>
+    <span class="c1"># cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint</span>
+    <span class="n">candidates</span> <span class="o">=</span> <span class="n">tcp_candidates</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span>
+    <span class="n">registrars</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">h</span>
+        <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span>
+        <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span> <span class="ow">and</span> <span class="n">registrar_probe</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">local_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"doors"</span><span class="p">:</span> <span class="n">doors</span><span class="p">,</span>
+        <span class="s2">"registrars"</span><span class="p">:</span> <span class="n">registrars</span><span class="p">,</span>
+        <span class="s2">"candidates"</span><span class="p">:</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">candidates</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span> <span class="ow">and</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">registrars</span><span class="p">],</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_default_local_ip</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"192.168.1.1"</span><span class="p">,</span> <span class="s2">"10.0.0.1"</span><span class="p">,</span> <span class="s2">"8.8.8.8"</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">local_ip_for</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">continue</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="c1"># --- config-flow status probes (vdm10-ha) ----------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_reg_xml</span><span class="p">(</span><span class="n">serial</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mac</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">floor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># exact firmware field order (_sip_xml_get_reg_info_xml): serial, mac, name, floorNum</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"&lt;regXML&gt;</span><span class="se">\r\n</span><span class="s2">&lt;regDevSerial&gt;</span><span class="si">{</span><span class="n">serial</span><span class="si">}</span><span class="s2">&lt;/regDevSerial&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"&lt;regDevMacAddr&gt;</span><span class="si">{</span><span class="n">mac</span><span class="si">}</span><span class="s2">&lt;/regDevMacAddr&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"&lt;regDevName&gt;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&lt;/regDevName&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"&lt;floorNum&gt;</span><span class="si">{</span><span class="n">floor</span><span class="si">}</span><span class="s2">&lt;/floorNum&gt;</span><span class="se">\r\n</span><span class="s2">&lt;/regXML&gt;"</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_register</span><span class="p">(</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sipnum</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expires</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">serial</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mac</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">REGISTRAR_PORT</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Kind-1 indoor REGISTER per the VDM10 dialect (regXML body, replies are</span>
+<span class="sd">    routed to the sender's port 5060 by the registrar — see module docstring).</span>
+
+<span class="sd">    The body is sent even for ``Expires: 0``: the registrar's unregister</span>
+<span class="sd">    delete is ``where serial_no='&lt;s&gt;' or dev_ip='&lt;src ip&gt;'`` and the serial</span>
+<span class="sd">    is only scraped from regXML — an empty body matches nothing by serial.</span>
+<span class="sd">    """</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">_reg_xml</span><span class="p">(</span><span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="s2">"vdm10-probe"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"REGISTER sip:</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2"> SIP/2.0</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Via: SIP/2.0/UDP </span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">SIP_UA_PORT</span><span class="si">}</span><span class="s2">;rport;branch=z9hG4bK</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">31</span><span class="p">)</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Max-Forwards: 70</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Contact: &lt;sip:</span><span class="si">{</span><span class="n">sipnum</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">SIP_UA_PORT</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"To: &lt;sip:</span><span class="si">{</span><span class="n">sipnum</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s1">'From: "vdm10-probe"&lt;sip:</span><span class="si">{</span><span class="n">sipnum</span><span class="si">}</span><span class="s1">@</span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s1">&gt;;tag=</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">31</span><span class="p">)</span><span class="si">}</span><span class="se">\r\n</span><span class="s1">'</span>
+        <span class="sa">f</span><span class="s2">"Call-ID: </span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"CSeq: 1 REGISTER</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"User-Agent: eXosip/3.6.0</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Allow: INVITE, ACK, CANCEL, BYE, REFER, INFO, OPTIONS, MESSAGE</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Expires: </span><span class="si">{</span><span class="n">expires</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Content-Type: text/xml</span><span class="se">\r\n</span><span class="s2">"</span>
+        <span class="sa">f</span><span class="s2">"Content-Length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="si">}</span><span class="se">\r\n\r\n</span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">"</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_probe_datagram</span><span class="p">(</span><span class="n">sock</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">expect</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Wait for one SIP reply datagram; returns the raw packet or None.</span>
+
+<span class="sd">    ``expect`` filters stray datagrams (e.g. a late unregister 200 for the</span>
+<span class="sd">    previous slot) — the reply's To carries ``sip:&lt;sipnum&gt;@``, so only a</span>
+<span class="sd">    datagram containing the probed number counts as its answer.</span>
+<span class="sd">    """</span>
+    <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">remaining</span> <span class="o">:=</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ready</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">select</span><span class="o">.</span><span class="n">select</span><span class="p">([</span><span class="n">sock</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="n">remaining</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">expect</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">expect</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_probe_reply</span><span class="p">(</span><span class="n">sock</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">expect</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Like ``_probe_datagram`` but returns just the SIP status line."""</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">_probe_datagram</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">expect</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_auth_challenge</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The WWW-/Proxy-Authenticate value from a raw reply, for digest retry."""</span>
+    <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">):</span>
+        <span class="n">name</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">":"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"www-authenticate"</span><span class="p">,</span> <span class="s2">"proxy-authenticate"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_slot_status</span><span class="p">(</span>
+    <span class="n">sock</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sipnum</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">local_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">serial</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">mac</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">wait</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">REGISTRAR_PORT</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""REGISTER ``sipnum`` at ``host:5065``; returns the reply status code.</span>
+
+<span class="sd">    ``send_reply`` answers every outcome (200/410/400/500), so silence means</span>
+<span class="sd">    the packet or its reply was lost — one retry before giving up. A 200</span>
+<span class="sd">    inserts a dev_reg row; it is removed again with an ``Expires: 0``</span>
+<span class="sd">    unregister carrying regXML (see ``_build_register``).</span>
+<span class="sd">    """</span>
+    <span class="n">probe</span> <span class="o">=</span> <span class="n">_build_register</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">sipnum</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+    <span class="n">line</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">line</span> <span class="o">:=</span> <span class="n">_probe_reply</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">wait</span> <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">wait</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span> <span class="n">sipnum</span><span class="p">):</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"SIP/2.0 "</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="c1"># every insert fires vns_registrarSyncHook — blocking :8102 connects</span>
+        <span class="c1"># to each extension stall the registrar's SIP loop for seconds and</span>
+        <span class="c1"># it drops datagrams meanwhile, so retry the unregister past that</span>
+        <span class="c1"># window (bounded: an unanswered row still expires with its TTL and</span>
+        <span class="c1"># the next same-IP REGISTER replaces it via the dev_ip dedup match).</span>
+        <span class="n">unregister</span> <span class="o">=</span> <span class="n">_build_register</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">sipnum</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">unregister</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">_probe_reply</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">sipnum</span><span class="p">):</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">code</span>
+
+
+<div class="viewcode-block" id="register_status">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.register_status">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_status</span><span class="p">(</span>
+    <span class="n">registrar</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sipnum</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">serial</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">local_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">REGISTRAR_PORT</span><span class="p">,</span>
+    <span class="n">wait</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Probe-REGISTER ``sipnum`` on ``registrar`` and return the reply code.</span>
+
+<span class="sd">    For the config flow's registration check: ``200`` = the extension can be</span>
+<span class="sd">    claimed (the probe row is removed again via ``Expires: 0`` inside</span>
+<span class="sd">    ``_slot_status``), ``410`` = held by a different device, ``401``/``403`` =</span>
+<span class="sd">    the registrar challenged auth, ``None`` = unreachable or :5060 busy.</span>
+<span class="sd">    ``serial`` should be the entry's own so the dedup verdict matches what</span>
+<span class="sd">    the real registration will see.</span>
+<span class="sd">    """</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">"0.0.0.0"</span><span class="p">,</span> <span class="n">SIP_UA_PORT</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mac</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"bc:9b:5e:</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">24</span><span class="p">)</span><span class="si">:</span><span class="s2">06x</span><span class="si">}</span><span class="s2">"</span>
+        <span class="k">return</span> <span class="n">_slot_status</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">registrar</span><span class="p">,</span> <span class="n">sipnum</span><span class="p">,</span> <span class="n">local_ip</span><span class="p">,</span> <span class="n">serial</span><span class="p">,</span> <span class="n">mac</span><span class="p">,</span> <span class="n">wait</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="provider_status">
+<a class="viewcode-back" href="../../api/metzler.discovery.html#metzler.discovery.provider_status">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">provider_status</span><span class="p">(</span>
+    <span class="n">host</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">user</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">local_ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">6.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""REGISTER ``user`` at a standard SIP server; returns the reply code.</span>
+
+<span class="sd">    For the config flow's provider/trunk check: REGISTER -&gt; one digest retry</span>
+<span class="sd">    on 401/407 -&gt; status. A ``2xx`` is followed by ``Expires: 0`` cleanup.</span>
+<span class="sd">    ``None`` = unreachable/timeout. Unlike the intercom registrar, providers</span>
+<span class="sd">    answer on the Via's source port — an ephemeral bind suffices.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">metzler.sip.digest</span><span class="w"> </span><span class="kn">import</span> <span class="n">digest_response</span>  <span class="c1"># lazy: module stays stdlib-only</span>
+
+    <span class="n">call_id</span><span class="p">,</span> <span class="n">cseq</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setblocking</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">"0.0.0.0"</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">bind_port</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">expires</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">auth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"REGISTER sip:</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2"> SIP/2.0</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Via: SIP/2.0/UDP </span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">;rport;branch=z9hG4bK</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">31</span><span class="p">)</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Max-Forwards: 70</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"From: &lt;sip:</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">&gt;;tag=</span><span class="si">{</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">31</span><span class="p">)</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"To: &lt;sip:</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Contact: &lt;sip:</span><span class="si">{</span><span class="n">user</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">local_ip</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">bind_port</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Call-ID: </span><span class="si">{</span><span class="n">call_id</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"CSeq: </span><span class="si">{</span><span class="n">cseq</span><span class="si">}</span><span class="s2"> REGISTER</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"User-Agent: eXosip/3.6.0</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Expires: </span><span class="si">{</span><span class="n">expires</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+                <span class="sa">f</span><span class="s2">"Content-Length: 0</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">auth</span><span class="p">:</span>
+                <span class="n">headers</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"Authorization: </span><span class="si">{</span><span class="n">auth</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">headers</span><span class="si">}</span><span class="se">\r\n</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+
+        <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="mi">600</span><span class="p">),</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">_probe_datagram</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()),</span> <span class="n">expect</span><span class="o">=</span><span class="n">call_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\r\n</span><span class="s2">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">"replace"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"SIP/2.0 "</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">401</span><span class="p">,</span> <span class="mi">407</span><span class="p">)</span> <span class="ow">or</span> <span class="n">attempt</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">hdr</span> <span class="o">=</span> <span class="n">_auth_challenge</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">hdr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="n">cseq</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">auth</span> <span class="o">=</span> <span class="n">digest_response</span><span class="p">(</span><span class="n">hdr</span><span class="p">,</span> <span class="s2">"REGISTER"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"sip:</span><span class="si">{</span><span class="n">domain</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="mi">600</span><span class="p">,</span> <span class="n">auth</span><span class="p">),</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="mi">200</span> <span class="o">&lt;=</span> <span class="n">code</span> <span class="o">&lt;</span> <span class="mi">300</span><span class="p">:</span>
+            <span class="n">cseq</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">build</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="n">_probe_datagram</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">expect</span><span class="o">=</span><span class="n">call_id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">code</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firmware internals — hicore (INDOOR_V2.0.24_build230608) &mdash; vdm10-python 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Intercom registration &amp; private-SIP communication — firmware internals" href="intercom-registration.html" />
+    <link rel="prev" title="The Hikvision private SIP dialect — and the standard-SIP leg" href="../protocol.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Library</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">README</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Simulator architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../protocol.html">The Hikvision private SIP dialect — and the standard-SIP leg</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V1</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-call-flow.html">Doorbell call flow — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hikconnect.html">Hik-Connect / EZVIZ cloud channel — registration and call-state pushes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="door-unlock-api.html">Door unlock via ISAPI (HTTP XML) — firmware internals</a></li>
+<li class="toctree-l1"><a class="reference internal" href="isapi-endpoints.html">ISAPI endpoints registered by <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (VDM10 indoor, fw 2.0.24)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Firmware V2</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/README.html">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.2.100_build251203)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/architecture-v2.html">V2 architecture — how the SIP stack differs structurally</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/intercom-registration.html">Intercom registration &amp; private-SIP communication — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/door-call-flow.html">Doorbell call flow — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/doorbell-pairing.html">Doorbell pairing &amp; door↔indoor signaling — firmware internals (V2.2.100)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../firmware-v2/hikconnect.html">Hik-Connect / EZVIZ cloud channel — firmware internals (V2.2.100)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">V1 ↔ V2 comparison</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/README.html">Firmware version comparison — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/registration.html">Registration — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/protocol-changes.html">Protocol / message-format deltas — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/subsystem-changes.html">Subsystem-by-subsystem diff — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/config-and-gates.html">Configuration surface &amp; gates — V2.0.24 vs V2.2.100</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version-comparison/unchanged.html">What did NOT change — V2.0.24 vs V2.2.100</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/metzler.html">metzler package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">vdm10-python</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/firmware/README.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="firmware-internals-hicore-indoor-v2-0-24-build230608">
+<h1>Firmware internals — <code class="docutils literal notranslate"><span class="pre">hicore</span></code> (INDOOR_V2.0.24_build230608)<a class="headerlink" href="#firmware-internals-hicore-indoor-v2-0-24-build230608" title="Link to this heading"></a></h1>
+<p>Topic docs built from the decompiled, human-rewritten pseudocode in
+<a class="reference internal" href="#../../vdm10_1.0/"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/</span></code></span></a>. Each cites the source file, function name and
+original <code class="docutils literal notranslate"><span class="pre">0x…</span></code> address so a claim can be traced back to the binary. Items the
+decompile couldn’t prove are marked <strong>unverified</strong>.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Doc</p></th>
+<th class="head"><p>Covers</p></th>
+<th class="head"><p>Main source areas</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="intercom-registration.html"><span class="std std-doc">intercom-registration.md</span></a></p></td>
+<td><p>Extension registration, heartbeat, dev_reg, busy flag, call routing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="doorbell-pairing.html"><span class="std std-doc">doorbell-pairing.md</span></a></p></td>
+<td><p>Indoor↔doorbell pairing, pre-registration, unlock credentials, visNet channel</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/client/</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/visnet/</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="hikconnect.html"><span class="std std-doc">hikconnect.md</span></a></p></td>
+<td><p>EZVIZ/Hik-Connect bootstrap, registration, call-state pushes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/ezviz/</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/ezdevsdk/</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="door-call-flow.html"><span class="std std-doc">door-call-flow.md</span></a></p></td>
+<td><p>Doorbell → indoor call incl. extension fan-out and the video feed</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/sip/</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/net/</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/gui/calls/</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="door-unlock-api.html"><span class="std std-doc">door-unlock-api.md</span></a></p></td>
+<td><p>Remote door-unlock endpoint (XML parsed, devType gate, call chain)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/</span></code>, <code class="docutils literal notranslate"><span class="pre">hicore</span></code> URI table</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="isapi-endpoints.html"><span class="std std-doc">isapi-endpoints.md</span></a></p></td>
+<td><p>Full ISAPI route catalog from the <code class="docutils literal notranslate"><span class="pre">hicore</span></code> URI table (146 endpoints)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hicore</span></code> <code class="docutils literal notranslate"><span class="pre">.data</span></code>, <code class="docutils literal notranslate"><span class="pre">vdm10_1.0/isapi/</span></code>, <code class="docutils literal notranslate"><span class="pre">tools/dump_isapi_table.py</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>The simulator’s own wire-level description of the same protocols is in
+<a class="reference internal" href="../protocol.html"><span class="std std-doc">../protocol.md</span></a>; this folder is the firmware’s side of the
+story (what <code class="docutils literal notranslate"><span class="pre">hicore</span></code> actually does, not just what the sim emulates).</p>
+<p>Background: <code class="docutils literal notranslate"><span class="pre">../../ANALYSIS.md</span></code> (extraction + verified findings),
+<code class="docutils literal notranslate"><span class="pre">../../HIKCONNECT.md</span></code> (cloud protocol details), <code class="docutils literal notranslate"><span class="pre">../../vdm10_1.0/*/README.md</span></code>
+(per-area file maps and the Ghidra→vdm10_1.0 naming tables in
+<code class="docutils literal notranslate"><span class="pre">../../vdm10_1.0/names/</span></code>).</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../protocol.html" class="btn btn-neutral float-left" title="The Hikvision private SIP dialect — and the standard-SIP leg" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="intercom-registration.html" class="btn btn-neutral float-right" title="Intercom registration &amp; private-SIP communication — firmware internals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, lodzen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
