@@ -79,8 +79,8 @@ def station_factory():
         for k, v in attrs.items():
             setattr(o, k, v)
         st = IndoorStation(o)
-        sent = st.sent = Sent()  # ty: ignore[unresolved-attribute]
-        st.send = lambda pkt, addr: (pkt.set("Content-Length", str(len(pkt.body)), True), sent.append((pkt, addr)))  # ty: ignore[invalid-assignment]
+        sent = st.sent = Sent()  # ty: ignore[missing-attribute]
+        st.send = lambda pkt, addr: (pkt.set("Content-Length", str(len(pkt.body)), True), sent.append((pkt, addr)))
         made.append(st)
         return st
 

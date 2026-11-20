@@ -34,6 +34,9 @@ class InboundCallMixin:
         call.trunk = trunk  # the SIP leg this call came from
         call.kind = "intercom"
         self.calls[call.id] = call
+        # the inbound leg is the session HA surfaces ("ringing the indoor"):
+        # call_out's intercom leg is an implementation detail, like a trunk leg
+        self._fire_event("ring", call)
         self.reply(call, self.in_dialog_response(pkt, "180 Ringing", extra_to_tag=call.to_tag))
         log.info("inbound %s call %s -> ringing intercom %s", trunk.label, pkt.get("From"), self.o.inbound_target)
         if self.registered.is_set():
@@ -68,6 +71,7 @@ class InboundCallMixin:
         ok.body = call.trunk.answer_sdp(offer, media)
         self.reply(call, ok)
         call.state = "established"
+        self._fire_event("answered", call)
         media.start()
         log.info(
             "inbound call established: SIP app <-> intercom %s (peer audio %s, protection %s)",

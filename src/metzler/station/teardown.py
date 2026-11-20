@@ -62,6 +62,7 @@ class TeardownMixin:
             if out.get("bridged"):  # intercom hung up -> BYE the app
                 call = out["bridged"]
                 self.bye_intercom(call)
+                call.end_reason = "bye"
                 self._close_call(call, call.id)
             log.info("outbound call to %s ended by peer", out["num"])
 

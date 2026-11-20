@@ -27,7 +27,7 @@ markers = ["integration: spawns the simulator as a subprocess on localhost"]
 dev = [
     "pytest>=9.1,<9.2",
     "ruff>=0.17.3,<0.18",
-    "ty>=0.0.95,<0.0.96",
+    "ty>=0.0.107,<0.1",
 ]
 
 [tool.ruff]
@@ -66,9 +66,12 @@ include = ["src", "tests"]
 root = ["./src", "./tests", "./tools"]
 
 # IndoorStation is assembled from mixins that share `self`; each mixin
-# references attributes defined by its siblings, which is uncheckable.
+# references attributes defined by its siblings, which is uncheckable. The
+# optional SipProvider/FritzTrunk legs are guarded at runtime but ty sees
+# the `X | None` union - same class of uncheckable internals.
 [[tool.ty.overrides]]
 include = ["src/metzler/station/**"]
 
 [tool.ty.overrides.rules]
-unresolved-attribute = "ignore"
+missing-attribute = "ignore"
+missing-union-attribute = "ignore"

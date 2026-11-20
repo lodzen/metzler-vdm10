@@ -300,6 +300,7 @@ class StationCore:
             self.out_calls.pop(cid, None)
             if call:  # callee busy/gone -> tell the app
                 self.reply(call, self.in_dialog_response(call.invite, pkt.status_line[8:], extra_to_tag=call.to_tag))
+                call.end_reason = "rejected"
                 self._close_call(call, call.id)
 
     def on_response(self, pkt, addr):
