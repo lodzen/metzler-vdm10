@@ -3,6 +3,7 @@
 import re
 import socket
 import threading
+import time
 
 import pytest
 
@@ -198,6 +199,70 @@ def test_discover_localhost_registrar(_sip_ua_port_free):
         stop.set()
         tcp.close()
         reg_t.join(timeout=6)
+
+
+def _registrar_on(ip, port, statuses, got):
+    """fake_registrar bound to a specific loopback IP + port (multi-host)."""
+    srv = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    srv.bind((ip, port))
+    srv.settimeout(8)
+    t = threading.Thread(target=fake_registrar, args=(srv, statuses, got), daemon=True)
+    t.start()
+    return t
+
+
+def test_probe_many_finds_registrar():
+    got = []
+    reg_port, t = _registrar({"10000000000": 410}, got)
+    found = discovery.registrar_probe_many(
+        ["127.0.0.1"], listen_port=0, reg_port=reg_port, local_ip="127.0.0.1", timeout=2
+    )
+    assert found == {"127.0.0.1"}
+    t.join(timeout=2)
+
+
+def test_probe_many_two_hosts_share_one_socket():
+    """two registrars at the same reg_port on different loopback IPs -> both
+    answered; replies are matched by source addr on the shared socket."""
+    got = []
+    free = _bind()
+    port = free.getsockname()[1]
+    free.close()
+    t1 = _registrar_on("127.0.0.1", port, {"10000000000": 410}, got)
+    t2 = _registrar_on("127.0.0.2", port, {"10000000000": 410}, got)
+    try:
+        found = discovery.registrar_probe_many(
+            ["127.0.0.1", "127.0.0.2"], listen_port=0, reg_port=port, local_ip="127.0.0.1", timeout=2
+        )
+        assert found == {"127.0.0.1", "127.0.0.2"}
+    finally:
+        t1.join(timeout=2)
+        t2.join(timeout=2)
+
+
+def test_probe_many_silent_host_bounds_the_sweep():
+    """a dead host costs one timeout for the whole fingerprint, not per host."""
+    free = _bind()
+    dead = free.getsockname()[1]
+    free.close()
+    start = time.monotonic()
+    found = discovery.registrar_probe_many(
+        ["127.0.0.1", "127.0.0.2"], listen_port=0, reg_port=dead, local_ip="127.0.0.1", timeout=1.0
+    )
+    assert found == set()
+    assert time.monotonic() - start < 2.5
+
+
+def test_scan_slots_silent_host_bounds_the_sweep():
+    """6 slots x per-slot timeout used to take ~36s on a dead host - the batch
+    sweep must finish within its overall budget."""
+    free = _bind()
+    dead = free.getsockname()[1]
+    free.close()
+    start = time.monotonic()
+    res = scan_extension_slots("127.0.0.1", listen_port=0, reg_port=dead, local_ip="127.0.0.1", timeout=1.0)
+    assert set(res.values()) == {None}
+    assert time.monotonic() - start < 2.5
 
 
 def test_local_ip_and_subnet():

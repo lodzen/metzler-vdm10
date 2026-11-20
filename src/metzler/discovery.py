@@ -183,13 +183,165 @@ def registrar_probe(
     return status
 
 
+def _bind_probe_sock(listen_port):
+    """the reply socket probes must use: the VDM10 registrar answers to
+    source-ip:5060 unconditionally, so every probe shares this bind. None
+    when the port is taken (a running station holds it)."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        s.bind(("", listen_port))
+    except OSError:
+        s.close()
+        return None
+    s.setblocking(False)
+    return s
+
+
+def _collect_status(sock, deadline, pending, key_of):
+    """recv SIP replies until ``deadline`` -> {key: status int}.
+
+    ``key_of(data, addr)`` maps a datagram to a pending key (None = stray
+    datagram, e.g. a late unregister-200 for an earlier probe)."""
+    found = {}
+    while pending and time.monotonic() < deadline:
+        ready, _, _ = select.select([sock], [], [], max(0.0, deadline - time.monotonic()))
+        if not ready:
+            break
+        try:
+            data, addr = sock.recvfrom(65535)
+        except OSError:
+            continue
+        key = key_of(data, addr)
+        if key is None or key not in pending:
+            continue
+        pending.discard(key)
+        if data.startswith(b"SIP/2.0 "):
+            try:
+                found[key] = int(data.split(None, 2)[1])
+            except (IndexError, ValueError):
+                pass
+    return found
+
+
+def _unregister(sock, host, packet, reg_port):
+    """a 200 inserted a dev_reg row - Expires:0 removes it; the registrar's
+    sync hook stalls its SIP loop after an insert, so retry past that
+    window (a missed row still dies with its TTL)."""
+    for _ in range(3):
+        sock.sendto(packet, (host, reg_port))
+        if _probe_reply(sock, 1.5):
+            break
+
+
 def scan_extension_slots(host, slots=EXT_SLOTS, **kw):
     """probe ``{base}{slot}`` for each slot -> {ext_number: status|None}.
 
     Live semantics: 410 = slot taken by a device, 200 = free (slot row is
     removed again by the probe's unregister follow-up), None = no registrar.
+    All REGISTERs go out up front on one shared reply socket and the replies
+    are matched back by their echoed Call-ID - ``timeout`` bounds the whole
+    sweep, so a silent host costs one wait instead of one per slot.
     """
-    return {f"{EXT_BASE}{slot}": registrar_probe(host, f"{EXT_BASE}{slot}", **kw) for slot in slots}
+    local_ip = kw.get("local_ip") or local_ip_for(host)
+    timeout = float(kw.get("timeout", 3.0))
+    serial = kw.get("serial", "Q12345678")
+    mac = kw.get("mac", "02:00:11:22:33:44")
+    floor = kw.get("floor", 3)
+    reg_port = kw.get("reg_port", REGISTRAR_PORT)
+    listen_port = kw.get("listen_port", SIP_UA_PORT)
+    exts = [f"{EXT_BASE}{slot}" for slot in slots]
+    sock = _bind_probe_sock(listen_port)
+    if sock is None:
+        return dict.fromkeys(exts)
+    try:
+        packets = {
+            ext: _reg_packet(host, ext, f"vdm10-scan-{ext}", 900, serial, mac, floor, local_ip, listen_port, reg_port)
+            for ext in exts
+        }
+
+        def blast(targets):
+            for ext in targets:
+                sock.sendto(packets[ext], (host, reg_port))
+
+        def match(data, _addr):
+            return next((e for e in pending if f"vdm10-scan-{e}".encode() in data), None)
+
+        pending = set(exts)
+        found = {}
+        end = time.monotonic() + timeout
+        blast(pending)
+        found.update(_collect_status(sock, min(end, time.monotonic() + min(timeout, 0.8)), pending, match))
+        if pending:
+            blast(pending)
+            found.update(_collect_status(sock, end, pending, match))
+        for ext, code in found.items():
+            if code == 200:
+                _unregister(
+                    sock,
+                    host,
+                    _reg_packet(
+                        host, ext, f"vdm10-scan-{ext}-unreg", 0, serial, mac, floor, local_ip, listen_port, reg_port
+                    ),
+                    reg_port,
+                )
+        return {ext: found.get(ext) for ext in exts}
+    finally:
+        sock.close()
+
+
+def registrar_probe_many(hosts, timeout=2.0, local_ip=None, **kw):
+    """kind-1 indoor REGISTER fingerprint against several hosts at once ->
+    the subset that answered (a registrar listens there).
+
+    Per-host probing can't parallelize: the registrar replies to source:5060
+    and parallel sockets would steal each other's datagrams. One shared
+    socket blasts REGISTERs to all hosts and matches replies by source IP -
+    ``timeout`` bounds the whole fingerprint, not each host.
+    """
+    hosts = list(hosts)
+    if not hosts:
+        return set()
+    timeout = float(timeout)
+    serial = kw.get("serial", "Q12345678")
+    mac = kw.get("mac", "02:00:11:22:33:44")
+    floor = kw.get("floor", 3)
+    reg_port = kw.get("reg_port", REGISTRAR_PORT)
+    listen_port = kw.get("listen_port", SIP_UA_PORT)
+    ext = kw.get("ext") or f"{EXT_BASE}0"
+    lip = local_ip or local_ip_for(hosts[0], reg_port)
+    sock = _bind_probe_sock(listen_port)
+    if sock is None:
+        return set()
+    try:
+        cid = f"vdm10-probe-{uuid.uuid4().hex[:12]}"
+        packets = {h: _reg_packet(h, ext, cid, 900, serial, mac, floor, lip, listen_port, reg_port) for h in hosts}
+        pending = set(hosts)
+        end = time.monotonic() + timeout
+
+        def blast(targets):
+            for h in targets:
+                sock.sendto(packets[h], (h, reg_port))
+
+        def by_addr(_data, addr):
+            return addr[0]
+
+        blast(pending)
+        found = _collect_status(sock, min(end, time.monotonic() + min(timeout, 0.8)), pending, by_addr)
+        if pending:
+            blast(pending)
+            found.update(_collect_status(sock, end, pending, by_addr))
+        for h, code in found.items():
+            if code == 200:
+                _unregister(
+                    sock,
+                    h,
+                    _reg_packet(h, ext, f"{cid}-unreg", 0, serial, mac, floor, lip, listen_port, reg_port),
+                    reg_port,
+                )
+        return set(found)
+    finally:
+        sock.close()
 
 
 def free_extension(host, **kw) -> str | None:
@@ -281,16 +433,13 @@ def discover(timeout=3.0, subnet=None, local_ip=None):
     ]
     door_ips = {d["_ip"] for d in doors}
     # cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint
-    candidates = tcp_candidates(subnet)
-    registrars = [
-        h
-        for h in candidates
-        if h not in door_ips and registrar_probe(h, timeout=min(timeout, 2.0), local_ip=local_ip) is not None
-    ]
+    candidates = [h for h in tcp_candidates(subnet) if h not in door_ips]
+    answered = registrar_probe_many(candidates, timeout=min(timeout, 2.0), local_ip=local_ip)
+    registrars = [h for h in candidates if h in answered]
     return {
         "doors": doors,
         "registrars": registrars,
-        "candidates": [h for h in candidates if h not in door_ips and h not in registrars],
+        "candidates": [h for h in candidates if h not in answered],
     }
 
 
