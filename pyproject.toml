@@ -1,5 +1,5 @@
 [project]
-name = "metzler"
+name = "vdm10-python"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -18,6 +18,10 @@ indoor-station = "metzler.cli:main"
 [build-system]
 requires = ["uv_build>=0.12.19,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# dist name is vdm10-python but the import package stays `metzler`
+module-name = "metzler"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

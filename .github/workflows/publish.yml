@@ -1,4 +1,4 @@
-# Uploads the `metzler` package to PyPI when a GitHub release is published.
+# Uploads the `vdm10-python` package to PyPI when a GitHub release is published.
 # Requires a PyPI trusted publisher registered for this repo + workflow
 # (pypi.org → account → publishing) and a GitHub environment named `stable`.
 name: Upload Python Package
@@ -39,7 +39,7 @@ jobs:
       id-token: write
     environment:
       name: stable
-      url: https://pypi.org/project/metzler/${{ github.event.release.name }}
+      url: https://pypi.org/project/vdm10-python/${{ github.event.release.name }}
 
     steps:
       - name: Retrieve release distributions
