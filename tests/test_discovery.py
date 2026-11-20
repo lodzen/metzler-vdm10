@@ -164,6 +164,25 @@ def test_free_extension_picks_lowest_free():
     t.join(timeout=2)
 
 
+def test_free_extension_never_picks_main_indoor():
+    """`…00` is the main indoor's own AOR - some firmware 200s a REGISTER for
+    it, so even a caller sweeping slot 0 must not be offered it."""
+    got = []
+    reg_port, t = _registrar(
+        {
+            "10000000000": 200,
+            "10000000001": 410,
+            "10000000002": 200,
+        },
+        got,
+    )
+    ext = free_extension(
+        "127.0.0.1", slots=range(0, 6), listen_port=0, reg_port=reg_port, local_ip="127.0.0.1", timeout=3
+    )
+    assert ext == "10000000002"
+    t.join(timeout=2)
+
+
 def test_discover_localhost_registrar(_sip_ua_port_free):
     """end-to-end: fake :8000 TCP candidate + :5065 registrar -> found."""
     from metzler.discovery import discover

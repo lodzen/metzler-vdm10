@@ -37,7 +37,7 @@ SIP_UA_PORT = 5060
 VDM10_OUTDOOR_TYPE = "57619"
 VDM10_MAC_PREFIXES = ("bc:9b:5e",)
 EXT_BASE = "1000000000"  # devLongNum prefix; + slot digit = 11-char AOR
-EXT_SLOTS = range(0, 6)  # firmware caps registered extensions at idx 5
+EXT_SLOTS = range(1, 6)  # registered extension idx 01-05; idx 0 is the main indoor itself
 
 _SADP_PROBE = '<?xml version="1.0" encoding="utf-8"?><Probe><Uuid>{u}</Uuid><Types>inquiry</Types></Probe>'
 
@@ -345,9 +345,15 @@ def registrar_probe_many(hosts, timeout=2.0, local_ip=None, **kw):
 
 
 def free_extension(host, **kw) -> str | None:
-    """lowest free (status 200) extension long-number on the registrar."""
+    """lowest free (status 200) extension long-number on the registrar.
+
+    Never returns the idx-0 number - that AOR is the main indoor itself even
+    when the registrar accepts a REGISTER for it (no dev_reg row exists to
+    collide with, so some firmware answers 200).
+    """
+    main_num = f"{EXT_BASE}0"
     for ext, status in scan_extension_slots(host, **kw).items():
-        if status and 200 <= status < 300:
+        if ext != main_num and status and 200 <= status < 300:
             return ext
     return None
 
