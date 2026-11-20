@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>metzler.discovery &mdash; vdm10-python 0.1.3 documentation</title>
+  <title>metzler.discovery &mdash; vdm10-python 0.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../_static/documentation_options.js?v=fd825880"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
@@ -639,9 +639,11 @@ window.runMermaid = runMermaid;</script>
     <span class="n">status</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span>
     <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">65535</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
             <span class="k">break</span>
+        <span class="k">if</span> <span class="n">addr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">host</span><span class="p">:</span>
+            <span class="k">continue</span>  <span class="c1"># stray datagram - :5060 is shared, other probes' replies can land here</span>
         <span class="n">status</span> <span class="o">=</span> <span class="n">_status_of</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">or</span> <span class="n">status</span>
         <span class="k">if</span> <span class="n">status</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">&gt;=</span> <span class="mi">200</span><span class="p">:</span>  <span class="c1"># final response (skip 1xx)</span>
             <span class="k">break</span>
@@ -936,10 +938,12 @@ window.runMermaid = runMermaid;</script>
 
     <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="ow">in</span> <span class="p">[(</span><span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">subnet</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">]:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">out</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+        <span class="c1"># submit the whole sweep first - calling result() inside the loop</span>
+        <span class="c1"># would serialize the probes (minutes on a mostly-silent /24)</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="p">{</span><span class="n">ex</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">probe</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span> <span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">subnet</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">fut</span><span class="p">,</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">futures</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">:=</span> <span class="n">fut</span><span class="o">.</span><span class="n">result</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">out</span></div>
 
 
@@ -997,6 +1001,7 @@ window.runMermaid = runMermaid;</script>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"vdm10 scan: </span><span class="si">%d</span><span class="s2"> door(s) via SADP: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">doors</span><span class="p">),</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">door_ips</span><span class="p">))</span>
     <span class="c1"># cheap pre-filter: only Hikvision-signature hosts get the SIP fingerprint</span>
     <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">tcp_candidates</span><span class="p">(</span><span class="n">subnet</span><span class="p">)</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">door_ips</span><span class="p">]</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"vdm10 scan: </span><span class="si">%d</span><span class="s2"> host(s) with tcp signature: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">),</span> <span class="n">candidates</span><span class="p">)</span>
     <span class="n">answered</span> <span class="o">=</span> <span class="n">registrar_probe_many</span><span class="p">(</span><span class="n">candidates</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="n">local_ip</span><span class="o">=</span><span class="n">local_ip</span><span class="p">)</span>
     <span class="n">macs</span> <span class="o">=</span> <span class="n">_vdm10_macs</span><span class="p">(</span><span class="n">arp_table</span><span class="p">()</span> <span class="k">if</span> <span class="n">arp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">arp</span><span class="p">,</span> <span class="n">subnet</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
